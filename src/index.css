@@ -340,11 +340,10 @@ html {
 
 /* ── Match row mobile ── */
 @media (max-width: 640px) {
-  .match-row { flex-wrap: wrap !important; gap: 8px !important; padding: 12px 14px !important; }
-  .match-row-teams { width: 100% !important; }
-  .match-row-name { font-size: 12px !important; max-width: 75px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
-  .match-row-odds { order: 2; }
-  .match-row-btn { margin-left: auto !important; }
+  .match-row { padding: 12px 14px !important; }
+  .match-row-name { display: none !important; }
+  .match-row-odds { gap: 3px !important; }
+  .match-row-odds > div { min-width: 36px !important; padding: 3px 5px !important; }
 }
 
 /* ── Analysis result mobile ── */

@@ -435,11 +435,11 @@ function LoadingAnalysis({ match }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 400, margin: '24px auto 0' }}>
         {['Анализ формы команд', 'Проверка травм и дисквалификаций', 'Сравнение коэффициентов', 'Формирование вердикта'].map((step, i) => (
           <div key={i} style={{
-            display: 'flex', alignItems: 'center', gap: 8,
+            display: 'flex', alignItems: 'flex-start', gap: 8,
             padding: '8px 14px', background: '#f8fafc', borderRadius: 8,
             fontSize: 13, color: '#64748b',
           }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2563eb', animation: `blink 1.4s infinite ${i * 0.3}s` }} />
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2563eb', flexShrink: 0, marginTop: 4, animation: `blink 1.4s infinite ${i * 0.3}s` }} />
             {step}
           </div>
         ))}
