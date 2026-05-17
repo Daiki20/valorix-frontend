@@ -332,7 +332,7 @@ function MatchRow({ match, onClick }) {
   const isLive = match.status === 'LIVE' || match.minute
   return (
     <div
-      className="card"
+      className="card match-row"
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -345,58 +345,49 @@ function MatchRow({ match, onClick }) {
         background: isLive ? 'rgba(254,242,242,0.5)' : undefined,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <TeamLogo name={match.home} img={match.homeImg} size={36} />
-          <span style={{ fontWeight: 700, fontSize: 14, color: '#1a1a2e', whiteSpace: 'nowrap' }}>{match.home}</span>
-        </div>
-        <div style={{ textAlign: 'center', minWidth: 80, flexShrink: 0 }}>
+      <div className="match-row-teams" style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
+        <TeamLogo name={match.home} img={match.homeImg} size={32} />
+        <span className="match-row-name" style={{ fontWeight: 700, fontSize: 14, color: '#1a1a2e' }}>{match.home}</span>
+        <div style={{ textAlign: 'center', flexShrink: 0, padding: '0 4px' }}>
           {isLive ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', animation: 'pulse-ring 1.2s ease-out infinite' }} />
-                <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444', letterSpacing: 0.5 }}>LIVE</span>
+                <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444' }}>LIVE</span>
               </div>
-              {match.score && <div style={{ fontSize: 15, fontWeight: 900, color: '#1a1a2e' }}>{match.score}</div>}
-              {match.minute && <div style={{ fontSize: 10, color: '#ef4444', fontWeight: 600 }}>{match.minute}'</div>}
+              {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#1a1a2e' }}>{match.score}</div>}
             </div>
           ) : (
-            <>
-              <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600 }}>{match.league}</div>
-              <div style={{ fontSize: 14, fontWeight: 800, color: '#1a1a2e' }}>VS</div>
-              <div style={{ fontSize: 10, color: '#94a3b8' }}>{match.date}</div>
-            </>
+            <div style={{ fontSize: 12, fontWeight: 800, color: '#94a3b8' }}>VS</div>
           )}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontWeight: 700, fontSize: 14, color: '#1a1a2e', whiteSpace: 'nowrap' }}>{match.away}</span>
-          <TeamLogo name={match.away} img={match.awayImg} size={36} />
-        </div>
+        <span className="match-row-name" style={{ fontWeight: 700, fontSize: 14, color: '#1a1a2e' }}>{match.away}</span>
+        <TeamLogo name={match.away} img={match.awayImg} size={32} />
       </div>
 
       {odds && (
-        <div style={{ display: 'flex', gap: 4 }}>
+        <div className="match-row-odds" style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
           {[{ label: '1', val: odds.home }, { label: 'X', val: odds.draw }, { label: '2', val: odds.away }].map(o => (
             <div key={o.label} style={{
               textAlign: 'center', background: '#f8fafc',
-              border: '1px solid #e2e8f0', borderRadius: 8, padding: '4px 8px', minWidth: 44,
+              border: '1px solid #e2e8f0', borderRadius: 8, padding: '4px 7px', minWidth: 40,
             }}>
               <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600 }}>{o.label}</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a2e' }}>{o.val}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e' }}>{o.val}</div>
             </div>
           ))}
         </div>
       )}
 
-      <div style={{
+      <div className="match-row-btn" style={{
         background: hovered ? '#1a1a2e' : '#f1f5f9',
         color: hovered ? 'white' : '#64748b',
-        borderRadius: 20, padding: '6px 14px',
+        borderRadius: 20, padding: '6px 12px',
         fontSize: 13, fontWeight: 600,
-        display: 'flex', alignItems: 'center', gap: 6,
+        display: 'flex', alignItems: 'center', gap: 5,
         transition: 'all 0.15s', flexShrink: 0,
       }}>
-        <Zap size={14} /> Анализ
+        <Zap size={13} /> Анализ
       </div>
     </div>
   )

@@ -338,6 +338,24 @@ html {
   .coin-packages { grid-template-columns: 1fr !important; }
 }
 
+/* ── Match row mobile ── */
+@media (max-width: 640px) {
+  .match-row { flex-wrap: wrap !important; gap: 8px !important; padding: 12px 14px !important; }
+  .match-row-teams { width: 100% !important; }
+  .match-row-name { font-size: 12px !important; max-width: 75px !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+  .match-row-odds { order: 2; }
+  .match-row-btn { margin-left: auto !important; }
+}
+
+/* ── Analysis result mobile ── */
+@media (max-width: 640px) {
+  .analysis-stats { grid-template-columns: repeat(2, 1fr) !important; }
+  .analysis-header { padding: 16px !important; }
+  .analysis-header-team { font-size: 14px !important; }
+  .analysis-header-vs { font-size: 11px !important; }
+  .analysis-pad { padding: 16px !important; }
+}
+
 /* ── Preview card mobile ── */
 @media (max-width: 767px) {
   .preview-tabs { padding: 0 12px !important; gap: 4px !important; }

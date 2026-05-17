@@ -11,26 +11,26 @@ export default function AnalysisResult({ match, analysis }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Match header */}
-      <div className="card" style={{ padding: '24px 28px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <TeamCircle name={match.home} />
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 18 }}>{match.home}</div>
-              <div style={{ fontSize: 12, color: '#94a3b8' }}>Хозяева</div>
+      <div className="card analysis-header" style={{ padding: '20px 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
+            <TeamCircle name={match.home} size={44} />
+            <div style={{ minWidth: 0 }}>
+              <div className="analysis-header-team" style={{ fontWeight: 700, fontSize: 16, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{match.home}</div>
+              <div style={{ fontSize: 11, color: '#94a3b8' }}>Хозяева</div>
             </div>
           </div>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600, letterSpacing: 1 }}>{match.league}</div>
-            <div style={{ fontSize: 24, fontWeight: 900, color: '#1a1a2e', margin: '4px 0' }}>VS</div>
-            <div style={{ fontSize: 12, color: '#94a3b8' }}>{match.date}</div>
+          <div className="analysis-header-vs" style={{ textAlign: 'center', flexShrink: 0, padding: '0 4px' }}>
+            <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, whiteSpace: 'nowrap' }}>{match.league}</div>
+            <div style={{ fontSize: 20, fontWeight: 900, color: '#1a1a2e', margin: '2px 0' }}>VS</div>
+            <div style={{ fontSize: 10, color: '#94a3b8', whiteSpace: 'nowrap' }}>{match.date}</div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontWeight: 700, fontSize: 18 }}>{match.away}</div>
-              <div style={{ fontSize: 12, color: '#94a3b8' }}>Гости</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0, justifyContent: 'flex-end' }}>
+            <div style={{ textAlign: 'right', minWidth: 0 }}>
+              <div className="analysis-header-team" style={{ fontWeight: 700, fontSize: 16, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{match.away}</div>
+              <div style={{ fontSize: 11, color: '#94a3b8' }}>Гости</div>
             </div>
-            <TeamCircle name={match.away} />
+            <TeamCircle name={match.away} size={44} />
           </div>
         </div>
       </div>
@@ -47,7 +47,7 @@ export default function AnalysisResult({ match, analysis }) {
       </div>
 
       {/* Stats row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+      <div className="analysis-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
         {/* Confidence gauge */}
         <div className="card" style={{ padding: '20px 16px', textAlign: 'center' }}>
           <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600, marginBottom: 12 }}>ИНДЕКС ДОВЕРИЯ</div>
@@ -209,14 +209,14 @@ export default function AnalysisResult({ match, analysis }) {
   )
 }
 
-function TeamCircle({ name }) {
+function TeamCircle({ name, size = 52 }) {
   const colors = ['#ef4444', '#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#ec4899']
   const color = colors[name.charCodeAt(0) % colors.length]
   return (
     <div style={{
-      width: 52, height: 52, borderRadius: '50%', background: color,
+      width: size, height: size, borderRadius: '50%', background: color, flexShrink: 0,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: 20, fontWeight: 800, color: 'white',
+      fontSize: size * 0.38, fontWeight: 800, color: 'white',
     }}>
       {name[0]}
     </div>
