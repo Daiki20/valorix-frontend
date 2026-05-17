@@ -33,10 +33,10 @@ export default function Navbar() {
 
           {/* Desktop nav links */}
           <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-            <a href="#how" style={{ color: '#4b5563', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
+            <a href="/#how" style={{ color: '#4b5563', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
               Как это работает?
             </a>
-            <a href="#faq" style={{ color: '#4b5563', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
+            <a href="/#faq" style={{ color: '#4b5563', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
               FAQ
             </a>
           </div>
@@ -85,8 +85,8 @@ export default function Navbar() {
             padding: '16px 24px 20px',
             display: 'flex', flexDirection: 'column', gap: 12,
           }}>
-            <a href="#how" onClick={() => setMobileOpen(false)} style={{ color: '#4b5563', textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>Как это работает?</a>
-            <a href="#faq" onClick={() => setMobileOpen(false)} style={{ color: '#4b5563', textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>FAQ</a>
+            <a href="/#how" onClick={() => setMobileOpen(false)} style={{ color: '#4b5563', textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>Как это работает?</a>
+            <a href="/#faq" onClick={() => setMobileOpen(false)} style={{ color: '#4b5563', textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>FAQ</a>
             {user && <Link to="/history" onClick={() => setMobileOpen(false)} style={{ color: '#4b5563', textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>История анализов</Link>}
             {user?.is_admin && <Link to="/admin" onClick={() => setMobileOpen(false)} style={{ color: '#2563eb', textDecoration: 'none', fontSize: 15, fontWeight: 700, padding: '8px 0', display: 'flex', alignItems: 'center', gap: 6 }}><Shield size={14} />Админ панель</Link>}
             <div style={{ display: 'flex', gap: 10, paddingTop: 4 }}>
