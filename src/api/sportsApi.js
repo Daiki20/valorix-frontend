@@ -174,8 +174,8 @@ export async function analyzeMatch(match) {
     if (pariOdds) realOdds = [pariOdds, ...realOdds]
   }
 
-  const injuries = await getInjuries(match.home, match.away).catch(() => ({ home: [], away: [] }))
-  const prompt = buildPrompt(match, stats, glicko, injuries)
+  const context = await getMatchContext(match.home, match.away).catch(() => ({}))
+  const prompt = buildPrompt(match, stats, glicko, context)
   const jsonStr = await callOpenAI(prompt)
   const analysis = parseAnalysis(jsonStr, match)
 
@@ -454,7 +454,7 @@ function extractBookmakerOdds(bookmakers) {
   return result.sort((a, b) => Number(b.odds) - Number(a.odds)).slice(0, 5)
 }
 
-function buildPrompt(match, stats, glicko, injuries = { home: [], away: [] }) {
+function buildPrompt(match, stats, glicko, ctx = {}) {
   const homeStats = stats?.home
   const awayStats = stats?.away
 
@@ -492,10 +492,42 @@ function buildPrompt(match, stats, glicko, injuries = { home: [], away: [] }) {
     ? `КОЭФФИЦИЕНТЫ БУКМЕКЕРОВ (1X2): хозяева ${odds.home}, ничья ${odds.draw}, гости ${odds.away}`
     : ''
 
-  const injuriesBlock = (injuries.home.length || injuries.away.length)
-    ? `ТРАВМИРОВАННЫЕ И ДИСКВАЛИФИЦИРОВАННЫЕ:
-${injuries.home.length ? `${match.home}: ${injuries.home.join(', ')}` : `${match.home}: все здоровы`}
-${injuries.away.length ? `${match.away}: ${injuries.away.join(', ')}` : `${match.away}: все здоровы`}`
+  // Injuries
+  const homeInjured = ctx.homeInjured || []
+  const awayInjured = ctx.awayInjured || []
+  const injuriesBlock = (homeInjured.length || awayInjured.length)
+    ? `ТРАВМЫ И ДИСКВАЛИФИКАЦИИ:
+${homeInjured.length ? `${match.home}: ${homeInjured.join(', ')}` : `${match.home}: все здоровы`}
+${awayInjured.length ? `${match.away}: ${awayInjured.join(', ')}` : `${match.away}: все здоровы`}`
+    : ''
+
+  // Form
+  const homeForm = ctx.homeForm || []
+  const awayForm = ctx.awayForm || []
+  const formBlock = (homeForm.length || awayForm.length)
+    ? `ФОРМА (последние 5 матчей, W=победа D=ничья L=поражение):
+${match.home}: ${homeForm.join(' ') || 'нет данных'}
+${match.away}: ${awayForm.join(' ') || 'нет данных'}`
+    : ''
+
+  // Standings
+  const hs = ctx.homeStanding
+  const as = ctx.awayStanding
+  const standingsBlock = (hs || as)
+    ? `ТАБЛИЦА ЛИГИ:
+${hs ? `${match.home}: ${hs.rank} место, ${hs.points} очков, ${hs.goalsDiff > 0 ? '+' : ''}${hs.goalsDiff} разница голов` : ''}
+${as ? `${match.away}: ${as.rank} место, ${as.points} очков, ${as.goalsDiff > 0 ? '+' : ''}${as.goalsDiff} разница голов` : ''}`
+    : ''
+
+  // Lineups
+  const lineups = ctx.lineups || {}
+  const lineupKeys = Object.keys(lineups)
+  const lineupsBlock = lineupKeys.length
+    ? `СТАРТОВЫЕ СОСТАВЫ:
+${lineupKeys.map(team => {
+  const l = lineups[team]
+  return `${team} (схема ${l.formation || '?'}): ${l.startXI?.join(', ') || 'нет данных'}`
+}).join('\n')}`
     : ''
 
   return `Ты профессиональный спортивный аналитик и эксперт по букмекерским ставкам. Проанализируй матч.
@@ -506,7 +538,10 @@ ${injuries.away.length ? `${match.away}: ${injuries.away.join(', ')}` : `${match
 
 ${statsBlock}
 ${glickoBlock}
+${standingsBlock}
+${formBlock}
 ${injuriesBlock}
+${lineupsBlock}
 ${oddsBlock}
 
 Задача:
@@ -550,10 +585,10 @@ ${oddsBlock}
 }`
 }
 
-async function getInjuries(home, away) {
+async function getMatchContext(home, away) {
   const token = localStorage.getItem('valorix_token')
   try {
-    const res = await fetch(`${API_BASE}/analyze/injuries`, {
+    const res = await fetch(`${API_BASE}/analyze/context`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -561,10 +596,10 @@ async function getInjuries(home, away) {
       },
       body: JSON.stringify({ home, away }),
     })
-    if (!res.ok) return { home: [], away: [] }
+    if (!res.ok) return {}
     return res.json()
   } catch {
-    return { home: [], away: [] }
+    return {}
   }
 }
 
