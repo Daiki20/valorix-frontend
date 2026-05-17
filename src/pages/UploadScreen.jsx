@@ -54,7 +54,7 @@ export default function UploadScreen() {
       pendingResult.current = res
       setLocked(true)
     } catch (err) {
-      setError('Не удалось проанализировать скрин. Проверьте API ключи.')
+      setError(`Ошибка: ${err.message}`)
     } finally {
       setLoading(false)
     }
