@@ -100,10 +100,31 @@ export async function searchMatches(query) {
 }
 
 // Get upcoming matches (default list, sorted by date)
-export async function getUpcomingMatches(limit = 20) {
+export async function getUpcomingMatches(limit = 40) {
   if (!SSTATS_KEY) return MOCK_MATCHES
 
-  const leagueIds = [39, 140, 78, 61, 135, 235, 203] // PL, La Liga, Bundesliga, Ligue 1, Serie A, РПЛ, Бразилия
+  const leagueIds = [
+    2,   // Champions League
+    3,   // Europa League
+    848, // Conference League
+    39,  // Premier League
+    40,  // Championship
+    78,  // Bundesliga
+    79,  // Bundesliga 2
+    61,  // Ligue 1
+    135, // Serie A
+    140, // La Liga
+    94,  // Primeira Liga
+    88,  // Eredivisie
+    144, // Belgian Pro League
+    235, // РПЛ
+    71,  // Brazil Serie A
+    128, // Argentina Primera
+    179, // Scottish Premiership
+    203, // Süper Lig (Turkey)
+    106, // Ekstraklasa (Poland)
+    169, // Allsvenskan (Sweden)
+  ]
   const promises = leagueIds.map(id =>
     sstatsGet('/Games/list', { upcoming: true, leagueid: id, limit: 5 }).catch(() => ({ data: [] }))
   )
