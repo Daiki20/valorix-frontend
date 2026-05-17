@@ -440,7 +440,7 @@ function LoadingAnalysis({ match }) {
             fontSize: 13, color: '#64748b',
           }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2563eb', flexShrink: 0, marginTop: 4, animation: `blink 1.4s infinite ${i * 0.3}s` }} />
-            {step}
+            <span style={{ textAlign: 'left' }}>{step}</span>
           </div>
         ))}
       </div>
