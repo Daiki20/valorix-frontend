@@ -329,6 +329,15 @@ body {
   .coin-packages { grid-template-columns: 1fr !important; }
 }
 
+/* ── Admin panel mobile ── */
+@media (max-width: 767px) {
+  .admin-wrap { padding: 16px 12px !important; }
+  .admin-form { flex-direction: column !important; }
+  .admin-form input { width: 100% !important; }
+  .admin-tabs { width: 100% !important; }
+  .admin-tabs button { padding: 8px 12px !important; font-size: 12px !important; flex: 1; }
+}
+
 /* ── xs: маленькие телефоны (< 480px) ── */
 @media (max-width: 479px) {
   .hero-title { font-size: 26px !important; letter-spacing: -0.5px !important; }

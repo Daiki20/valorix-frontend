@@ -24,7 +24,7 @@ export default function Admin() {
   return (
     <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
       <Navbar />
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px' }}>
+      <div className="admin-wrap" style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px' }}>
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
             <Shield size={22} color="#2563eb" />
@@ -34,7 +34,7 @@ export default function Admin() {
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: 4, marginBottom: 28, background: 'white', borderRadius: 12, padding: 4, border: '1px solid #e2e8f0', width: 'fit-content' }}>
+        <div className="admin-tabs" style={{ display: 'flex', gap: 4, marginBottom: 28, background: 'white', borderRadius: 12, padding: 4, border: '1px solid #e2e8f0', width: 'fit-content' }}>
           {TABS.map((t, i) => (
             <button key={i} onClick={() => setTab(i)} style={{
               padding: '8px 20px', borderRadius: 8, border: 'none', fontSize: 14, fontWeight: 600, cursor: 'pointer',
@@ -132,7 +132,7 @@ function DashboardTab({ toast }) {
           }}>− Снять</button>
         </div>
 
-        <form onSubmit={handleAddCoins} style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        <form onSubmit={handleAddCoins} className="admin-form" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
           <input
             placeholder="Email пользователя"
             value={coinForm.email}
@@ -167,7 +167,7 @@ function DashboardTab({ toast }) {
       {stats?.recentUsers?.length > 0 && (
         <div className="card" style={{ padding: 24 }}>
           <h3 style={{ fontWeight: 700, fontSize: 16, color: '#1a1a2e', marginBottom: 16 }}>Последние регистрации</h3>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+          <div style={{ overflowX: 'auto' }}><table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
               <tr style={{ borderBottom: '2px solid #f1f5f9' }}>
                 {['Email', 'Username', 'Монеты', 'Роль', 'Дата'].map(h => (
@@ -186,7 +186,7 @@ function DashboardTab({ toast }) {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </div>
       )}
     </div>
