@@ -238,7 +238,7 @@ export default function AnalysisResult({ match, analysis }) {
       )}
 
       {/* Data warning (esports) */}
-      {analysis.dataWarning && (
+      {analysis.dataWarning && analysis.dataWarning !== 'null' && (
         <div style={{
           background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 12,
           padding: '14px 18px', display: 'flex', gap: 10, alignItems: 'flex-start',
