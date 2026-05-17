@@ -498,6 +498,7 @@ ${oddsBlock}
 3. Рассчитай справедливый коэффициент (Fair Odds) на победу фаворита
 4. Если есть данные о коэффициентах — найди Value
 5. Дай 4-5 конкретных причин прогноза
+6. Предложи 2-3 дополнительные ставки на основе статистики (тотал, обе забьют, фора и т.д.)
 
 Ответь строго в JSON (без markdown):
 {
@@ -509,6 +510,18 @@ ${oddsBlock}
   "bookOdds": "число — средний у букмекеров (если известен)",
   "value": число — процент value (может быть отрицательным),
   "reasons": ["причина 1", "причина 2", "причина 3", "причина 4"],
+  "extraBets": [
+    {
+      "type": "Тотал больше 2.5",
+      "confidence": 75,
+      "reason": "конкретная причина из статистики команд"
+    },
+    {
+      "type": "Обе забьют — Да",
+      "confidence": 68,
+      "reason": "конкретная причина из статистики команд"
+    }
+  ],
   "bestOdds": [
     {"name": "Fonbet", "odds": "X.XX"},
     {"name": "Winline", "odds": "X.XX"},
@@ -550,6 +563,7 @@ function parseAnalysis(jsonStr, match) {
       bookOdds: p.bookOdds || null,
       value: Number(p.value) || 0,
       reasons: Array.isArray(p.reasons) ? p.reasons : [],
+      extraBets: Array.isArray(p.extraBets) ? p.extraBets : [],
       bestOdds: Array.isArray(p.bestOdds) ? p.bestOdds : [],
     }
   } catch {
