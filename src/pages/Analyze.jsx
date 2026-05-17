@@ -65,7 +65,7 @@ export default function Analyze() {
       pendingResult.current = result   // НЕ в state — не попадает в DOM
       setLocked(true)
     } catch (err) {
-      setError('Не удалось выполнить анализ. Проверьте API ключи в файле .env')
+      setError(`Ошибка: ${err.message}`)
     } finally {
       setAnalysisLoading(false)
     }
