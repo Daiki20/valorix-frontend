@@ -237,6 +237,19 @@ export default function AnalysisResult({ match, analysis }) {
         </div>
       )}
 
+      {/* Data warning (esports) */}
+      {analysis.dataWarning && (
+        <div style={{
+          background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 12,
+          padding: '14px 18px', display: 'flex', gap: 10, alignItems: 'flex-start',
+        }}>
+          <AlertTriangle size={16} color="#ea580c" style={{ flexShrink: 0, marginTop: 1 }} />
+          <span style={{ fontSize: 13, color: '#9a3412', lineHeight: 1.5 }}>
+            <strong>Неполные данные:</strong> {analysis.dataWarning}
+          </span>
+        </div>
+      )}
+
       {/* Warning */}
       <div style={{
         background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 12,

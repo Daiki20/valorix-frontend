@@ -192,8 +192,9 @@ export async function analyzeScreenshot(base64Image) {
   if (!extracted?.matches?.length) throw new Error('Не удалось распознать матч на скриншоте')
 
   // Step 2: for each match, enrich with sstats data then do full AI analysis
+  const game = extracted.game || 'football'
   const analyzed = await Promise.all(
-    extracted.matches.map(m => enrichAndAnalyze(m))
+    extracted.matches.map(m => enrichAndAnalyze(m, game))
   )
 
   return {
@@ -230,27 +231,39 @@ async function extractFromScreenshot(base64Image) {
 - "prematch" — линия с коэффициентами до матча
 - "mixed" — несколько матчей
 
+Определи игру/спорт:
+- "football" — футбол
+- "cs2" — Counter-Strike 2
+- "dota2" — Dota 2
+- "valorant" — Valorant
+- "lol" — League of Legends
+- "other" — другое
+
 Для каждого матча:
-1. Прочитай названия команд ТОЧНО как написано (может быть по-русски, на другом языке)
-2. Укажи английское название команды (homeEn, awayEn) — нужно для поиска в базе
-3. Если лайв — запиши счёт и минуту
-4. Если предматч — запиши коэффициенты
+1. Прочитай названия команд ТОЧНО как написано
+2. Укажи английское название команды (homeEn, awayEn)
+3. Для киберспорта — перечисли игроков каждой команды если они видны на скрине
+4. Если лайв — запиши счёт
+5. Если предматч — запиши коэффициенты
 
 Ответь строго в JSON:
 {
   "screenType": "live | prematch | mixed",
+  "game": "football | cs2 | dota2 | valorant | lol | other",
   "matches": [
     {
       "home": "название с экрана",
       "away": "название с экрана",
       "homeEn": "English team name",
       "awayEn": "English team name",
-      "league": "лига если видна",
+      "league": "турнир если виден",
       "score": "0:0 если лайв, иначе null",
       "minute": число или null,
       "odds1": число или null,
       "oddsX": число или null,
-      "odds2": число или null
+      "odds2": число или null,
+      "homePlayers": ["игрок1", "игрок2"] или [],
+      "awayPlayers": ["игрок1", "игрок2"] или []
     }
   ]
 }`,
@@ -268,8 +281,121 @@ async function extractFromScreenshot(base64Image) {
   return JSON.parse(data.content)
 }
 
+// Fetch current Dota 2 hero meta from OpenDota (free, no key)
+async function fetchDotaMeta() {
+  try {
+    const res = await fetch('https://api.opendota.com/api/heroStats')
+    if (!res.ok) return null
+    const heroes = await res.json()
+    return heroes
+      .filter(h => h.pro_pick > 20)
+      .sort((a, b) => (b.pro_win / b.pro_pick) - (a.pro_win / a.pro_pick))
+      .slice(0, 30)
+      .map(h => ({
+        name: h.localized_name,
+        winRate: h.pro_pick > 0 ? ((h.pro_win / h.pro_pick) * 100).toFixed(1) : null,
+        pickRate: h.pro_pick,
+      }))
+  } catch {
+    return null
+  }
+}
+
+function buildEsportsPrompt(match, game) {
+  const isLive = !!match.score
+  const homePlayers = match.homePlayers?.length ? match.homePlayers.join(', ') : null
+  const awayPlayers = match.awayPlayers?.length ? match.awayPlayers.join(', ') : null
+  const metaBlock = match.dotaMeta?.length
+    ? `ТЕКУЩАЯ МЕТА (топ герои по про-винрейту, патч актуальный):
+${match.dotaMeta.map(h => `${h.name}: ${h.winRate}% winrate (${h.pickRate} пиков в про)`).join('\n')}`
+    : ''
+
+  const gameNames = { cs2: 'CS2', dota2: 'Dota 2', valorant: 'Valorant', lol: 'League of Legends' }
+  const gameName = gameNames[game] || game
+
+  const playersBlock = (homePlayers || awayPlayers)
+    ? `ИГРОКИ НА СКРИНЕ:
+${homePlayers ? `${match.home}: ${homePlayers}` : ''}
+${awayPlayers ? `${match.away}: ${awayPlayers}` : ''}`.trim()
+    : ''
+
+  const oddsBlock = match.odds1x2
+    ? `КОЭФФИЦИЕНТЫ: ${match.home} ${match.odds1x2.home} | Ничья ${match.odds1x2.draw || '—'} | ${match.away} ${match.odds1x2.away}`
+    : ''
+
+  const scoreBlock = isLive ? `ТЕКУЩИЙ СЧЁТ: ${match.score}` : ''
+
+  return `Ты профессиональный аналитик киберспорта. Анализируй матч по ${gameName}. Отвечай СТРОГО по-русски.
+
+МАТЧ: ${match.home} vs ${match.away}
+ТУРНИР: ${match.league || 'неизвестно'}
+${scoreBlock}
+${playersBlock}
+${metaBlock}
+${oddsBlock}
+
+ВАЖНЫЕ ПРАВИЛА:
+1. Используй ВСЕ свои знания об этих командах: история, состав, форма, стиль игры
+2. Для Dota 2 — анализируй сигнатурных героев игроков и соответствие текущей мете
+3. Для CS2 — анализируй роли игроков, карточный пул команд, недавние результаты
+4. ЕСЛИ ты не знаешь точных данных об игроке или его сигнатурных героях — честно предупреди об этом в поле "dataWarning", но анализ всё равно дай
+5. НЕ выдумывай статистику и факты которых не знаешь
+6. Анализ должен быть конкретным и профессиональным
+
+Ответь строго в JSON:
+{
+  "verdict": "чёткий вердикт кто победит",
+  "summary": "3-4 предложения глубокого анализа по-русски",
+  "confidence": число 0-100,
+  "risk": "low | medium | high",
+  "fairOdds": "справедливый коэф на фаворита",
+  "bookOdds": "коэф букмекера если известен",
+  "value": число,
+  "dataWarning": "предупреждение если каких-то данных не хватает, или null",
+  "reasons": ["факт 1", "факт 2", "факт 3", "факт 4"],
+  "extraBets": [
+    {
+      "type": "название ставки",
+      "confidence": число 50-95,
+      "reason": "конкретное обоснование"
+    }
+  ],
+  "bestOdds": []
+}`
+}
+
 // Step 2: find teams in sstats, get stats, run full analysis
-async function enrichAndAnalyze(matchInfo) {
+async function enrichAndAnalyze(matchInfo, game = 'football') {
+  // Esports route — no sstats, use GPT knowledge + live meta
+  const esportsGames = ['cs2', 'dota2', 'valorant', 'lol']
+  if (esportsGames.includes(game)) {
+    const match = {
+      home: matchInfo.home,
+      away: matchInfo.away,
+      league: matchInfo.league || '',
+      score: matchInfo.score,
+      minute: matchInfo.minute,
+      odds1x2: matchInfo.odds1 ? { home: matchInfo.odds1, draw: matchInfo.oddsX, away: matchInfo.odds2 } : null,
+      homePlayers: matchInfo.homePlayers || [],
+      awayPlayers: matchInfo.awayPlayers || [],
+      dotaMeta: game === 'dota2' ? (await fetchDotaMeta().catch(() => null)) : null,
+    }
+    const prompt = buildEsportsPrompt(match, game)
+    const jsonStr = await callOpenAI(prompt)
+    const analysis = parseAnalysis(jsonStr, match)
+    return {
+      home: matchInfo.home,
+      away: matchInfo.away,
+      league: matchInfo.league,
+      score: matchInfo.score,
+      minute: matchInfo.minute,
+      odds: matchInfo.odds1,
+      oddsX: matchInfo.oddsX,
+      odds2: matchInfo.odds2,
+      ...analysis,
+    }
+  }
+
   let homeId = null, awayId = null
   let stats = null, glicko = null, h2h = null, realOdds = []
 
@@ -621,6 +747,7 @@ function parseAnalysis(jsonStr, match) {
       reasons: Array.isArray(p.reasons) ? p.reasons : [],
       extraBets: Array.isArray(p.extraBets) ? p.extraBets : [],
       bestOdds: Array.isArray(p.bestOdds) ? p.bestOdds : [],
+      dataWarning: p.dataWarning || null,
     }
   } catch {
     return getMockAnalysis(match)
