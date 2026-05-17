@@ -174,7 +174,8 @@ export async function analyzeMatch(match) {
     if (pariOdds) realOdds = [pariOdds, ...realOdds]
   }
 
-  const prompt = buildPrompt(match, stats, glicko)
+  const injuries = await getInjuries(match.home, match.away).catch(() => ({ home: [], away: [] }))
+  const prompt = buildPrompt(match, stats, glicko, injuries)
   const jsonStr = await callOpenAI(prompt)
   const analysis = parseAnalysis(jsonStr, match)
 
@@ -453,7 +454,7 @@ function extractBookmakerOdds(bookmakers) {
   return result.sort((a, b) => Number(b.odds) - Number(a.odds)).slice(0, 5)
 }
 
-function buildPrompt(match, stats, glicko) {
+function buildPrompt(match, stats, glicko, injuries = { home: [], away: [] }) {
   const homeStats = stats?.home
   const awayStats = stats?.away
 
@@ -491,6 +492,12 @@ function buildPrompt(match, stats, glicko) {
     ? `КОЭФФИЦИЕНТЫ БУКМЕКЕРОВ (1X2): хозяева ${odds.home}, ничья ${odds.draw}, гости ${odds.away}`
     : ''
 
+  const injuriesBlock = (injuries.home.length || injuries.away.length)
+    ? `ТРАВМИРОВАННЫЕ И ДИСКВАЛИФИЦИРОВАННЫЕ:
+${injuries.home.length ? `${match.home}: ${injuries.home.join(', ')}` : `${match.home}: все здоровы`}
+${injuries.away.length ? `${match.away}: ${injuries.away.join(', ')}` : `${match.away}: все здоровы`}`
+    : ''
+
   return `Ты профессиональный спортивный аналитик и эксперт по букмекерским ставкам. Проанализируй матч.
 
 МАТЧ: ${match.home} vs ${match.away}
@@ -499,6 +506,7 @@ function buildPrompt(match, stats, glicko) {
 
 ${statsBlock}
 ${glickoBlock}
+${injuriesBlock}
 ${oddsBlock}
 
 Задача:
@@ -540,6 +548,24 @@ ${oddsBlock}
     {"name": "1xbet", "odds": "X.XX"}
   ]
 }`
+}
+
+async function getInjuries(home, away) {
+  const token = localStorage.getItem('valorix_token')
+  try {
+    const res = await fetch(`${API_BASE}/analyze/injuries`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ home, away }),
+    })
+    if (!res.ok) return { home: [], away: [] }
+    return res.json()
+  } catch {
+    return { home: [], away: [] }
+  }
 }
 
 async function callOpenAI(prompt) {
