@@ -122,25 +122,34 @@ export default function MatchPreviewCard() {
           <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', letterSpacing: 0.5, marginBottom: 8 }}>ДОПОЛНИТЕЛЬНЫЕ СТАВКИ</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
             {[
-              { type: 'Угловые Арсенала больше 5.5', confidence: 82, reason: 'Арсенал подавал 7+ угловых в 8 из 10 домашних матчей', color: '#22c55e' },
-              { type: 'Тотал 1-го тайма больше 0.5', confidence: 74, reason: 'Арсенал забивал в первом тайме в 7 последних домашних играх', color: '#f59e0b' },
-              { type: 'Победа с нулём (Арсенал)', confidence: 61, reason: 'Хозяева не пропускали в 5 из 7 последних матчей дома', color: '#3b82f6' },
-            ].map((bet, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'flex-start', gap: 10,
-                padding: '10px 12px', background: '#f8fafc',
-                borderRadius: 10, border: '1px solid #e2e8f0',
-              }}>
-                <div style={{ textAlign: 'center', minWidth: 36, flexShrink: 0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 900, color: bet.color }}>{bet.confidence}%</div>
-                  <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>увер.</div>
+              { type: 'Угловые Арсенала больше 5.5', confidence: 82, reason: 'Арсенал подавал 7+ угловых в 8 из 10 домашних матчей' },
+              { type: 'Тотал 1-го тайма больше 0.5', confidence: 74, reason: 'Арсенал забивал в первом тайме в 7 последних домашних играх' },
+              { type: 'Победа с нулём (Арсенал)', confidence: 61, reason: 'Хозяева не пропускали в 5 из 7 последних матчей дома' },
+            ].map((bet, i) => {
+              const isGreen = bet.confidence >= 70
+              const isYellow = bet.confidence >= 55 && bet.confidence < 70
+              const color = isGreen ? '#22c55e' : isYellow ? '#f59e0b' : '#94a3b8'
+              const bg = isGreen ? '#f0fdf4' : isYellow ? '#fefce8' : '#f8fafc'
+              const border = isGreen ? '#bbf7d0' : isYellow ? '#fde68a' : '#e2e8f0'
+              const leftBorder = isGreen ? '#22c55e' : isYellow ? '#f59e0b' : '#e2e8f0'
+              return (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 10,
+                  padding: '10px 12px', background: bg,
+                  borderRadius: 10, border: `1px solid ${border}`,
+                  borderLeft: `4px solid ${leftBorder}`,
+                }}>
+                  <div style={{ textAlign: 'center', minWidth: 36, flexShrink: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 900, color }}>{bet.confidence}%</div>
+                    <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>увер.</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e', marginBottom: 2 }}>{bet.type}</div>
+                    <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.4 }}>{bet.reason}</div>
+                  </div>
                 </div>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e', marginBottom: 2 }}>{bet.type}</div>
-                  <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.4 }}>{bet.reason}</div>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 

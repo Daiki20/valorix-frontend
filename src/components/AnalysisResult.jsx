@@ -36,14 +36,19 @@ export default function AnalysisResult({ match, analysis }) {
       </div>
 
       {/* Verdict */}
-      <div className="card" style={{ padding: '20px 28px', borderLeft: '4px solid #22c55e' }}>
+      <div style={{
+        padding: '20px 28px', borderLeft: '4px solid #16a34a',
+        background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
+        border: '1px solid #86efac', borderLeft: '4px solid #16a34a',
+        borderRadius: 16,
+      }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <CheckCircle size={20} color="#22c55e" />
-          <span style={{ fontWeight: 800, fontSize: 17, color: '#1a1a2e' }}>
+          <CheckCircle size={20} color="#16a34a" />
+          <span style={{ fontWeight: 800, fontSize: 17, color: '#14532d' }}>
             Вердикт AI: {analysis.verdict}
           </span>
         </div>
-        <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.7 }}>{analysis.summary}</p>
+        <p style={{ fontSize: 14, color: '#166534', lineHeight: 1.7 }}>{analysis.summary}</p>
       </div>
 
       {/* Extra bets */}
