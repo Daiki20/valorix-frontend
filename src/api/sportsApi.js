@@ -110,7 +110,7 @@ export async function getUpcomingMatches(limit = 20) {
   const results = await Promise.all(promises)
   const allGames = results.flatMap(r => r.data || [])
   allGames.sort((a, b) => new Date(a.date) - new Date(b.date))
-  return allGames.slice(0, limit).map(normalizeGame)
+  return allGames.map(normalizeGame).filter(m => m.odds1x2).slice(0, limit)
 }
 
 // Main AI analysis for a match
