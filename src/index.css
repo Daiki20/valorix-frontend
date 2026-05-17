@@ -329,6 +329,16 @@ body {
   .coin-packages { grid-template-columns: 1fr !important; }
 }
 
+/* ── Preview card mobile ── */
+@media (max-width: 767px) {
+  .preview-tabs { padding: 0 12px !important; gap: 4px !important; }
+  .preview-tabs button { padding: 7px 10px !important; font-size: 11px !important; }
+  .preview-card-pad { padding: 12px 14px 16px !important; }
+  .preview-match-pad { padding: 14px 14px !important; }
+  .preview-stats { grid-template-columns: 1fr 1fr !important; }
+  .preview-header { padding: 12px 14px !important; }
+}
+
 /* ── Admin panel mobile ── */
 @media (max-width: 767px) {
   .admin-wrap { padding: 16px 12px !important; }

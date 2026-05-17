@@ -41,7 +41,7 @@ export default function MatchPreviewCard() {
       border: '1.5px dashed #e2e8f0',
     }}>
       {/* Header */}
-      <div style={{ background: '#f8fafc', padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div className="preview-header" style={{ background: '#f8fafc', padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: '#64748b' }}>Анализ матча</span>
         <span style={{
           fontSize: 10, fontWeight: 800, color: '#94a3b8',
@@ -50,7 +50,7 @@ export default function MatchPreviewCard() {
       </div>
 
       {/* Match info */}
-      <div style={{
+      <div className="preview-match-pad" style={{
         padding: '20px 24px',
         display: 'flex',
         alignItems: 'center',
@@ -91,7 +91,7 @@ export default function MatchPreviewCard() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', padding: '0 24px', gap: 4, paddingTop: 16 }}>
+      <div className="preview-tabs" style={{ display: 'flex', padding: '0 24px', gap: 4, paddingTop: 16 }}>
         {TABS.map((tab, i) => (
           <button key={i} onClick={() => setActiveTab(i)} style={{
             padding: '8px 16px',
@@ -110,7 +110,7 @@ export default function MatchPreviewCard() {
       </div>
 
       {/* Tab content */}
-      <div style={{ padding: '16px 24px 20px' }}>
+      <div className="preview-card-pad" style={{ padding: '16px 24px 20px' }}>
         {activeTab === 0 && (
           <div>
             <div style={{
@@ -122,7 +122,7 @@ export default function MatchPreviewCard() {
             </div>
 
             {/* Stats row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
+            <div className="preview-stats" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
               <StatBox label="Индекс доверия" value="68" sub="/100" color="#2563eb" isGauge />
               <StatBox label="Риск" value="Средний" sub="" color="#f59e0b" isRisk />
               <StatBox label="Fair Odds" value="1.91" sub="Sportsbook 2.08" color="#1a1a2e" />
