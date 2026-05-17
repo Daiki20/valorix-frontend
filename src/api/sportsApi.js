@@ -1,5 +1,5 @@
 const SSTATS_KEY = import.meta.env.VITE_SSTATS_API_KEY
-const OPENAI_KEY = import.meta.env.VITE_OPENAI_API_KEY
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 const BASE = 'https://api.sstats.net'
 
 function sstatsUrl(path, params = {}) {
@@ -115,7 +115,6 @@ export async function getUpcomingMatches(limit = 20) {
 
 // Main AI analysis for a match
 export async function analyzeMatch(match) {
-  if (!OPENAI_KEY) return getMockAnalysis(match)
 
   let stats = null
   let glicko = null
@@ -148,7 +147,6 @@ export async function analyzeMatch(match) {
 
 // Analyze screenshot — full 2-step pipeline
 export async function analyzeScreenshot(base64Image) {
-  if (!OPENAI_KEY) return getMockScreenshotResult()
 
   // Step 1: extract match info from screenshot
   const extracted = await extractFromScreenshot(base64Image)
@@ -170,11 +168,15 @@ export async function analyzeScreenshot(base64Image) {
 
 // Step 1: GPT-4o reads the screenshot
 async function extractFromScreenshot(base64Image) {
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+  const token = localStorage.getItem('valorix_token')
+  const res = await fetch(`${API_BASE}/analyze/chat`, {
     method: 'POST',
-    headers: { 'Authorization': `Bearer ${OPENAI_KEY}`, 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: JSON.stringify({
-      model: 'gpt-4o',
+      max_tokens: 800,
       messages: [{
         role: 'user',
         content: [
@@ -217,13 +219,14 @@ async function extractFromScreenshot(base64Image) {
           { type: 'image_url', image_url: { url: base64Image, detail: 'high' } },
         ],
       }],
-      max_tokens: 800,
-      response_format: { type: 'json_object' },
     }),
   })
-  if (!res.ok) throw new Error(`OpenAI vision error: ${res.status}`)
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.error || `Server error ${res.status}`)
+  }
   const data = await res.json()
-  return JSON.parse(data.choices[0].message.content)
+  return JSON.parse(data.content)
 }
 
 // Step 2: find teams in sstats, get stats, run full analysis
@@ -477,26 +480,24 @@ ${oddsBlock}
 }
 
 async function callOpenAI(prompt) {
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+  const token = localStorage.getItem('valorix_token')
+  const res = await fetch(`${API_BASE}/analyze/chat`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${OPENAI_KEY}`,
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({
-      model: 'gpt-4o',
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 1200,
-      response_format: { type: 'json_object' },
     }),
   })
 
   if (!res.ok) {
-    const err = await res.text()
-    throw new Error(`OpenAI ${res.status}: ${err}`)
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.error || `Server error ${res.status}`)
   }
   const data = await res.json()
-  return data.choices[0].message.content
+  return data.content
 }
 
 function parseAnalysis(jsonStr, match) {
