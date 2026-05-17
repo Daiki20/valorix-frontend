@@ -136,15 +136,8 @@ export default function MatchPreviewCard() {
           {/* Tab 0: Verdict stats + extra bets */}
           {activeTab === 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div className="preview-stats" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
-                <StatBox label="Индекс доверия" value="68" color="#2563eb" isGauge />
-                <StatBox label="Риск" value="Средний" color="#f59e0b" isRisk />
-                <StatBox label="Fair Odds" value="1.91" sub="Букмекер 2.08" color="#1a1a2e" />
-                <StatBox label="Value" value="+8.9%" sub="Рекомендуем" color="#22c55e" />
-              </div>
-
-              {/* Extra bets */}
-              <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: 12 }}>
+              {/* Extra bets first */}
+              <div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', letterSpacing: 0.5, marginBottom: 8 }}>ДОПОЛНИТЕЛЬНЫЕ СТАВКИ</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                   {[
@@ -167,6 +160,16 @@ export default function MatchPreviewCard() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Stats below */}
+              <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: 12 }}>
+                <div className="preview-stats" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
+                  <StatBox label="Индекс доверия" value="68" color="#2563eb" isGauge />
+                  <StatBox label="Риск" value="Средний" color="#f59e0b" isRisk />
+                  <StatBox label="Fair Odds" value="1.91" sub="Букмекер 2.08" color="#1a1a2e" />
+                  <StatBox label="Value" value="+8.9%" sub="Рекомендуем" color="#22c55e" />
                 </div>
               </div>
             </div>
