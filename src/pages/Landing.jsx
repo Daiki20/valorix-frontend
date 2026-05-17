@@ -23,13 +23,13 @@ export default function Landing() {
 
       {/* Global ambient orbs */}
       <div style={{
-        position: 'fixed', top: -200, right: -150, width: 700, height: 700,
+        position: 'absolute', top: -200, right: -150, width: 700, height: 700,
         background: 'radial-gradient(circle, rgba(37,99,235,0.10) 0%, transparent 65%)',
         borderRadius: '50%', pointerEvents: 'none', zIndex: 0,
         animation: 'floatOrb 9s ease-in-out infinite',
       }} />
       <div style={{
-        position: 'fixed', bottom: -150, left: -100, width: 600, height: 600,
+        position: 'absolute', bottom: -150, left: -100, width: 600, height: 600,
         background: 'radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 65%)',
         borderRadius: '50%', pointerEvents: 'none', zIndex: 0,
         animation: 'floatOrb 12s ease-in-out infinite reverse',
