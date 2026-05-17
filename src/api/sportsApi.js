@@ -310,8 +310,8 @@ async function enrichAndAnalyze(matchInfo) {
 
   // Build match object compatible with analyzeMatch format
   const match = {
-    home: matchInfo.homeEn || matchInfo.home,
-    away: matchInfo.awayEn || matchInfo.away,
+    home: matchInfo.home,
+    away: matchInfo.away,
     homeOriginal: matchInfo.home,
     awayOriginal: matchInfo.away,
     league: matchInfo.league || '',
@@ -387,7 +387,7 @@ ${match.away} (гости, последние ${awayStats.gamesCount} матче
     ? `\nКОЭФФИЦИЕНТЫ: хозяева ${match.odds1x2.home}, ничья ${match.odds1x2.draw}, гости ${match.odds1x2.away}`
     : ''
 
-  return `Ты профессиональный спортивный аналитик. Сделай ПОЛНЫЙ анализ матча как эксперт.
+  return `Ты профессиональный спортивный аналитик. Сделай ПОЛНЫЙ анализ матча как эксперт. Отвечай СТРОГО по-русски.
 
 МАТЧ: ${match.home} vs ${match.away}
 ЛИГА: ${match.league}
