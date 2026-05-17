@@ -91,7 +91,7 @@ export default function Landing() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', animation: 'fadeInUp 0.7s ease 0.1s both' }}>
+              <div className="hero-card-wrap" style={{ display: 'flex', justifyContent: 'flex-end', animation: 'fadeInUp 0.7s ease 0.1s both' }}>
                 <MatchPreviewCard />
               </div>
             </div>

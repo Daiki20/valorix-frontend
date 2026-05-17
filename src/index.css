@@ -305,6 +305,7 @@ html {
   .hero-title { font-size: 40px !important; }
   .hero-buttons { justify-content: center !important; }
   .hero-stats { justify-content: center !important; }
+  .hero-card-wrap { justify-content: center !important; }
 
   .steps-grid { grid-template-columns: 1fr 1fr !important; }
   .features-grid { grid-template-columns: 1fr !important; }
