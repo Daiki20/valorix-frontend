@@ -46,6 +46,37 @@ export default function AnalysisResult({ match, analysis }) {
         <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.7 }}>{analysis.summary}</p>
       </div>
 
+      {/* Extra bets */}
+      {analysis.extraBets && analysis.extraBets.length > 0 && (
+        <div className="card" style={{ padding: '24px 28px' }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1a1a2e', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <TrendingUp size={18} color="#7c3aed" />
+            Дополнительные ставки
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {analysis.extraBets.map((bet, i) => {
+              const color = bet.confidence >= 70 ? '#22c55e' : bet.confidence >= 55 ? '#f59e0b' : '#94a3b8'
+              return (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 12,
+                  padding: '14px 16px', background: '#f8fafc', borderRadius: 12,
+                  border: '1px solid #e2e8f0',
+                }}>
+                  <div style={{ flexShrink: 0, textAlign: 'center', minWidth: 48 }}>
+                    <div style={{ fontSize: 16, fontWeight: 900, color }}>{bet.confidence}%</div>
+                    <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>уверен.</div>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#1a1a2e', marginBottom: 4 }}>{bet.type}</div>
+                    <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>{bet.reason}</div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Stats row */}
       <div className="analysis-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
         {/* Confidence gauge */}
@@ -102,37 +133,6 @@ export default function AnalysisResult({ match, analysis }) {
           </div>
         </div>
       </div>
-
-      {/* Extra bets */}
-      {analysis.extraBets && analysis.extraBets.length > 0 && (
-        <div className="card" style={{ padding: '24px 28px' }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1a1a2e', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <TrendingUp size={18} color="#7c3aed" />
-            Дополнительные ставки
-          </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {analysis.extraBets.map((bet, i) => {
-              const color = bet.confidence >= 70 ? '#22c55e' : bet.confidence >= 55 ? '#f59e0b' : '#94a3b8'
-              return (
-                <div key={i} style={{
-                  display: 'flex', alignItems: 'flex-start', gap: 12,
-                  padding: '14px 16px', background: '#f8fafc', borderRadius: 12,
-                  border: '1px solid #e2e8f0',
-                }}>
-                  <div style={{ flexShrink: 0, textAlign: 'center', minWidth: 48 }}>
-                    <div style={{ fontSize: 16, fontWeight: 900, color }}>{bet.confidence}%</div>
-                    <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>уверен.</div>
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#1a1a2e', marginBottom: 4 }}>{bet.type}</div>
-                    <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>{bet.reason}</div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
 
       {/* Reasons */}
       <div className="card" style={{ padding: '24px 28px' }}>
