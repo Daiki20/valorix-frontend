@@ -99,39 +99,56 @@ export async function searchMatches(query) {
   return (gamesData.data || []).map(g => normalizeGame(g))
 }
 
-// Get upcoming matches (default list, sorted by date)
-export async function getUpcomingMatches(limit = 40) {
+// Priority: higher = shown first
+const LEAGUE_PRIORITY = {
+  2: 1000, 3: 1000, 848: 1000,           // UCL / UEL / UECL
+  39: 900, 140: 900, 135: 900,            // PL / La Liga / Serie A
+  78: 900, 61: 900,                       // Bundesliga / Ligue 1
+  94: 800, 88: 800, 144: 800,             // Portugal / Netherlands / Belgium
+  203: 800, 179: 800, 207: 750,           // Turkey / Scotland / Switzerland
+  197: 750, 210: 750, 333: 750,           // Greece / Ukraine
+  235: 700, 236: 650,                     // РПЛ / ФНЛ
+  71: 600, 128: 600, 131: 600,            // Brazil / Argentina / Libertadores
+  253: 550, 262: 550, 13: 550,            // MLS / Liga MX / Copa Sudamericana
+  98: 500, 292: 500, 480: 500,            // J-League / K League / Saudi
+  169: 450, 113: 450, 119: 450,           // Sweden / Norway / Denmark
+  40: 400, 79: 400, 62: 400,              // Championship / Bundesliga 2 / Ligue 2
+  106: 350, 383: 350, 218: 350,           // Poland / Czech / Slovakia
+}
+
+// Get upcoming matches (default list, sorted by priority then date)
+export async function getUpcomingMatches(limit = 50) {
   if (!SSTATS_KEY) return MOCK_MATCHES
 
   const leagueIds = [
-    2,   // Champions League
-    3,   // Europa League
-    848, // Conference League
-    39,  // Premier League
-    40,  // Championship
-    78,  // Bundesliga
-    79,  // Bundesliga 2
-    61,  // Ligue 1
-    135, // Serie A
-    140, // La Liga
-    94,  // Primeira Liga
-    88,  // Eredivisie
-    144, // Belgian Pro League
-    235, // РПЛ
-    71,  // Brazil Serie A
-    128, // Argentina Primera
-    179, // Scottish Premiership
-    203, // Süper Lig (Turkey)
-    106, // Ekstraklasa (Poland)
-    169, // Allsvenskan (Sweden)
+    2, 3, 848,           // UCL, UEL, UECL
+    39, 140, 135, 78, 61, // Big 5
+    94, 88, 144, 203, 179, 207, 197, 210, // Top Europe
+    235, 236,            // Russia
+    71, 128, 131, 13,    // South America
+    253, 262,            // North America
+    98, 292, 480,        // Asia
+    169, 113, 119,       // Scandinavia
+    40, 79, 62,          // Second tiers
+    106, 383, 218,       // Eastern Europe
   ]
+
   const promises = leagueIds.map(id =>
     sstatsGet('/Games/list', { upcoming: true, leagueid: id, limit: 5 }).catch(() => ({ data: [] }))
   )
   const results = await Promise.all(promises)
   const allGames = results.flatMap(r => r.data || [])
-  allGames.sort((a, b) => new Date(a.date) - new Date(b.date))
-  return allGames.map(normalizeGame).filter(m => m.odds1x2).slice(0, limit)
+
+  return allGames
+    .map(normalizeGame)
+    .filter(m => m.odds1x2)
+    .sort((a, b) => {
+      const pa = LEAGUE_PRIORITY[a.leagueId] || 0
+      const pb = LEAGUE_PRIORITY[b.leagueId] || 0
+      if (pb !== pa) return pb - pa
+      return new Date(a.date) - new Date(b.date)
+    })
+    .slice(0, limit)
 }
 
 // Main AI analysis for a match
