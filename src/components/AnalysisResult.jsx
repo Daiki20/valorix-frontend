@@ -55,12 +55,18 @@ export default function AnalysisResult({ match, analysis }) {
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {analysis.extraBets.map((bet, i) => {
-              const color = bet.confidence >= 70 ? '#22c55e' : bet.confidence >= 55 ? '#f59e0b' : '#94a3b8'
+              const isGreen = bet.confidence >= 70
+              const isYellow = bet.confidence >= 55 && bet.confidence < 70
+              const color = isGreen ? '#22c55e' : isYellow ? '#f59e0b' : '#94a3b8'
+              const bg = isGreen ? '#f0fdf4' : isYellow ? '#fefce8' : '#f8fafc'
+              const border = isGreen ? '#bbf7d0' : isYellow ? '#fde68a' : '#e2e8f0'
+              const leftBorder = isGreen ? '#22c55e' : isYellow ? '#f59e0b' : '#e2e8f0'
               return (
                 <div key={i} style={{
                   display: 'flex', alignItems: 'flex-start', gap: 12,
-                  padding: '14px 16px', background: '#f8fafc', borderRadius: 12,
-                  border: '1px solid #e2e8f0',
+                  padding: '14px 16px', background: bg, borderRadius: 12,
+                  border: `1px solid ${border}`,
+                  borderLeft: `4px solid ${leftBorder}`,
                 }}>
                   <div style={{ flexShrink: 0, textAlign: 'center', minWidth: 48 }}>
                     <div style={{ fontSize: 16, fontWeight: 900, color }}>{bet.confidence}%</div>
