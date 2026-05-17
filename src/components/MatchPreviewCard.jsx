@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const TABS = ['Вердикт', 'Доп. ставки', 'Причины']
+const TABS = ['Вердикт', 'Причины']
 
 export default function MatchPreviewCard() {
   const [activeTab, setActiveTab] = useState(0)
@@ -133,44 +133,47 @@ export default function MatchPreviewCard() {
         {/* Tab content */}
         <div className="preview-card-pad" style={{ padding: '14px 20px 20px' }}>
 
-          {/* Tab 0: Verdict stats */}
+          {/* Tab 0: Verdict stats + extra bets */}
           {activeTab === 0 && (
-            <div className="preview-stats" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
-              <StatBox label="Индекс доверия" value="68" color="#2563eb" isGauge />
-              <StatBox label="Риск" value="Средний" color="#f59e0b" isRisk />
-              <StatBox label="Fair Odds" value="1.91" sub="Букмекер 2.08" color="#1a1a2e" />
-              <StatBox label="Value" value="+8.9%" sub="Рекомендуем" color="#22c55e" />
-            </div>
-          )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div className="preview-stats" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8 }}>
+                <StatBox label="Индекс доверия" value="68" color="#2563eb" isGauge />
+                <StatBox label="Риск" value="Средний" color="#f59e0b" isRisk />
+                <StatBox label="Fair Odds" value="1.91" sub="Букмекер 2.08" color="#1a1a2e" />
+                <StatBox label="Value" value="+8.9%" sub="Рекомендуем" color="#22c55e" />
+              </div>
 
-          {/* Tab 1: Extra bets */}
-          {activeTab === 1 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[
-                { type: 'Угловые Арсенала больше 5.5', confidence: 82, reason: 'Арсенал подавал 7+ угловых в 8 из 10 домашних матчей', color: '#22c55e' },
-                { type: 'Тотал голов первого тайма больше 0.5', confidence: 74, reason: 'Арсенал забивал в первом тайме в 7 последних домашних играх', color: '#f59e0b' },
-                { type: 'Победа с нулём (Арсенал)', confidence: 61, reason: 'Хозяева не пропускали в 5 из 7 последних матчей дома', color: '#3b82f6' },
-              ].map((bet, i) => (
-                <div key={i} style={{
-                  display: 'flex', alignItems: 'flex-start', gap: 10,
-                  padding: '12px 14px', background: '#f8fafc',
-                  borderRadius: 12, border: '1px solid #e2e8f0',
-                }}>
-                  <div style={{ textAlign: 'center', minWidth: 40, flexShrink: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 900, color: bet.color }}>{bet.confidence}%</div>
-                    <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>увер.</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a2e', marginBottom: 3 }}>{bet.type}</div>
-                    <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.5 }}>{bet.reason}</div>
-                  </div>
+              {/* Extra bets */}
+              <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: 12 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', letterSpacing: 0.5, marginBottom: 8 }}>ДОПОЛНИТЕЛЬНЫЕ СТАВКИ</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+                  {[
+                    { type: 'Угловые Арсенала больше 5.5', confidence: 82, reason: 'Арсенал подавал 7+ угловых в 8 из 10 домашних матчей', color: '#22c55e' },
+                    { type: 'Тотал 1-го тайма больше 0.5', confidence: 74, reason: 'Арсенал забивал в первом тайме в 7 последних домашних играх', color: '#f59e0b' },
+                    { type: 'Победа с нулём (Арсенал)', confidence: 61, reason: 'Хозяева не пропускали в 5 из 7 последних матчей дома', color: '#3b82f6' },
+                  ].map((bet, i) => (
+                    <div key={i} style={{
+                      display: 'flex', alignItems: 'flex-start', gap: 10,
+                      padding: '10px 12px', background: '#f8fafc',
+                      borderRadius: 10, border: '1px solid #e2e8f0',
+                    }}>
+                      <div style={{ textAlign: 'center', minWidth: 36, flexShrink: 0 }}>
+                        <div style={{ fontSize: 14, fontWeight: 900, color: bet.color }}>{bet.confidence}%</div>
+                        <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>увер.</div>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e', marginBottom: 2 }}>{bet.type}</div>
+                        <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.4 }}>{bet.reason}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           )}
 
-          {/* Tab 2: Reasons */}
-          {activeTab === 2 && (
+          {/* Tab 1: Reasons */}
+          {activeTab === 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
               {[
                 'Арсенал выиграл 7 из последних 10 домашних матчей',
