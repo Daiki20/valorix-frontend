@@ -326,10 +326,22 @@ function LockedResult({ match, cost, userCoins, loading, onConfirm }) {
   )
 }
 
+function getConfidence(odds) {
+  if (!odds) return null
+  const favOdds = Math.min(Number(odds.home), Number(odds.away))
+  const homeDiff = Math.abs(Number(odds.home) - Number(odds.away))
+  if (favOdds <= 1.45) return { label: '🔥 Явный фаворит', bg: '#fff7ed', color: '#c2410c', border: '#fed7aa' }
+  if (favOdds <= 1.75) return { label: '⚡ Есть перевес', bg: '#fefce8', color: '#a16207', border: '#fde68a' }
+  if (homeDiff < 0.3) return { label: '⚖️ Равная игра', bg: '#f8fafc', color: '#64748b', border: '#e2e8f0' }
+  return null
+}
+
 function MatchRow({ match, onClick }) {
   const [hovered, setHovered] = useState(false)
   const odds = match.odds1x2
   const isLive = match.status === 'LIVE' || match.minute
+  const confidence = getConfidence(odds)
+
   return (
     <div
       className="card match-row"
@@ -347,8 +359,27 @@ function MatchRow({ match, onClick }) {
     >
       <div className="match-row-teams" style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
         <TeamLogo name={match.home} img={match.homeImg} size={32} />
-        <span className="match-row-name" style={{ fontWeight: 700, fontSize: 14, color: '#1a1a2e' }}>{match.home}</span>
-        <div style={{ textAlign: 'center', flexShrink: 0, padding: '0 4px' }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+            <span className="match-row-name" style={{ fontWeight: 700, fontSize: 14, color: '#1a1a2e' }}>{match.home}</span>
+            <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 500 }}>vs</span>
+            <span className="match-row-name" style={{ fontWeight: 700, fontSize: 14, color: '#1a1a2e' }}>{match.away}</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
+            {match.league && <span style={{ fontSize: 11, color: '#94a3b8' }}>{match.league}</span>}
+            {confidence && (
+              <span style={{
+                fontSize: 10, fontWeight: 700, padding: '2px 7px',
+                borderRadius: 10, background: confidence.bg,
+                color: confidence.color, border: `1px solid ${confidence.border}`,
+                whiteSpace: 'nowrap',
+              }}>
+                {confidence.label}
+              </span>
+            )}
+          </div>
+        </div>
+        <div style={{ textAlign: 'center', flexShrink: 0, padding: '0 4px', marginLeft: 'auto' }}>
           {isLive ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -357,11 +388,8 @@ function MatchRow({ match, onClick }) {
               </div>
               {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#1a1a2e' }}>{match.score}</div>}
             </div>
-          ) : (
-            <div style={{ fontSize: 12, fontWeight: 800, color: '#94a3b8' }}>VS</div>
-          )}
+          ) : null}
         </div>
-        <span className="match-row-name" style={{ fontWeight: 700, fontSize: 14, color: '#1a1a2e' }}>{match.away}</span>
         <TeamLogo name={match.away} img={match.awayImg} size={32} />
       </div>
 
