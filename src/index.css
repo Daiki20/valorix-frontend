@@ -22,6 +22,7 @@ html {
   width: 100%;
   min-height: 100vh;
   text-align: left;
+  overflow-x: hidden;
 }
 
 /* ─── Gradient text ─── */
@@ -321,8 +322,8 @@ html {
   .hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
   .hero-title { font-size: 34px !important; letter-spacing: -1px !important; }
   .hero-buttons { flex-wrap: wrap !important; }
-  .hero-stats { gap: 16px !important; flex-wrap: wrap !important; justify-content: center !important; }
-  .hero-stats > div { min-width: 80px; text-align: center; }
+  .hero-stats { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; text-align: center; }
+  .hero-stats > div { text-align: center; }
 
   .steps-grid { grid-template-columns: 1fr !important; }
   .features-grid { grid-template-columns: 1fr !important; }
