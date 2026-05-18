@@ -87,7 +87,7 @@ export default function SharePage() {
         </Link>
       </div>
 
-      <div style={{ maxWidth: 680, margin: '0 auto', padding: '32px 20px 60px' }}>
+      <div className="share-page-body" style={{ maxWidth: 680, margin: '0 auto', padding: '32px 20px 60px' }}>
 
         {/* ── MATCH CARD ───────────────────────────────────────── */}
         <div style={{
@@ -109,26 +109,26 @@ export default function SharePage() {
           )}
 
           {/* Teams */}
-          <div style={{ padding: '28px 32px 24px', display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div className="share-teams-row" style={{ padding: '28px 32px 24px', display: 'flex', alignItems: 'center', gap: 16 }}>
             {/* Home */}
-            <div style={{ flex: 1, textAlign: 'center' }}>
-              <div style={{
+            <div style={{ flex: 1, textAlign: 'center', minWidth: 0 }}>
+              <div className="share-team-avatar" style={{
                 width: 64, height: 64, borderRadius: '50%',
                 background: `linear-gradient(135deg, ${teamColor(match.home)}, ${teamColor(match.home)}aa)`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 24, fontWeight: 900, color: 'white',
-                margin: '0 auto 12px',
+                margin: '0 auto 12px', flexShrink: 0,
                 boxShadow: `0 4px 20px ${teamColor(match.home)}44`,
               }}>
                 {match.home[0]}
               </div>
-              <div style={{ color: 'white', fontWeight: 800, fontSize: 17, lineHeight: 1.2 }}>{match.home}</div>
+              <div className="share-team-name" style={{ color: 'white', fontWeight: 800, fontSize: 17, lineHeight: 1.2, wordBreak: 'break-word' }}>{match.home}</div>
               <div style={{ color: '#64748b', fontSize: 12, marginTop: 4 }}>Хозяева</div>
             </div>
 
             {/* VS */}
             <div style={{ textAlign: 'center', flexShrink: 0 }}>
-              <div style={{
+              <div className="share-vs-circle" style={{
                 width: 52, height: 52, borderRadius: '50%',
                 background: 'rgba(255,255,255,0.05)',
                 border: '1px solid rgba(255,255,255,0.1)',
@@ -140,24 +140,24 @@ export default function SharePage() {
             </div>
 
             {/* Away */}
-            <div style={{ flex: 1, textAlign: 'center' }}>
-              <div style={{
+            <div style={{ flex: 1, textAlign: 'center', minWidth: 0 }}>
+              <div className="share-team-avatar" style={{
                 width: 64, height: 64, borderRadius: '50%',
                 background: `linear-gradient(135deg, ${teamColor(match.away)}, ${teamColor(match.away)}aa)`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 24, fontWeight: 900, color: 'white',
-                margin: '0 auto 12px',
+                margin: '0 auto 12px', flexShrink: 0,
                 boxShadow: `0 4px 20px ${teamColor(match.away)}44`,
               }}>
                 {match.away[0]}
               </div>
-              <div style={{ color: 'white', fontWeight: 800, fontSize: 17, lineHeight: 1.2 }}>{match.away}</div>
+              <div className="share-team-name" style={{ color: 'white', fontWeight: 800, fontSize: 17, lineHeight: 1.2, wordBreak: 'break-word' }}>{match.away}</div>
               <div style={{ color: '#64748b', fontSize: 12, marginTop: 4 }}>Гости</div>
             </div>
           </div>
 
           {/* Verdict banner */}
-          <div style={{
+          <div className="share-verdict-banner" style={{
             margin: '0 20px 20px',
             background: 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05))',
             border: '1px solid rgba(34,197,94,0.3)',
@@ -327,7 +327,7 @@ export default function SharePage() {
         </div>
 
         {/* ── CTA ──────────────────────────────────────────────── */}
-        <div style={{
+        <div className="share-cta" style={{
           background: 'linear-gradient(135deg, rgba(124,58,237,0.2), rgba(37,99,235,0.2))',
           border: '1px solid rgba(124,58,237,0.3)',
           borderRadius: 20, padding: '28px 32px', textAlign: 'center',

@@ -119,7 +119,7 @@ export default function Analyze() {
     return (
       <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
         <Navbar />
-        <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px' }}>
+        <div className="analyze-page-content" style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px' }}>
           <button
             onClick={() => { setSelectedMatch(null); setLocked(false); setRevealed(false); setShareToken(null); pendingResult.current = null }}
             style={{
@@ -168,7 +168,7 @@ export default function Analyze() {
   return (
     <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
       <Navbar />
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px' }}>
+      <div className="analyze-page-content" style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px' }}>
         <Link to="/" style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           color: '#64748b', fontSize: 14, fontWeight: 600, marginBottom: 24,
@@ -201,21 +201,23 @@ export default function Analyze() {
           ))}
         </div>
 
-        <form onSubmit={handleSearch} style={{ marginBottom: 28, position: 'relative' }}>
-          <input
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="Поиск по команде или лиге..."
-            style={{
-              width: '100%', padding: '14px 20px 14px 48px',
-              borderRadius: 12, border: '1.5px solid #e2e8f0',
-              fontSize: 15, background: 'white', outline: 'none',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-            }}
-          />
-          <Search size={18} color="#94a3b8"
-            style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)' }} />
-        </form>
+        {activeTab === 'upcoming' && (
+          <form onSubmit={handleSearch} style={{ marginBottom: 28, position: 'relative' }}>
+            <input
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="Поиск по команде или лиге..."
+              style={{
+                width: '100%', padding: '14px 20px 14px 48px',
+                borderRadius: 12, border: '1.5px solid #e2e8f0',
+                fontSize: 15, background: 'white', outline: 'none',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+              }}
+            />
+            <Search size={18} color="#94a3b8"
+              style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)' }} />
+          </form>
+        )}
 
         {loading && activeTab === 'upcoming' ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -299,7 +301,7 @@ function LockedResult({ match, cost, userCoins, loading, onConfirm }) {
         alignItems: 'center', justifyContent: 'center',
         padding: 24,
       }}>
-        <div style={{
+        <div className="locked-card" style={{
           background: 'white', borderRadius: 20,
           padding: '36px 40px', maxWidth: 380, width: '100%',
           textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.3)',

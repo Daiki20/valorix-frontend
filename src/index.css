@@ -341,18 +341,33 @@ html {
 /* ── Match row mobile ── */
 @media (max-width: 640px) {
   .match-row { padding: 12px 14px !important; }
-  .match-row-name { display: none !important; }
+  .match-row-name { font-size: 11px !important; max-width: 76px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .match-row-odds { gap: 3px !important; }
   .match-row-odds > div { min-width: 36px !important; padding: 3px 5px !important; }
+  .match-row-btn { padding: 5px 10px !important; font-size: 12px !important; }
+  .analyze-page-content { padding: 20px 14px !important; }
+  .locked-card { padding: 24px 18px !important; }
 }
 
 /* ── Analysis result mobile ── */
 @media (max-width: 640px) {
   .analysis-stats { grid-template-columns: repeat(2, 1fr) !important; }
   .analysis-header { padding: 16px !important; }
-  .analysis-header-team { font-size: 14px !important; }
-  .analysis-header-vs { font-size: 11px !important; }
+  .analysis-header-team { font-size: 12px !important; }
+  .analysis-header-vs { padding: 0 2px !important; font-size: 9px !important; }
   .analysis-pad { padding: 16px !important; }
+  .bk-odds-row { font-size: 12px !important; }
+}
+
+/* ── Share page mobile ── */
+@media (max-width: 640px) {
+  .share-page-body { padding: 16px 12px 40px !important; }
+  .share-teams-row { padding: 18px 14px 16px !important; gap: 8px !important; }
+  .share-team-avatar { width: 48px !important; height: 48px !important; font-size: 18px !important; }
+  .share-team-name { font-size: 13px !important; }
+  .share-vs-circle { width: 38px !important; height: 38px !important; font-size: 11px !important; }
+  .share-verdict-banner { margin: 0 10px 14px !important; padding: 12px 14px !important; }
+  .share-cta { padding: 20px 16px !important; }
 }
 
 /* ── Preview card mobile ── */

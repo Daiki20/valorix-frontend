@@ -26,7 +26,6 @@ const SSTATS_TO_PARI_LEAGUE = {
   61:  11920, // Ligue 1
   135: 11924, // Serie A
   235: 11935, // Russian Premier League
-  61:  11920, // Ligue 1
   94:  11939, // Primeira Liga (Portugal)
 }
 

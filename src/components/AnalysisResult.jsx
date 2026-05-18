@@ -41,7 +41,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
 
       {/* Verdict */}
       <div style={{
-        padding: '20px 28px', borderLeft: '4px solid #16a34a',
+        padding: '20px 28px',
         background: 'linear-gradient(135deg, #f0fdf4, #dcfce7)',
         border: '1px solid #86efac', borderLeft: '4px solid #16a34a',
         borderRadius: 16,
@@ -200,10 +200,10 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
 
           {analysis.bestOdds[0]?.real ? (
             // Real bookmaker data — show table
-            <div>
-              <div style={{
+            <div style={{ overflowX: 'auto' }}>
+              <div className="bk-odds-row" style={{
                 display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px',
-                gap: 4, marginBottom: 6, padding: '0 8px',
+                gap: 4, marginBottom: 6, padding: '0 8px', minWidth: 260,
               }}>
                 <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>БУКМЕКЕР</span>
                 <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600, textAlign: 'center' }}>П1</span>
@@ -211,9 +211,9 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
                 <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600, textAlign: 'center' }}>П2</span>
               </div>
               {analysis.bestOdds.map((bk, i) => (
-                <div key={i} style={{
+                <div key={i} className="bk-odds-row" style={{
                   display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px',
-                  gap: 4, padding: '10px 8px',
+                  gap: 4, padding: '10px 8px', minWidth: 260,
                   background: i === 0 ? '#f0fdf4' : i % 2 === 0 ? '#f8fafc' : 'white',
                   borderRadius: 8, marginBottom: 4,
                   border: i === 0 ? '1px solid #bbf7d0' : '1px solid transparent',
