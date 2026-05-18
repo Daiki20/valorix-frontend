@@ -235,7 +235,7 @@ export default function Analyze() {
         ) : activeTab === 'live' ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {liveMatches.length > 0 ? liveMatches.map(match => (
-              <MatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} />
+              <MatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} isLiveTab />
             )) : (
               <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8' }}>
                 <div style={{ fontSize: 40, marginBottom: 12 }}>🔴</div>
@@ -376,10 +376,10 @@ function getConfidence(odds) {
   return null
 }
 
-function MatchRow({ match, onClick }) {
+function MatchRow({ match, onClick, isLiveTab }) {
   const [hovered, setHovered] = useState(false)
   const odds = match.odds1x2
-  const isLive = match.status === 'LIVE' || match.minute
+  const isLive = isLiveTab || match.isLive || match.status === 'LIVE' || match.minute
   const confidence = getConfidence(odds)
 
   return (
@@ -433,7 +433,7 @@ function MatchRow({ match, onClick }) {
         <TeamLogo name={match.away} img={match.awayImg} size={32} />
       </div>
 
-      {odds && (
+      {odds && !isLive && (
         <div className="match-row-odds" style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
           {[{ label: '1', val: odds.home }, { label: 'X', val: odds.draw }, { label: '2', val: odds.away }].map(o => (
             <div key={o.label} style={{
