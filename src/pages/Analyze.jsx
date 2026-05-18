@@ -85,6 +85,7 @@ export default function Analyze() {
         matchHome: selectedMatch.home,
         matchAway: selectedMatch.away,
         league: selectedMatch.league,
+        sport: 'football',
         result: pendingResult.current,
       })
       updateCoins(data.coins)

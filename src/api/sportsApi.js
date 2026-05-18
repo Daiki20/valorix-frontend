@@ -281,6 +281,25 @@ async function extractFromScreenshot(base64Image) {
   return JSON.parse(data.content)
 }
 
+// Fetch esports team context from backend (Esports Data API by mrcupcake)
+async function getEsportsContext(game, home, away, homePlayers = [], awayPlayers = []) {
+  const token = localStorage.getItem('valorix_token')
+  try {
+    const res = await fetch(`${API_BASE}/analyze/esports-context`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ game, home, away, homePlayers, awayPlayers }),
+    })
+    if (!res.ok) return {}
+    return res.json()
+  } catch {
+    return {}
+  }
+}
+
 // Fetch current Dota 2 hero meta from OpenDota (free, no key)
 async function fetchDotaMeta() {
   try {
@@ -301,65 +320,108 @@ async function fetchDotaMeta() {
   }
 }
 
-function buildEsportsPrompt(match, game) {
+function buildEsportsPrompt(match, game, ctx = {}) {
   const isLive = !!match.score
-  const homePlayers = match.homePlayers?.length ? match.homePlayers.join(', ') : null
-  const awayPlayers = match.awayPlayers?.length ? match.awayPlayers.join(', ') : null
-  const metaBlock = match.dotaMeta?.length
-    ? `ТЕКУЩАЯ МЕТА (топ герои по про-винрейту, патч актуальный):
-${match.dotaMeta.map(h => `${h.name}: ${h.winRate}% winrate (${h.pickRate} пиков в про)`).join('\n')}`
-    : ''
-
   const gameNames = { cs2: 'CS2', dota2: 'Dota 2', valorant: 'Valorant', lol: 'League of Legends' }
   const gameName = gameNames[game] || game
 
-  const playersBlock = (homePlayers || awayPlayers)
-    ? `ИГРОКИ НА СКРИНЕ:
-${homePlayers ? `${match.home}: ${homePlayers}` : ''}
-${awayPlayers ? `${match.away}: ${awayPlayers}` : ''}`.trim()
+  // Players from screen (OCR)
+  const screenHome = match.homePlayers?.length ? match.homePlayers.join(', ') : null
+  const screenAway = match.awayPlayers?.length ? match.awayPlayers.join(', ') : null
+
+  // Players from Esports Data API (mrcupcake) — real roster
+  const apiHomeRoster = ctx.homeRoster?.length
+    ? ctx.homeRoster.map(p => p.role ? `${p.name} (${p.role})` : p.name).join(', ')
+    : null
+  const apiAwayRoster = ctx.awayRoster?.length
+    ? ctx.awayRoster.map(p => p.role ? `${p.name} (${p.role})` : p.name).join(', ')
+    : null
+
+  // Use API roster if available, otherwise fall back to screen OCR
+  const homeRoster = apiHomeRoster || screenHome
+  const awayRoster = apiAwayRoster || screenAway
+  const hasRealRoster = !!(apiHomeRoster || apiAwayRoster)
+
+  const rosterBlock = (homeRoster || awayRoster)
+    ? `ТЕКУЩИЙ СОСТАВ${hasRealRoster ? ' (реальные данные)' : ' (с экрана)'}:
+${homeRoster ? `${match.home}: ${homeRoster}` : `${match.home}: состав неизвестен`}
+${awayRoster ? `${match.away}: ${awayRoster}` : `${match.away}: состав неизвестен`}`
+    : `СОСТАВЫ: данные не получены — используй свои знания о командах`
+
+  // Rankings
+  const rankBlock = (ctx.homeRank || ctx.awayRank)
+    ? `МИРОВОЙ РЕЙТИНГ: ${match.home} #${ctx.homeRank || '?'} | ${match.away} #${ctx.awayRank || '?'}`
+    : ''
+
+  // Recent results from Esports Data API
+  const resultsBlock = (ctx.homeResults || ctx.awayResults)
+    ? `ПОСЛЕДНИЕ РЕЗУЛЬТАТЫ (реальные данные):
+${ctx.homeResults ? `${match.home}: ${ctx.homeResults}` : ''}
+${ctx.awayResults ? `${match.away}: ${ctx.awayResults}` : ''}`.trim()
+    : ''
+
+  // Dota 2 hero meta from OpenDota
+  const metaBlock = match.dotaMeta?.length
+    ? `ТЕКУЩАЯ МЕТА Dota 2 (топ герои по про-винрейту):
+${match.dotaMeta.map(h => `${h.name}: ${h.winRate}% winrate (${h.pickRate} пиков)`).join('\n')}`
     : ''
 
   const oddsBlock = match.odds1x2
-    ? `КОЭФФИЦИЕНТЫ: ${match.home} ${match.odds1x2.home} | Ничья ${match.odds1x2.draw || '—'} | ${match.away} ${match.odds1x2.away}`
+    ? `КОЭФФИЦИЕНТЫ: ${match.home} ${match.odds1x2.home} | ${match.away} ${match.odds1x2.away}${match.odds1x2.draw ? ` | Ничья ${match.odds1x2.draw}` : ''}`
     : ''
 
   const scoreBlock = isLive ? `ТЕКУЩИЙ СЧЁТ: ${match.score}` : ''
+
+  const dataQuality = hasRealRoster && (ctx.homeResults || ctx.awayResults)
+    ? 'Используй реальные данные выше как основу анализа — они актуальнее твоих знаний.'
+    : 'Реальные данные API недоступны — используй свои знания о командах, но будь честен если неуверен.'
 
   return `Ты профессиональный аналитик киберспорта с глубокими знаниями про сцену ${gameName}. Отвечай СТРОГО по-русски.
 
 МАТЧ: ${match.home} vs ${match.away}
 ТУРНИР: ${match.league || 'неизвестно'}
 ${scoreBlock}
-${playersBlock}
+${rankBlock}
+
+${rosterBlock}
+
+${resultsBlock}
+
 ${metaBlock}
+
 ${oddsBlock}
 
+${dataQuality}
+
 ОБЯЗАТЕЛЬНО включи в анализ:
-1. Конкретных ключевых игроков каждой команды — их роли и сигнатурных героев (Dota) или роли/специализацию (CS2)
-2. Как сигнатурки соотносятся с текущей метой — кто выигрывает от меты, кто проигрывает
-3. Последние турнирные результаты и общую форму команд
-4. Стиль игры каждой команды и как они противостоят друг другу
-5. ЕСЛИ не знаешь точных данных о конкретном игроке — укажи это в dataWarning, но анализ всё равно дай
-6. НЕ пиши общие фразы — только конкретика с именами игроков и реальными фактами
-7. Для Dota 2 — доп ставки: тотал карт, первая кровь, тотал убийств за матч, взятие Рошана, тотал башен
-8. Для CS2 — доп ставки: тотал раундов, победа на пистолетном раунде, тотал карт, овертайм
+1. Конкретных игроков каждой команды по имени — их роли, сигнатурные герои (Dota) или специализацию (CS2/Valorant)
+2. Как сигнатурки/стиль игры соотносятся с текущей метой — кому мета помогает
+3. Форму команд по последним результатам — серии побед/поражений, против каких соперников
+4. Стиль игры каждой команды и историческое противостояние
+5. ЕСЛИ данных о конкретном игроке нет — укажи это в dataWarning, но анализ всё равно дай
+6. НЕ пиши общие фразы — только конкретика с именами и фактами
+
+Дополнительные ставки:
+- Dota 2: тотал карт, первая кровь, тотал убийств, взятие Рошана, тотал башен за матч
+- CS2: тотал раундов, победа на пистолете, тотал карт, овертайм на карте
+- Valorant/LoL: тотал карт, первая кровь, тотал убийств
 
 Ответь строго в JSON:
 {
   "verdict": "чёткий вердикт кто победит",
-  "summary": "3-4 предложения глубокого анализа по-русски",
+  "summary": "3-4 предложения глубокого анализа с именами игроков по-русски",
   "confidence": число 0-100,
   "risk": "low | medium | high",
   "fairOdds": "справедливый коэф на фаворита",
   "bookOdds": "коэф букмекера если известен",
   "value": число,
   "dataWarning": "предупреждение если каких-то данных не хватает, или null",
-  "reasons": ["факт 1", "факт 2", "факт 3", "факт 4"],
+  "reasons": ["факт с именами/цифрами 1", "факт 2", "факт 3", "факт 4"],
   "extraBets": [
     {
-      "type": "название ставки СТРОГО по-русски (например: Тотал карт больше 2.5 / Первая кровь PARIVISION / Тотал убийств больше 45.5)",
+      "type": "название ставки СТРОГО по-русски (Тотал карт больше 2.5 / Первая кровь NaVi / Тотал убийств больше 45.5)",
       "confidence": число 50-95,
-      "reason": "конкретное обоснование по-русски"
+      "reason": "конкретное обоснование с цифрами и именами по-русски"
     }
   ],
   "bestOdds": []
@@ -368,9 +430,15 @@ ${oddsBlock}
 
 // Step 2: find teams in sstats, get stats, run full analysis
 async function enrichAndAnalyze(matchInfo, game = 'football') {
-  // Esports route — no sstats, use GPT knowledge + live meta
+  // Esports route — real API data + Dota meta + GPT analysis
   const esportsGames = ['cs2', 'dota2', 'valorant', 'lol']
   if (esportsGames.includes(game)) {
+    // Fetch real esports data and Dota meta in parallel
+    const [esportsCtx, dotaMeta] = await Promise.all([
+      getEsportsContext(game, matchInfo.home, matchInfo.away, matchInfo.homePlayers, matchInfo.awayPlayers),
+      game === 'dota2' ? fetchDotaMeta().catch(() => null) : Promise.resolve(null),
+    ])
+
     const match = {
       home: matchInfo.home,
       away: matchInfo.away,
@@ -380,9 +448,9 @@ async function enrichAndAnalyze(matchInfo, game = 'football') {
       odds1x2: matchInfo.odds1 ? { home: matchInfo.odds1, draw: matchInfo.oddsX, away: matchInfo.odds2 } : null,
       homePlayers: matchInfo.homePlayers || [],
       awayPlayers: matchInfo.awayPlayers || [],
-      dotaMeta: game === 'dota2' ? (await fetchDotaMeta().catch(() => null)) : null,
+      dotaMeta,
     }
-    const prompt = buildEsportsPrompt(match, game)
+    const prompt = buildEsportsPrompt(match, game, esportsCtx)
     const jsonStr = await callOpenAI(prompt)
     const analysis = parseAnalysis(jsonStr, match)
     return {
@@ -516,41 +584,52 @@ ${match.away} (гости, последние ${awayStats.gamesCount} матче
     ? `\nКОЭФФИЦИЕНТЫ: хозяева ${match.odds1x2.home}, ничья ${match.odds1x2.draw}, гости ${match.odds1x2.away}`
     : ''
 
-  return `Ты профессиональный спортивный аналитик. Сделай ПОЛНЫЙ анализ матча как эксперт. Отвечай СТРОГО по-русски.
+  return `Ты профессиональный спортивный аналитик. Отвечай СТРОГО по-русски.
 
 МАТЧ: ${match.home} vs ${match.away}
 ЛИГА: ${match.league}
 ${liveBlock}
+
 ${statsBlock}
 ${glickoBlock}
 ${h2hBlock}
 ${oddsBlock}
 
-${isLive
-    ? `Матч идёт. Счёт ${match.score} на ${match.minute} минуте.
-Задача: оцени ход матча, кто доминирует по статистике, какова вероятность что изменится счёт, какой исход наиболее вероятен.
-Используй ВСЕ свои знания об этих командах: их стиль игры, ключевых игроков, тренеров, текущую форму.`
-    : `Задача: дай полный предматчевый анализ.
-Используй ВСЕ свои знания об этих командах: история, ключевые игроки, тренеры, форма, травмы.
-Если есть статистика — используй её. Найди Value если есть коэффициенты.`}
+══ ПРАВИЛА РАБОТЫ С ДАННЫМИ ══
+${(statsBlock || glickoBlock || h2hBlock)
+    ? `• ИСПОЛЬЗУЙ цифры из блоков выше — они из реальной базы данных
+• ЗАПРЕЩЕНО придумывать статистику которой нет выше
+• Если данных нет — пиши "данных нет", не выдумывай цифры
+• Своими знаниями о командах дополняй контекст, но НЕ статистику`
+    : `• Данных из базы нет — опирайся на свои знания об этих командах
+• В reasons пиши что это оценка на основе общих знаний, не свежей статистики`}
 
-Найди 2-3 НЕСТАНДАРТНЫЕ ставки — не просто "тотал больше 2.5" или "обе забьют", а конкретные паттерны из статистики этих команд. Анализируй угловые, карточки, форы, тотал первого тайма, чистый лист и т.д. Каждая ставка должна быть обоснована КОНКРЕТНЫМИ цифрами.
+${isLive
+    ? `Матч ИДЁТ. Счёт ${match.score} на ${match.minute} минуте.
+Задача: оцени ход матча по статистике выше. Кто доминирует по xG и ударам? Какова вероятность смены счёта?`
+    : `Задача: предматчевый анализ.
+Определи фаворита. Рассчитай Fair Odds. Найди Value если есть коэффициенты.`}
+
+Дополнительные ставки — ТОЛЬКО если в данных выше есть конкретный паттерн:
+- Угловые: если команда стабильно берёт много/мало (смотри avgCorners)
+- Тотал: если сумма avgScore+avgConceded указывает на тренд
+- Чистый лист: если avgConceded низкое и состав защиты сильный
 
 Ответь строго в JSON:
 {
-  "verdict": "чёткий вердикт: кто победит или какой исход",
-  "summary": "3-4 предложения глубокого анализа",
+  "verdict": "чёткий вердикт кто победит или какой исход",
+  "summary": "3-4 предложения анализа с конкретными цифрами из данных",
   "confidence": число 0-100,
   "risk": "low | medium | high",
   "fairOdds": "справедливый коэффициент на фаворита",
-  "bookOdds": "коэффициент букмекера если известен",
+  "bookOdds": "коэффициент букмекера если есть",
   "value": число или 0,
-  "reasons": ["факт 1 о командах/игроках", "факт 2", "факт 3", "факт 4", "факт 5"],
+  "reasons": ["факт с цифрой 1", "факт с цифрой 2", "факт с цифрой 3", "факт с цифрой 4"],
   "extraBets": [
     {
-      "type": "Точное название ставки (например: Угловые хозяев больше 5.5)",
+      "type": "Название ставки по-русски",
       "confidence": число 50-95,
-      "reason": "КОНКРЕТНАЯ статистика с цифрами"
+      "reason": "Цифра из данных выше: например 'avgCorners=7.8 → линия на 7.5 проходная'"
     }
   ],
   "bestOdds": []
@@ -585,114 +664,136 @@ function extractBookmakerOdds(bookmakers) {
 function buildPrompt(match, stats, glicko, ctx = {}) {
   const homeStats = stats?.home
   const awayStats = stats?.away
+  const hasStats = !!(homeStats && awayStats)
 
+  // Full stats block — ALL available numbers
   let statsBlock = ''
-  if (homeStats && awayStats) {
+  if (hasStats) {
+    const hCorners = homeStats.avgCorners != null ? homeStats.avgCorners.toFixed(1) : null
+    const aCorners = awayStats.avgCorners != null ? awayStats.avgCorners.toFixed(1) : null
     statsBlock = `
-СТАТИСТИКА ХОЗЯЕВ (${match.home}) за последние ${homeStats.gamesCount} матчей дома:
-- Побед: ${homeStats.wins}, Ничьих: ${homeStats.draws}, Поражений: ${homeStats.loses}
-- Среднее голов забито: ${homeStats.avgScore?.toFixed(2)}, пропущено: ${homeStats.avgConceded?.toFixed(2)}
-- Средние удары по воротам: ${homeStats.avgShots?.toFixed(1)}, удары соперника: ${homeStats.avgOppShots?.toFixed(1)}
-- Средние угловые: ${homeStats.avgCorners?.toFixed(1)}
+── СТАТИСТИКА ИЗ БАЗЫ ДАННЫХ (реальные цифры) ──
+${match.home} — последние ${homeStats.gamesCount} матчей ДОМА:
+  Форма: ${homeStats.wins}П / ${homeStats.draws}Н / ${homeStats.loses}П
+  Голы: ${homeStats.avgScore?.toFixed(2)} забито / ${homeStats.avgConceded?.toFixed(2)} пропущено за матч
+  Удары: ${homeStats.avgShots?.toFixed(1)} нанесено / ${homeStats.avgOppShots?.toFixed(1)} допущено за матч${hCorners ? `\n  Угловые: ${hCorners} в среднем за матч` : ''}
 
-СТАТИСТИКА ГОСТЕЙ (${match.away}) за последние ${awayStats.gamesCount} матчей в гостях:
-- Побед: ${awayStats.wins}, Ничьих: ${awayStats.draws}, Поражений: ${awayStats.loses}
-- Среднее голов забито: ${awayStats.avgScore?.toFixed(2)}, пропущено: ${awayStats.avgConceded?.toFixed(2)}
-- Средние удары: ${awayStats.avgShots?.toFixed(1)}, удары соперника: ${awayStats.avgOppShots?.toFixed(1)}`
+${match.away} — последние ${awayStats.gamesCount} матчей В ГОСТЯХ:
+  Форма: ${awayStats.wins}П / ${awayStats.draws}Н / ${awayStats.loses}П
+  Голы: ${awayStats.avgScore?.toFixed(2)} забито / ${awayStats.avgConceded?.toFixed(2)} пропущено за матч
+  Удары: ${awayStats.avgShots?.toFixed(1)} нанесено / ${awayStats.avgOppShots?.toFixed(1)} допущено за матч${aCorners ? `\n  Угловые: ${aCorners} в среднем за матч` : ''}`
   }
 
+  // xG + Glicko probabilities
   let glickoBlock = ''
   if (glicko) {
     const homePct = (glicko.homeWinProbability * 100).toFixed(1)
     const awayPct = (glicko.awayWinProbability * 100).toFixed(1)
-    const drawPct = (100 - glicko.homeWinProbability * 100 - glicko.awayWinProbability * 100).toFixed(1)
+    const drawPct = Math.max(0, 100 - glicko.homeWinProbability * 100 - glicko.awayWinProbability * 100).toFixed(1)
+    const hXg = glicko.homeXg?.toFixed(2)
+    const aXg = glicko.awayXg?.toFixed(2)
     glickoBlock = `
-МОДЕЛЬ GLICKO-2 (математическая вероятность):
-- Рейтинг ${match.home}: ${glicko.homeRating?.toFixed(0)} (xG: ${glicko.homeXg?.toFixed(2)})
-- Рейтинг ${match.away}: ${glicko.awayRating?.toFixed(0)} (xG: ${glicko.awayXg?.toFixed(2)})
-- Вероятность победы хозяев: ${homePct}%
-- Вероятность победы гостей: ${awayPct}%
-- Вероятность ничьей: ${drawPct}%`
+── МАТЕМАТИЧЕСКАЯ МОДЕЛЬ GLICKO-2 ──
+  Рейтинг ${match.home}: ${glicko.homeRating?.toFixed(0)}${hXg ? ` | xG за матч: ${hXg}` : ''}
+  Рейтинг ${match.away}: ${glicko.awayRating?.toFixed(0)}${aXg ? ` | xG за матч: ${aXg}` : ''}
+  Вероятности: П1 ${homePct}% | X ${drawPct}% | П2 ${awayPct}%${
+  hXg && aXg ? `\n  xG говорит: ${match.home} создаёт на ${(glicko.homeXg - glicko.awayXg).toFixed(2)} xG ${glicko.homeXg > glicko.awayXg ? 'больше' : 'меньше'} соперника` : ''}`
   }
 
   const odds = match.odds1x2
   const oddsBlock = odds
-    ? `КОЭФФИЦИЕНТЫ БУКМЕКЕРОВ (1X2): хозяева ${odds.home}, ничья ${odds.draw}, гости ${odds.away}`
+    ? `── КОЭФФИЦИЕНТЫ БУКМЕКЕРОВ ──\nП1 ${odds.home} | X ${odds.draw} | П2 ${odds.away}`
     : ''
 
-  // Lineups
+  // Lineups (from RapidAPI)
   const homeLineup = ctx.homeLineup || []
   const awayLineup = ctx.awayLineup || []
   const lineupsBlock = (homeLineup.length || awayLineup.length)
-    ? `СТАРТОВЫЕ СОСТАВЫ:
-${homeLineup.length ? `${match.home}${ctx.formation?.home ? ` (${ctx.formation.home})` : ''}: ${homeLineup.join(', ')}` : ''}
-${awayLineup.length ? `${match.away}${ctx.formation?.away ? ` (${ctx.formation.away})` : ''}: ${awayLineup.join(', ')}` : ''}`.trim()
+    ? `── СТАРТОВЫЕ СОСТАВЫ ──
+${homeLineup.length ? `${match.home}${ctx.formation?.home ? ` [${ctx.formation.home}]` : ''}: ${homeLineup.join(', ')}` : `${match.home}: состав неизвестен`}
+${awayLineup.length ? `${match.away}${ctx.formation?.away ? ` [${ctx.formation.away}]` : ''}: ${awayLineup.join(', ')}` : `${match.away}: состав неизвестен`}`
     : ''
 
   // Standings
   const hs = ctx.homeStanding
   const as_ = ctx.awayStanding
   const standingsBlock = (hs || as_)
-    ? `ТАБЛИЦА ЛИГИ:
-${hs ? `${match.home}: ${hs.rank || hs.position} место, ${hs.points} очков, разница голов ${hs.goalsDiff ?? hs.goalDifference ?? '?'}` : ''}
-${as_ ? `${match.away}: ${as_.rank || as_.position} место, ${as_.points} очков, разница голов ${as_.goalsDiff ?? as_.goalDifference ?? '?'}` : ''}`.trim()
+    ? `── ТАБЛИЦА ЛИГИ ──
+${hs ? `${match.home}: ${hs.rank || hs.position} место | ${hs.points} очков | ГР ${hs.goalsDiff ?? hs.goalDifference ?? '?'}` : ''}
+${as_ ? `${match.away}: ${as_.rank || as_.position} место | ${as_.points} очков | ГР ${as_.goalsDiff ?? as_.goalDifference ?? '?'}` : ''}`.trim()
     : ''
 
-  const injuriesBlock = ''
-  const formBlock = ''
+  // Value calculation hint
+  let valueHint = ''
+  if (glicko && odds) {
+    const modelFav = glicko.homeWinProbability > glicko.awayWinProbability ? 'home' : 'away'
+    const modelProb = modelFav === 'home' ? glicko.homeWinProbability : glicko.awayWinProbability
+    const bookOdds = modelFav === 'home' ? odds.home : odds.away
+    const impliedProb = bookOdds ? 1 / bookOdds : null
+    if (impliedProb) {
+      const value = ((modelProb - impliedProb) / impliedProb * 100).toFixed(1)
+      valueHint = `\n── VALUE РАСЧЁТ ──\nМодель даёт вероятность фаворита ${(modelProb * 100).toFixed(1)}%, букмекер закладывает ${(impliedProb * 100).toFixed(1)}% → Value: ${value}%`
+    }
+  }
 
-  return `Ты профессиональный спортивный аналитик и эксперт по букмекерским ставкам. Проанализируй матч.
+  const dataAvailable = hasStats || !!glicko || !!ctx.homeLineup?.length
+
+  return `Ты профессиональный спортивный аналитик. Отвечай СТРОГО по-русски.
 
 МАТЧ: ${match.home} vs ${match.away}
-ЛИГА: ${match.league}
-ДАТА: ${match.date}
+ЛИГА: ${match.league} | ДАТА: ${match.date}
 
 ${statsBlock}
 ${glickoBlock}
 ${standingsBlock}
-${formBlock}
-${injuriesBlock}
 ${lineupsBlock}
 ${oddsBlock}
+${valueHint}
 
-Задача:
-1. Определи фаворита с учётом всех данных
-2. Оцени риски и неопределённость
-3. Рассчитай справедливый коэффициент (Fair Odds) на победу фаворита
-4. Если есть данные о коэффициентах — найди Value
-5. Дай 4-5 конкретных причин прогноза
-6. Найди 2-3 НЕСТАНДАРТНЫЕ ставки — не просто "тотал больше 2.5" или "обе забьют", а конкретные паттерны которые ты видишь в статистике этих команд. Анализируй:
-   - Угловые (если команда стабильно берёт 7+ угловых)
-   - Жёлтые карточки (агрессивные команды)
-   - Фора (если разница классов большая)
-   - Тотал голов первого тайма
-   - Победа с нулём (чистый лист)
-   - Конкретный счёт если есть явный паттерн
-   - Тотал угловых, ударов и т.д.
-   Каждая ставка должна быть обоснована КОНКРЕТНЫМИ цифрами из статистики (например: "Манчестер получал 8+ угловых в 7 из последних 9 домашних матчей")
+══ ПРАВИЛА РАБОТЫ С ДАННЫМИ ══
+${dataAvailable
+    ? `• Используй ТОЛЬКО цифры из блоков выше — они реальные, из базы данных
+• ЗАПРЕЩЕНО придумывать статистику которой нет в данных выше
+• Если какой-то статистики нет — пиши "данных нет", не выдумывай
+• Своими знаниями о командах дополняй контекст (стиль, тренер, история), но НЕ факты и цифры`
+    : `• Данных из базы нет — используй только свои знания об этих командах
+• Чётко отмечай в reasons что данные основаны на общих знаниях, не на свежей статистике`}
+
+ЗАДАЧИ:
+1. Определи фаворита — аргументируй ЦИФРАМИ из данных выше
+2. Fair Odds: рассчитай справедливый коэффициент на основе вероятностей модели
+3. Value: если коэффициенты букмекера выше fair odds — есть value
+4. Дай 4-5 конкретных причин с цифрами
+5. Найди 2-3 дополнительные ставки — ТОЛЬКО если в данных есть паттерн:
+   - Угловые: если команда берёт стабильно много/мало (цифра из статистики)
+   - Тотал голов: если avgScore+avgConceded указывает на явный тренд
+   - Фора: если разница классов большая (рейтинг + позиция в таблице)
+   - Чистый лист: если avgConceded низкое и состав защиты сильный
+   КАЖДУЮ ставку обосновывай ТОЛЬКО реальными цифрами из данных выше
 
 Ответь строго в JSON (без markdown):
 {
   "verdict": "краткий вердикт: например 'Победа Arsenal' или 'Ничья вероятна'",
-  "summary": "2-3 предложения итогового анализа по-русски",
+  "summary": "2-3 предложения анализа с конкретными цифрами из данных",
   "confidence": число от 0 до 100,
   "risk": "low или medium или high",
   "fairOdds": "число — справедливый коэффициент",
-  "bookOdds": "число — средний у букмекеров (если известен)",
-  "value": число — процент value (может быть отрицательным),
-  "reasons": ["причина 1", "причина 2", "причина 3", "причина 4"],
+  "bookOdds": "число — коэф букмекера если есть",
+  "value": число — процент value,
+  "reasons": [
+    "факт с цифрой из данных 1",
+    "факт с цифрой из данных 2",
+    "факт с цифрой из данных 3",
+    "факт с цифрой из данных 4"
+  ],
   "extraBets": [
     {
-      "type": "Точное название ставки (например: Угловые хозяев больше 5.5)",
+      "type": "Название ставки по-русски",
       "confidence": число 50-95,
-      "reason": "КОНКРЕТНАЯ статистика: например 'Арсенал подавал 7+ угловых в 8 из последних 10 домашних матчей'"
+      "reason": "КОНКРЕТНАЯ цифра из данных: например '${match.home} берёт X угловых в среднем, линия на X.5'"
     }
   ],
-  "bestOdds": [
-    {"name": "Fonbet", "odds": "X.XX"},
-    {"name": "Winline", "odds": "X.XX"},
-    {"name": "1xbet", "odds": "X.XX"}
-  ]
+  "bestOdds": []
 }`
 }
 
