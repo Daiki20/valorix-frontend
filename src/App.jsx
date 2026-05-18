@@ -11,6 +11,7 @@ import Privacy from './pages/Privacy'
 import Support from './pages/Support'
 import ResetPassword from './pages/ResetPassword'
 import NotFound from './pages/NotFound'
+import SharePage from './pages/SharePage'
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/support" element={<Support />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/share/:token" element={<SharePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

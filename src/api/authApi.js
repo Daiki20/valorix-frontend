@@ -36,6 +36,7 @@ export const coinsApi = {
   verifyPayment: (paymentId) => request('GET', `/coins/verify-payment/${paymentId}`),
   spend: (data) => request('POST', '/coins/spend', data),
   transactions: () => request('GET', '/coins/transactions'),
+  getShare: (token) => fetch(`${BASE}/share/${token}`).then(r => r.json()),
 }
 
 export { getToken }

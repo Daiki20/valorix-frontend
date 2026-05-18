@@ -1,6 +1,7 @@
+import { useState } from 'react'
 import { CheckCircle, AlertTriangle, TrendingUp, Info } from 'lucide-react'
 
-export default function AnalysisResult({ match, analysis }) {
+export default function AnalysisResult({ match, analysis, shareToken }) {
   const confidence = analysis.confidence || 68
   const circumference = 2 * Math.PI * 40
   const dash = (confidence / 100) * circumference
@@ -10,6 +11,9 @@ export default function AnalysisResult({ match, analysis }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {shareToken && (
+        <ShareButton token={shareToken} match={match} />
+      )}
       {/* Match header */}
       <div className="card analysis-header" style={{ padding: '20px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
@@ -260,6 +264,30 @@ export default function AnalysisResult({ match, analysis }) {
           Этот анализ носит информационный характер. Играйте ответственно. 18+
         </span>
       </div>
+    </div>
+  )
+}
+
+function ShareButton({ token, match }) {
+  const [copied, setCopied] = useState(false)
+  const url = `${window.location.origin}/share/${token}`
+
+  function copy() {
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <div style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '12px 16px', background: '#f8fafc', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+      <span style={{ fontSize: 13, color: '#64748b', flex: 1 }}>Поделись анализом с другом</span>
+      <button onClick={copy} style={{
+        padding: '8px 16px', background: copied ? '#16a34a' : '#2563eb', color: 'white',
+        border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: 'pointer'
+      }}>
+        {copied ? '✓ Скопировано' : 'Копировать ссылку'}
+      </button>
     </div>
   )
 }

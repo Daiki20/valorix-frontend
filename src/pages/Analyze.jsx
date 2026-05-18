@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import AnalysisResult from '../components/AnalysisResult'
 import AuthModal from '../components/AuthModal'
-import { searchMatches, analyzeMatch, getUpcomingMatches } from '../api/sportsApi'
+import { searchMatches, analyzeMatch, getUpcomingMatches, getLiveMatches } from '../api/sportsApi'
 import { coinsApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -26,6 +26,9 @@ export default function Analyze() {
   const [showAuth, setShowAuth] = useState(false)
   const pendingResult = useRef(null)                 // результат хранится здесь до оплаты
   const [revealedAnalysis, setRevealedAnalysis] = useState(null)
+  const [shareToken, setShareToken] = useState(null)
+  const [activeTab, setActiveTab] = useState('upcoming')
+  const [liveMatches, setLiveMatches] = useState([])
 
   useEffect(() => {
     getUpcomingMatches(20)
@@ -33,6 +36,15 @@ export default function Analyze() {
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    if (activeTab !== 'live') return
+    let cancelled = false
+    const fetch_ = () => getLiveMatches().then(m => { if (!cancelled) setLiveMatches(m) }).catch(() => {})
+    fetch_()
+    const interval = setInterval(fetch_, 2 * 60 * 1000)
+    return () => { cancelled = true; clearInterval(interval) }
+  }, [activeTab])
 
   const filtered = matches.filter(m =>
     m.home.toLowerCase().includes(query.toLowerCase()) ||
@@ -89,6 +101,7 @@ export default function Analyze() {
         result: pendingResult.current,
       })
       updateCoins(data.coins)
+      if (data.shareToken) setShareToken(data.shareToken)
       setRevealedAnalysis(pendingResult.current)
       pendingResult.current = null
       setLocked(false)
@@ -108,7 +121,7 @@ export default function Analyze() {
         <Navbar />
         <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px' }}>
           <button
-            onClick={() => { setSelectedMatch(null); setLocked(false); setRevealed(false); pendingResult.current = null }}
+            onClick={() => { setSelectedMatch(null); setLocked(false); setRevealed(false); setShareToken(null); pendingResult.current = null }}
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               background: 'none', border: 'none', cursor: 'pointer',
@@ -144,7 +157,7 @@ export default function Analyze() {
           )}
 
           {revealed && revealedAnalysis && (
-            <AnalysisResult match={selectedMatch} analysis={revealedAnalysis} />
+            <AnalysisResult match={selectedMatch} analysis={revealedAnalysis} shareToken={shareToken} />
           )}
         </div>
         {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
@@ -173,6 +186,21 @@ export default function Analyze() {
           </p>
         </div>
 
+        <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+          {[
+            { id: 'upcoming', label: 'Предстоящие' },
+            { id: 'live', label: '🔴 Лайв' },
+          ].map(tab => (
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
+              padding: '8px 20px', borderRadius: 10, fontWeight: 700, fontSize: 14,
+              border: 'none', cursor: 'pointer',
+              background: activeTab === tab.id ? '#2563eb' : 'white',
+              color: activeTab === tab.id ? 'white' : '#64748b',
+              boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+            }}>{tab.label}</button>
+          ))}
+        </div>
+
         <form onSubmit={handleSearch} style={{ marginBottom: 28, position: 'relative' }}>
           <input
             value={query}
@@ -189,7 +217,7 @@ export default function Analyze() {
             style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)' }} />
         </form>
 
-        {loading ? (
+        {loading && activeTab === 'upcoming' ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[1,2,3,4,5].map(i => (
               <div key={i} className="card" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -203,6 +231,17 @@ export default function Analyze() {
                 </div>
               </div>
             ))}
+          </div>
+        ) : activeTab === 'live' ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {liveMatches.length > 0 ? liveMatches.map(match => (
+              <MatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} />
+            )) : (
+              <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8' }}>
+                <div style={{ fontSize: 40, marginBottom: 12 }}>🔴</div>
+                <p>Сейчас нет лайв матчей</p>
+              </div>
+            )}
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

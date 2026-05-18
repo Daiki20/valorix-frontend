@@ -77,11 +77,14 @@ function HistoryRow({ item }) {
   let result = {}
   try { result = JSON.parse(item.result || '{}') } catch {}
 
-  const verdict = result.verdict || ''
-  const confidence = result.confidence
+  // Handle both screenshot format (matches[]) and direct format
+  const analysis = result.matches?.[0] || result
+  const verdict = analysis.verdict || ''
+  const confidence = analysis.confidence
   const date = new Date(item.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
 
-  const verdictColor = verdict.includes('П1') ? '#2563eb' : verdict.includes('П2') ? '#7c3aed' : verdict.includes('Ничья') ? '#f59e0b' : '#64748b'
+  const v = verdict.toLowerCase()
+  const verdictColor = v.includes('ничья') ? '#f59e0b' : (v.includes('победа') || verdict) ? '#2563eb' : '#64748b'
 
   return (
     <div className="card" style={{ padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16 }}>

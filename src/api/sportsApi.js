@@ -116,6 +116,17 @@ const LEAGUE_PRIORITY = {
   106: 350, 383: 350, 218: 350,           // Poland / Czech / Slovakia
 }
 
+// Get live matches
+export async function getLiveMatches() {
+  if (!SSTATS_KEY) return []
+  try {
+    const results = await Promise.all([
+      sstatsGet('/Games/list', { live: true, limit: 20 }).catch(() => ({ data: [] })),
+    ])
+    return results.flatMap(r => r.data || []).map(normalizeGame)
+  } catch { return [] }
+}
+
 // Get upcoming matches (default list, sorted by priority then date)
 export async function getUpcomingMatches(limit = 50) {
   if (!SSTATS_KEY) return MOCK_MATCHES
@@ -176,7 +187,8 @@ export async function analyzeMatch(match) {
 
   const context = await getMatchContext(match.home, match.away, match.leagueId).catch(() => ({}))
   const prompt = buildPrompt(match, stats, glicko, context)
-  const jsonStr = await callOpenAI(prompt)
+  const cacheKey = `m_${(match.home||'').toLowerCase().replace(/\s/g,'')}_${(match.away||'').toLowerCase().replace(/\s/g,'')}`
+  const jsonStr = await callOpenAI(prompt, cacheKey)
   const analysis = parseAnalysis(jsonStr, match)
 
   if (realOdds.length > 0) analysis.bestOdds = realOdds
@@ -502,7 +514,8 @@ async function enrichAndAnalyze(matchInfo, game = 'football') {
       dotaMeta,
     }
     const prompt = buildEsportsPrompt(match, game, esportsCtx)
-    const jsonStr = await callOpenAI(prompt)
+    const cacheKey = `e_${game}_${(matchInfo.home||'').toLowerCase().replace(/\s/g,'')}_${(matchInfo.away||'').toLowerCase().replace(/\s/g,'')}`
+    const jsonStr = await callOpenAI(prompt, cacheKey)
     const analysis = parseAnalysis(jsonStr, match)
     return {
       home: matchInfo.home,
@@ -570,7 +583,8 @@ async function enrichAndAnalyze(matchInfo, game = 'football') {
   }
 
   const prompt = buildFullScreenPrompt(match, stats, glicko, h2h)
-  const jsonStr = await callOpenAI(prompt)
+  const cacheKey = `f_${(matchInfo.home||'').toLowerCase().replace(/\s/g,'')}_${(matchInfo.away||'').toLowerCase().replace(/\s/g,'')}`
+  const jsonStr = await callOpenAI(prompt, cacheKey)
   const analysis = parseAnalysis(jsonStr, match)
 
   if (realOdds.length > 0) analysis.bestOdds = realOdds
@@ -866,7 +880,7 @@ async function getMatchContext(home, away, leagueId) {
   }
 }
 
-async function callOpenAI(prompt) {
+async function callOpenAI(prompt, cacheKey = null) {
   const token = localStorage.getItem('valorix_token')
   const res = await fetch(`${API_BASE}/analyze/chat`, {
     method: 'POST',
@@ -876,6 +890,7 @@ async function callOpenAI(prompt) {
     },
     body: JSON.stringify({
       messages: [{ role: 'user', content: prompt }],
+      ...(cacheKey ? { cacheKey } : {}),
     }),
   })
 
