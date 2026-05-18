@@ -157,7 +157,7 @@ export default function Analyze() {
           )}
 
           {revealed && revealedAnalysis && (
-            <AnalysisResult match={selectedMatch} analysis={revealedAnalysis} shareToken={shareToken} />
+            <AnalysisResult match={selectedMatch} analysis={revealedAnalysis} shareToken={shareToken} isLive={activeTab === 'live'} />
           )}
         </div>
         {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}

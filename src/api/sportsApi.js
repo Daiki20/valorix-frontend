@@ -845,13 +845,15 @@ ${match.away} — последние ${awayStats.gamesCount} матчей В Г�
   hXg && aXg ? `\n  xG говорит: ${match.home} создаёт на ${(glicko.homeXg - glicko.awayXg).toFixed(2)} xG ${glicko.homeXg > glicko.awayXg ? 'больше' : 'меньше'} соперника` : ''}`
   }
 
-  const odds = match.odds1x2
-  const oddsBlock = odds
-    ? `── КОЭФФИЦИЕНТЫ БУКМЕКЕРОВ ──\nП1 ${odds.home} | X ${odds.draw} | П2 ${odds.away}`
-    : ''
-
   // Live stats block — what's happening RIGHT NOW in the match
   const isLive = !!(match.isLive || match.score)
+
+  const odds = match.odds1x2
+  const oddsBlock = odds
+    ? isLive
+      ? `── КОЭФФИЦИЕНТЫ (ПРЕДМАТЧЕВЫЕ — устарели, в лайве коэфы другие) ──\nП1 ${odds.home} | X ${odds.draw} | П2 ${odds.away}\n⚠ НЕ используй эти коэфы для Value-расчёта — они установлены до матча`
+      : `── КОЭФФИЦИЕНТЫ БУКМЕКЕРОВ ──\nП1 ${odds.home} | X ${odds.draw} | П2 ${odds.away}`
+    : ''
   const liveStatsFormatted = liveStats ? formatLiveStats(liveStats, match.home, match.away) : null
   const liveBlock = isLive ? `
 ── ТЕКУЩИЙ МАТЧ (ЛАЙВ) ──
@@ -876,9 +878,9 @@ ${hs ? `${match.home}: ${hs.rank || hs.position} место | ${hs.points} оч�
 ${as_ ? `${match.away}: ${as_.rank || as_.position} место | ${as_.points} очков | ГР ${as_.goalsDiff ?? as_.goalDifference ?? '?'}` : ''}`.trim()
     : ''
 
-  // Value calculation hint
+  // Value calculation hint — skip for live (pre-match odds are outdated)
   let valueHint = ''
-  if (glicko && odds) {
+  if (glicko && odds && !isLive) {
     const modelFav = glicko.homeWinProbability > glicko.awayWinProbability ? 'home' : 'away'
     const modelProb = modelFav === 'home' ? glicko.homeWinProbability : glicko.awayWinProbability
     const bookOdds = modelFav === 'home' ? odds.home : odds.away

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { CheckCircle, AlertTriangle, TrendingUp, Info } from 'lucide-react'
 
-export default function AnalysisResult({ match, analysis, shareToken }) {
+export default function AnalysisResult({ match, analysis, shareToken, isLive }) {
   const confidence = analysis.confidence || 68
   const circumference = 2 * Math.PI * 40
   const dash = (confidence / 100) * circumference
@@ -129,7 +129,7 @@ export default function AnalysisResult({ match, analysis, shareToken }) {
             {analysis.fairOdds || '—'}
           </div>
           <div style={{ fontSize: 11, color: '#94a3b8' }}>Реальная вероятность</div>
-          {analysis.bookOdds && (
+          {analysis.bookOdds && !isLive && (
             <div style={{ marginTop: 8, fontSize: 12 }}>
               <span style={{ color: '#64748b' }}>Букмекер: </span>
               <span style={{ fontWeight: 700, color: '#1a1a2e' }}>{analysis.bookOdds}</span>
@@ -140,12 +140,21 @@ export default function AnalysisResult({ match, analysis, shareToken }) {
         {/* Value */}
         <div className="card" style={{ padding: '20px 16px', textAlign: 'center' }}>
           <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600, marginBottom: 12 }}>VALUE</div>
-          <div style={{ fontSize: 28, fontWeight: 900, color: analysis.value > 0 ? '#22c55e' : '#ef4444', marginBottom: 4 }}>
-            {analysis.value > 0 ? '+' : ''}{analysis.value}%
-          </div>
-          <div style={{ fontSize: 11, color: '#94a3b8' }}>
-            {analysis.value > 5 ? 'Рекомендуем' : analysis.value > 0 ? 'Умеренно' : 'Не рекомендуем'}
-          </div>
+          {isLive ? (
+            <>
+              <div style={{ fontSize: 22, marginBottom: 6 }}>🔴</div>
+              <div style={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.4 }}>Лайв коэфы<br/>меняются</div>
+            </>
+          ) : (
+            <>
+              <div style={{ fontSize: 28, fontWeight: 900, color: analysis.value > 0 ? '#22c55e' : '#ef4444', marginBottom: 4 }}>
+                {analysis.value > 0 ? '+' : ''}{analysis.value}%
+              </div>
+              <div style={{ fontSize: 11, color: '#94a3b8' }}>
+                {analysis.value > 5 ? 'Рекомендуем' : analysis.value > 0 ? 'Умеренно' : 'Не рекомендуем'}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
