@@ -180,10 +180,10 @@ async function fetchLiveScore(gameId) {
     const g = res?.data || res
     if (!g) return null
     console.log('[sstats single game]', JSON.stringify(g, null, 2))
-    const homeScore = g.homeScore ?? g.score?.home ?? g.result?.home ?? g.liveData?.homeScore
-      ?? g.homeGoals ?? g.home_score ?? g.scoreHome ?? null
-    const awayScore = g.awayScore ?? g.score?.away ?? g.result?.away ?? g.liveData?.awayScore
-      ?? g.awayGoals ?? g.away_score ?? g.scoreAway ?? null
+    const homeScore = g.homeFTResult ?? g.homeScore ?? g.score?.home ?? g.result?.home
+      ?? g.liveData?.homeScore ?? g.homeGoals ?? g.home_score ?? g.scoreHome ?? null
+    const awayScore = g.awayFTResult ?? g.awayScore ?? g.score?.away ?? g.result?.away
+      ?? g.liveData?.awayScore ?? g.awayGoals ?? g.away_score ?? g.scoreAway ?? null
     const minute = g.minute ?? g.elapsed ?? g.status?.minute ?? g.liveData?.minute
       ?? g.matchMinute ?? g.currentMinute ?? null
     if (homeScore != null && awayScore != null) {
@@ -1036,9 +1036,9 @@ function normalizeGame(g) {
   const awayOdds = odds1x2?.odds?.find(o => o.name === 'Away')?.value
   const drawOdds = odds1x2?.odds?.find(o => o.name === 'Draw')?.value
 
-  // Extract live score — try multiple common field paths
-  const homeScore = g.homeScore ?? g.score?.home ?? g.result?.home ?? g.liveData?.homeScore ?? null
-  const awayScore = g.awayScore ?? g.score?.away ?? g.result?.away ?? g.liveData?.awayScore ?? null
+  // Extract live score — homeFTResult/awayFTResult is what sstats uses (seen in h2h code)
+  const homeScore = g.homeFTResult ?? g.homeScore ?? g.score?.home ?? g.result?.home ?? g.liveData?.homeScore ?? g.homeGoals ?? null
+  const awayScore = g.awayFTResult ?? g.awayScore ?? g.score?.away ?? g.result?.away ?? g.liveData?.awayScore ?? g.awayGoals ?? null
   const scoreStr = homeScore != null && awayScore != null ? `${homeScore}:${awayScore}` : null
   const minute = g.minute ?? g.elapsed ?? g.status?.minute ?? g.liveData?.minute ?? null
   const isLive = scoreStr != null || g.status === 'live' || g.isLive === true
