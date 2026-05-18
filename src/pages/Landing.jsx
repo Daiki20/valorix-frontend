@@ -5,11 +5,14 @@ import Navbar from '../components/Navbar'
 import MatchPreviewCard from '../components/MatchPreviewCard'
 import Logo from '../components/Logo'
 import Onboarding from '../components/Onboarding'
+import ExpressCard from '../components/ExpressCard'
+import AuthModal from '../components/AuthModal'
 import { useAuth } from '../context/AuthContext'
 
 export default function Landing() {
   const { user } = useAuth()
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showAuth, setShowAuth] = useState(false)
 
   useEffect(() => {
     if (user && !localStorage.getItem('valorix_onboarded')) {
@@ -99,6 +102,11 @@ export default function Landing() {
         </section>
 
         <div className="glow-divider" />
+
+        {/* ── Express of the Day ── */}
+        <div style={{ maxWidth: 640, margin: '0 auto', padding: '40px 24px 0' }}>
+          <ExpressCard onAuthRequired={() => setShowAuth(true)} />
+        </div>
 
         {/* ── How it works ── */}
         <section id="how" className="section-pad" style={{ background: 'white', padding: '88px 24px', position: 'relative', overflow: 'hidden' }}>
@@ -232,6 +240,7 @@ export default function Landing() {
         </section>
 
         {showOnboarding && <Onboarding onClose={() => setShowOnboarding(false)} />}
+        {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
         {/* ── Footer ── */}
         <footer style={{ background: '#1a1a2e', color: '#94a3b8', padding: '44px 24px 32px', textAlign: 'center', position: 'relative' }}>

@@ -6,6 +6,7 @@ import AnalysisResult from '../components/AnalysisResult'
 import AuthModal from '../components/AuthModal'
 import { searchMatches, analyzeMatch, getUpcomingMatches, getLiveMatches } from '../api/sportsApi'
 import { coinsApi } from '../api/authApi'
+import ExpressCard from '../components/ExpressCard'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 
@@ -185,6 +186,8 @@ export default function Analyze() {
             Стоимость анализа: <strong>{ANALYSIS_COST} монет</strong> за матч
           </p>
         </div>
+
+        <ExpressCard onAuthRequired={() => setShowAuth(true)} />
 
         <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
           {[

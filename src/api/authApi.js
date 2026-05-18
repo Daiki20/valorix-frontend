@@ -39,4 +39,10 @@ export const coinsApi = {
   getShare: (token) => fetch(`${BASE}/share/${token}`).then(r => r.json()),
 }
 
+export const expressApi = {
+  today: () => fetch(`${BASE}/express/today`, { headers: authHeaders() }).then(r => r.json()),
+  purchase: () => request('POST', '/express/purchase'),
+  generate: () => request('POST', '/express/generate'),
+}
+
 export { getToken }
