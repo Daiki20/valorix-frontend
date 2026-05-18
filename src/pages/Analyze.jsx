@@ -425,6 +425,7 @@ function MatchRow({ match, onClick, isLiveTab }) {
             )}
           </div>
         </div>
+        <TeamLogo name={match.away} img={match.awayImg} size={32} />
         {isLive && (
           <div style={{ textAlign: 'center', flexShrink: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 3, justifyContent: 'center' }}>
@@ -434,7 +435,6 @@ function MatchRow({ match, onClick, isLiveTab }) {
             {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#1a1a2e', marginTop: 2 }}>{match.score}</div>}
           </div>
         )}
-        <TeamLogo name={match.away} img={match.awayImg} size={32} />
       </div>
 
       {odds && !isLive && (
