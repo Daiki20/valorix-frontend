@@ -15,7 +15,7 @@ export default function MatchPreviewCard() {
           background: '#eff6ff', border: '1.5px dashed #93c5fd',
           borderRadius: 20, padding: '5px 14px',
           fontSize: 11, fontWeight: 700, letterSpacing: 0.8,
-          whiteSpace: 'nowrap', animation: 'samplePulse 2s ease-in-out infinite',
+          textAlign: 'center', animation: 'samplePulse 2s ease-in-out infinite',
         }}>
           <style>{`
             @keyframes samplePulse {

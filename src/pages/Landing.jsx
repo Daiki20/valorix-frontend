@@ -45,7 +45,7 @@ export default function Landing() {
         <Navbar />
 
         {/* ── Hero ── */}
-        <section className="grid-bg section-pad" style={{ padding: '88px 24px 72px', position: 'relative' }}>
+        <section className="grid-bg section-pad" style={{ padding: '88px 24px 72px', position: 'relative', overflow: 'hidden' }}>
           <div className="container" style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
               <div style={{ animation: 'fadeInUp 0.6s ease forwards' }}>
@@ -56,7 +56,7 @@ export default function Landing() {
                   Принимай умные<br />решения с{' '}
                   <span className="gradient-text">AI‑АНАЛИТИКОЙ</span>
                 </h1>
-                <p className="hero-subtitle" style={{ fontSize: 16, color: '#64748b', lineHeight: 1.75, marginBottom: 36, maxWidth: 460 }}>
+                <p className="hero-subtitle" style={{ fontSize: 16, color: '#64748b', lineHeight: 1.75, marginBottom: 36, maxWidth: 460, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                   Выбирай матч или загружай скрин линии — AI проанализирует форму команд,
                   игроков, травмы, риски и покажет в какой{' '}
                   <span style={{ color: '#2563eb', fontWeight: 600 }}>букмекерской конторе лучший коэффициент</span>

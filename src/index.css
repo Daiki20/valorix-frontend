@@ -320,11 +320,21 @@ html {
   .mobile-burger { display: flex !important; }
   .nav-username { display: none; }
 
+  /* Убираем двойной паддинг: секция уже имеет свой, container не нужен */
+  .container { padding: 0 !important; }
+
   .hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
-  .hero-title { font-size: 34px !important; letter-spacing: -1px !important; }
+  .hero-title { font-size: 32px !important; letter-spacing: -0.5px !important; }
+  .hero-subtitle {
+    font-size: 14px !important;
+    max-width: 100% !important;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
   .hero-buttons { flex-wrap: wrap !important; }
   .hero-stats { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 8px !important; text-align: center; }
   .hero-stats > div { text-align: center; }
+  .stat-number { font-size: 18px !important; }
 
   .steps-grid { grid-template-columns: 1fr !important; }
   .features-grid { grid-template-columns: 1fr !important; }
@@ -332,7 +342,8 @@ html {
   .section-pad { padding: 56px 20px !important; }
   .section-title { font-size: 28px !important; }
 
-  .match-odds { display: none !important; }
+  /* Скрываем коэффициенты в карточках матчей — не хватает места */
+  .match-row-odds { display: none !important; }
   .analysis-grid { grid-template-columns: 1fr !important; }
 
   .coin-packages { grid-template-columns: 1fr !important; }
@@ -341,10 +352,9 @@ html {
 /* ── Match row mobile ── */
 @media (max-width: 640px) {
   .match-row { padding: 12px 14px !important; }
-  .match-row-name { font-size: 11px !important; max-width: 76px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .match-row-odds { gap: 3px !important; }
-  .match-row-odds > div { min-width: 36px !important; padding: 3px 5px !important; }
-  .match-row-btn { padding: 5px 10px !important; font-size: 12px !important; }
+  /* Без odds имена помещаются — просто уменьшаем шрифт */
+  .match-row-name { font-size: 12px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+  .match-row-btn { padding: 6px 12px !important; font-size: 12px !important; }
   .analyze-page-content { padding: 20px 14px !important; }
   .locked-card { padding: 24px 18px !important; }
 }
@@ -391,8 +401,7 @@ html {
 
 /* ── xs: маленькие телефоны (< 480px) ── */
 @media (max-width: 479px) {
-  .hero-title { font-size: 26px !important; letter-spacing: -0.5px !important; }
-  .hero-subtitle { font-size: 14px !important; }
+  .hero-title { font-size: 24px !important; letter-spacing: -0.3px !important; }
   .section-title { font-size: 22px !important; }
   .section-pad { padding: 44px 16px !important; }
 
@@ -402,11 +411,12 @@ html {
   .card { border-radius: 12px !important; }
   .btn-primary, .btn-outline { font-size: 13px !important; padding: 10px 18px !important; }
 
-  .hero-stats { flex-wrap: wrap !important; gap: 16px !important; }
-  .stat-item { min-width: 80px; }
+  /* На xs stats показываем в строку из 3 столбцов — без flex-wrap */
+  .hero-stats { grid-template-columns: repeat(3, 1fr) !important; gap: 6px !important; }
+  .stat-number { font-size: 16px !important; }
 
   .auth-modal-wrap { padding: 0 8px !important; }
   .auth-modal-inner { padding: 24px 16px !important; border-radius: 16px !important; }
 
-  .locked-card { padding: 24px 20px !important; }
+  .locked-card { padding: 20px 16px !important; }
 }
