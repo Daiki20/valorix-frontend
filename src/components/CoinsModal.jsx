@@ -3,11 +3,18 @@ import { X, Zap, Star } from 'lucide-react'
 import { coinsApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
 
+const PAYMENT_METHODS = [
+  { id: 'sbp',       label: 'СБП',        desc: 'Система быстрых платежей', emoji: '⚡' },
+  { id: 'bank_card', label: 'Карта',      desc: 'Visa, MasterCard, МИР',    emoji: '💳' },
+  { id: 'sberbank',  label: 'SberPay',    desc: 'Через приложение Сбера',   emoji: '🟢' },
+]
+
 export default function CoinsModal({ onClose }) {
   const { user, updateCoins } = useAuth()
   const [packages, setPackages] = useState([])
   const [loading, setLoading] = useState(false)
   const [selectedId, setSelectedId] = useState('pack_300')
+  const [paymentMethod, setPaymentMethod] = useState('sbp')
 
   useEffect(() => {
     coinsApi.packages().then(d => setPackages(d.packages))
@@ -16,7 +23,7 @@ export default function CoinsModal({ onClose }) {
   async function handleBuy() {
     setLoading(true)
     try {
-      const { confirmationUrl, paymentId } = await coinsApi.createPayment(selectedId)
+      const { confirmationUrl, paymentId } = await coinsApi.createPayment(selectedId, paymentMethod)
       localStorage.setItem('valorix_pending_payment', paymentId)
       window.location.href = confirmationUrl
     } catch (err) {
@@ -93,6 +100,31 @@ export default function CoinsModal({ onClose }) {
                 </div>
               </button>
             ))}
+          </div>
+
+          {/* Способ оплаты */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', letterSpacing: 0.5, marginBottom: 10 }}>
+              СПОСОБ ОПЛАТЫ
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {PAYMENT_METHODS.map(m => (
+                <button
+                  key={m.id}
+                  onClick={() => setPaymentMethod(m.id)}
+                  style={{
+                    flex: 1, padding: '10px 8px', borderRadius: 10,
+                    border: `2px solid ${paymentMethod === m.id ? '#2563eb' : '#e2e8f0'}`,
+                    background: paymentMethod === m.id ? '#eff6ff' : 'white',
+                    cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center',
+                  }}
+                >
+                  <div style={{ fontSize: 18, marginBottom: 3 }}>{m.emoji}</div>
+                  <div style={{ fontWeight: 700, fontSize: 12, color: paymentMethod === m.id ? '#2563eb' : '#1a1a2e' }}>{m.label}</div>
+                  <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 2, lineHeight: 1.3 }}>{m.desc}</div>
+                </button>
+              ))}
+            </div>
           </div>
 
           <button
