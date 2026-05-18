@@ -169,6 +169,53 @@ export default function SharePage() {
           </div>
         </div>
 
+        {/* ── EXTRA BETS ───────────────────────────────────────── */}
+        {analysis.extraBets && analysis.extraBets.length > 0 && (
+          <div style={{
+            background: '#1e1e32', border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: 20, padding: '24px', marginBottom: 16,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
+              <TrendingUp size={18} color="#a78bfa" />
+              <span style={{ color: 'white', fontWeight: 700, fontSize: 16 }}>Дополнительные ставки</span>
+              <span style={{
+                background: 'rgba(124,58,237,0.2)', color: '#a78bfa',
+                border: '1px solid rgba(124,58,237,0.3)',
+                borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 700,
+              }}>{analysis.extraBets.length}</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {analysis.extraBets.map((bet, i) => {
+                const isGreen = bet.confidence >= 70
+                const isYellow = bet.confidence >= 55 && bet.confidence < 70
+                const color = isGreen ? '#22c55e' : isYellow ? '#f59e0b' : '#94a3b8'
+                const bg = isGreen ? 'rgba(34,197,94,0.08)' : isYellow ? 'rgba(245,158,11,0.08)' : 'rgba(255,255,255,0.03)'
+                const border = isGreen ? 'rgba(34,197,94,0.25)' : isYellow ? 'rgba(245,158,11,0.25)' : 'rgba(255,255,255,0.08)'
+                const leftBorder = isGreen ? '#22c55e' : isYellow ? '#f59e0b' : '#334155'
+                return (
+                  <div key={i} style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 14,
+                    padding: '14px 16px',
+                    background: bg,
+                    border: `1px solid ${border}`,
+                    borderLeft: `3px solid ${leftBorder}`,
+                    borderRadius: 12,
+                  }}>
+                    <div style={{ flexShrink: 0, textAlign: 'center', minWidth: 52 }}>
+                      <div style={{ fontSize: 18, fontWeight: 900, color }}>{bet.confidence}%</div>
+                      <div style={{ fontSize: 9, color: '#475569', fontWeight: 600, marginTop: 1 }}>уверен.</div>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: 'white', marginBottom: 4 }}>{bet.type}</div>
+                      <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>{bet.reason}</div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
         {/* ── STATS ROW ─────────────────────────────────────────── */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 16 }}>
           {/* Confidence */}
@@ -216,53 +263,6 @@ export default function SharePage() {
             </div>
           </div>
         </div>
-
-        {/* ── EXTRA BETS ───────────────────────────────────────── */}
-        {analysis.extraBets && analysis.extraBets.length > 0 && (
-          <div style={{
-            background: '#1e1e32', border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: 20, padding: '24px', marginBottom: 16,
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 18 }}>
-              <TrendingUp size={18} color="#a78bfa" />
-              <span style={{ color: 'white', fontWeight: 700, fontSize: 16 }}>Дополнительные ставки</span>
-              <span style={{
-                background: 'rgba(124,58,237,0.2)', color: '#a78bfa',
-                border: '1px solid rgba(124,58,237,0.3)',
-                borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 700,
-              }}>{analysis.extraBets.length}</span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {analysis.extraBets.map((bet, i) => {
-                const isGreen = bet.confidence >= 70
-                const isYellow = bet.confidence >= 55 && bet.confidence < 70
-                const color = isGreen ? '#22c55e' : isYellow ? '#f59e0b' : '#94a3b8'
-                const bg = isGreen ? 'rgba(34,197,94,0.08)' : isYellow ? 'rgba(245,158,11,0.08)' : 'rgba(255,255,255,0.03)'
-                const border = isGreen ? 'rgba(34,197,94,0.25)' : isYellow ? 'rgba(245,158,11,0.25)' : 'rgba(255,255,255,0.08)'
-                const leftBorder = isGreen ? '#22c55e' : isYellow ? '#f59e0b' : '#334155'
-                return (
-                  <div key={i} style={{
-                    display: 'flex', alignItems: 'flex-start', gap: 14,
-                    padding: '14px 16px',
-                    background: bg,
-                    border: `1px solid ${border}`,
-                    borderLeft: `3px solid ${leftBorder}`,
-                    borderRadius: 12,
-                  }}>
-                    <div style={{ flexShrink: 0, textAlign: 'center', minWidth: 52 }}>
-                      <div style={{ fontSize: 18, fontWeight: 900, color }}>{bet.confidence}%</div>
-                      <div style={{ fontSize: 9, color: '#475569', fontWeight: 600, marginTop: 1 }}>уверен.</div>
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: 'white', marginBottom: 4 }}>{bet.type}</div>
-                      <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>{bet.reason}</div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
 
         {/* ── REASONS ──────────────────────────────────────────── */}
         {analysis.reasons && analysis.reasons.length > 0 && (
