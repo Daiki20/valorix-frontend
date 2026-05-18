@@ -162,32 +162,76 @@ export async function getUpcomingMatches(limit = 50) {
     .slice(0, limit)
 }
 
+// Fetch live in-game statistics (shots, possession, corners, cards)
+async function fetchLiveStats(gameId) {
+  try {
+    const res = await sstatsGet('/Games/statistics', { gameId })
+    return res?.data || res?.statistics || null
+  } catch { return null }
+}
+
+// Format live stats object/array into readable block for AI prompt
+function formatLiveStats(liveStats, home, away) {
+  if (!liveStats) return null
+  let lines = []
+
+  // Handle array format: [{type, home, away}, ...]
+  if (Array.isArray(liveStats)) {
+    for (const s of liveStats) {
+      const label = s.type || s.name || s.stat
+      if (label) lines.push(`  ${label}: ${home} ${s.home ?? s.homeValue ?? '?'} — ${away} ${s.away ?? s.awayValue ?? '?'}`)
+    }
+  // Handle object format: {homeStats: {...}, awayStats: {...}}
+  } else if (liveStats.homeStats || liveStats.home) {
+    const h = liveStats.homeStats || liveStats.home || {}
+    const a = liveStats.awayStats || liveStats.away || {}
+    const fmt = (label, key) => {
+      if (h[key] != null || a[key] != null) lines.push(`  ${label}: ${home} ${h[key] ?? '?'} — ${away} ${a[key] ?? '?'}`)
+    }
+    fmt('Удары', 'shots'); fmt('Удары в створ', 'shotsOnTarget')
+    fmt('Владение мячом', 'possession'); fmt('Угловые', 'corners')
+    fmt('Фолы', 'fouls'); fmt('Офсайды', 'offsides')
+    fmt('Жёлтые карточки', 'yellowCards'); fmt('Красные карточки', 'redCards')
+  }
+
+  return lines.length ? lines.join('\n') : null
+}
+
 // Main AI analysis for a match
 export async function analyzeMatch(match) {
-
+  const isLive = !!(match.isLive || match.score)
   let stats = null
   let glicko = null
   let realOdds = []
+  let liveStats = null
 
   if (SSTATS_KEY && match.id) {
-    const [statsRes, glickoRes, oddsRes, pariRes] = await Promise.allSettled([
+    const apiCalls = [
       sstatsGet('/Games/last-games-stats', { gameId: match.id }),
       sstatsGet(`/Games/glicko/${match.id}`),
       sstatsGet(`/Odds/${match.id}`),
       getPariOdds(match),
-    ])
+    ]
+    // For live matches — also fetch current in-game stats
+    if (isLive) apiCalls.push(fetchLiveStats(match.id))
+
+    const [statsRes, glickoRes, oddsRes, pariRes, liveStatsRes] = await Promise.allSettled(apiCalls)
     if (statsRes.status === 'fulfilled') stats = statsRes.value
     if (glickoRes.status === 'fulfilled') glicko = glickoRes.value?.data?.glicko
     if (oddsRes.status === 'fulfilled') realOdds = extractBookmakerOdds(oddsRes.value?.data || [])
+    if (liveStatsRes?.status === 'fulfilled' && liveStatsRes.value) liveStats = liveStatsRes.value
 
-    // Add Pari.ru to the list
     const pariOdds = pariRes.status === 'fulfilled' ? pariRes.value : null
     if (pariOdds) realOdds = [pariOdds, ...realOdds]
   }
 
   const context = await getMatchContext(match.home, match.away, match.leagueId).catch(() => ({}))
-  const prompt = buildPrompt(match, stats, glicko, context)
-  const cacheKey = `m_${(match.home||'').toLowerCase().replace(/\s/g,'')}_${(match.away||'').toLowerCase().replace(/\s/g,'')}`
+  const prompt = buildPrompt(match, stats, glicko, context, liveStats)
+
+  // Live matches — no cache (stats change every minute)
+  const cacheKey = isLive ? null :
+    `m_${(match.home||'').toLowerCase().replace(/\s/g,'')}_${(match.away||'').toLowerCase().replace(/\s/g,'')}`
+
   const jsonStr = await callOpenAI(prompt, cacheKey)
   const analysis = parseAnalysis(jsonStr, match)
 
@@ -726,7 +770,7 @@ function extractBookmakerOdds(bookmakers) {
   return result.sort((a, b) => Number(b.odds) - Number(a.odds)).slice(0, 5)
 }
 
-function buildPrompt(match, stats, glicko, ctx = {}) {
+function buildPrompt(match, stats, glicko, ctx = {}, liveStats = null) {
   const homeStats = stats?.home
   const awayStats = stats?.away
   const hasStats = !!(homeStats && awayStats)
@@ -770,6 +814,14 @@ ${match.away} — последние ${awayStats.gamesCount} матчей В Г�
     ? `── КОЭФФИЦИЕНТЫ БУКМЕКЕРОВ ──\nП1 ${odds.home} | X ${odds.draw} | П2 ${odds.away}`
     : ''
 
+  // Live stats block — what's happening RIGHT NOW in the match
+  const isLive = !!(match.isLive || match.score)
+  const liveStatsFormatted = liveStats ? formatLiveStats(liveStats, match.home, match.away) : null
+  const liveBlock = isLive ? `
+── ТЕКУЩИЙ МАТЧ (ЛАЙВ) ──
+  Счёт: ${match.score} | Минута: ${match.minute != null ? match.minute + "'" : '?'}
+${liveStatsFormatted ? `  Статистика матча прямо сейчас:\n${liveStatsFormatted}` : '  Детальная статистика матча недоступна — используй счёт и исторические данные'}` : ''
+
   // Lineups (from RapidAPI)
   const homeLineup = ctx.homeLineup || []
   const awayLineup = ctx.awayLineup || []
@@ -807,7 +859,7 @@ ${as_ ? `${match.away}: ${as_.rank || as_.position} место | ${as_.points} �
 
 МАТЧ: ${match.home} vs ${match.away}
 ЛИГА: ${match.league} | ДАТА: ${match.date}
-
+${liveBlock}
 ${statsBlock}
 ${glickoBlock}
 ${standingsBlock}
@@ -824,7 +876,13 @@ ${dataAvailable
     : `• Данных из базы нет — используй только свои знания об этих командах
 • Чётко отмечай в reasons что данные основаны на общих знаниях, не на свежей статистике`}
 
-ЗАДАЧИ:
+${isLive ? `ЗАДАЧА (ЛАЙВ-АНАЛИЗ):
+Матч идёт — счёт ${match.score} на ${match.minute != null ? match.minute + "'" : '?'} минуте.
+1. Проанализируй ход матча: кто доминирует по ударам, xG, владению? Кто давит?
+2. Оцени вероятность смены счёта — исходя из текущей статистики и исторических данных
+3. Найди лайв-ставки с ценностью: следующий гол, тотал, фора по ходу матча
+4. Verdict — что произойдёт в оставшееся время матча` :
+`ЗАДАЧИ:
 1. Определи фаворита — аргументируй ЦИФРАМИ из данных выше
 2. Fair Odds: рассчитай справедливый коэффициент на основе вероятностей модели
 3. Value: если коэффициенты букмекера выше fair odds — есть value
@@ -834,7 +892,7 @@ ${dataAvailable
    - Тотал голов: если avgScore+avgConceded указывает на явный тренд
    - Фора: если разница классов большая (рейтинг + позиция в таблице)
    - Чистый лист: если avgConceded низкое и состав защиты сильный
-   КАЖДУЮ ставку обосновывай ТОЛЬКО реальными цифрами из данных выше
+   КАЖДУЮ ставку обосновывай ТОЛЬКО реальными цифрами из данных выше`}
 
 Ответь строго в JSON (без markdown):
 {
@@ -929,6 +987,13 @@ function normalizeGame(g) {
   const awayOdds = odds1x2?.odds?.find(o => o.name === 'Away')?.value
   const drawOdds = odds1x2?.odds?.find(o => o.name === 'Draw')?.value
 
+  // Extract live score — try multiple common field paths
+  const homeScore = g.homeScore ?? g.score?.home ?? g.result?.home ?? g.liveData?.homeScore ?? null
+  const awayScore = g.awayScore ?? g.score?.away ?? g.result?.away ?? g.liveData?.awayScore ?? null
+  const scoreStr = homeScore != null && awayScore != null ? `${homeScore}:${awayScore}` : null
+  const minute = g.minute ?? g.elapsed ?? g.status?.minute ?? g.liveData?.minute ?? null
+  const isLive = scoreStr != null || g.status === 'live' || g.isLive === true
+
   return {
     id: g.id,
     flashId: g.flashId,
@@ -942,6 +1007,9 @@ function normalizeGame(g) {
     homeImg: g.homeTeam?.id ? `https://sstats.net/assets/logos/${g.homeTeam.id}.png` : null,
     awayImg: g.awayTeam?.id ? `https://sstats.net/assets/logos/${g.awayTeam.id}.png` : null,
     odds1x2: homeOdds ? { home: homeOdds, draw: drawOdds, away: awayOdds } : null,
+    score: scoreStr,
+    minute,
+    isLive,
     rawData: g,
   }
 }
