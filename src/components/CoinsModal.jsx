@@ -4,9 +4,10 @@ import { coinsApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
 
 const PAYMENT_METHODS = [
-  { id: 'sbp',       label: 'СБП',        desc: 'Система быстрых платежей', emoji: '⚡' },
-  { id: 'bank_card', label: 'Карта',      desc: 'Visa, MasterCard, МИР',    emoji: '💳' },
-  { id: 'sberbank',  label: 'SberPay',    desc: 'Через приложение Сбера',   emoji: '🟢' },
+  { id: 'sbp',           label: 'СБП',     desc: 'Система быстрых платежей', emoji: '⚡' },
+  { id: 'bank_card',     label: 'Карта',   desc: 'Visa, MasterCard, МИР',    emoji: '💳' },
+  { id: 'tinkoff_bank',  label: 'T-Pay',   desc: 'Через приложение Т-Банка', emoji: '🟡' },
+  { id: 'sberbank',      label: 'SberPay', desc: 'Через приложение Сбера',   emoji: '🟢' },
 ]
 
 export default function CoinsModal({ onClose }) {
