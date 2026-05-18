@@ -401,31 +401,33 @@ function MatchRow({ match, onClick, isLiveTab }) {
     >
       <div className="match-row-teams" style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
         <TeamLogo name={match.home} img={match.homeImg} size={32} />
-        <div style={{ minWidth: 0, flex: 1 }}>
-          {/* Одна строка: "Команда А vs Команда Б" — без переносов */}
-          <div style={{
-            fontWeight: 700, fontSize: 13, color: '#1a1a2e',
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          }}>
-            {match.home}
-            <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 400, margin: '0 4px' }}>vs</span>
-            {match.away}
+        {/* Имена + лого гостей в одном блоке — лого не уходит вправо */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{
+              fontWeight: 700, fontSize: 13, color: '#1a1a2e',
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>
+              {match.home}
+              <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 400, margin: '0 4px' }}>vs</span>
+              {match.away}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 3, flexWrap: 'wrap' }}>
+              {match.league && <span style={{ fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap' }}>{match.league}</span>}
+              {confidence && (
+                <span style={{
+                  fontSize: 10, fontWeight: 700, padding: '2px 6px',
+                  borderRadius: 8, background: confidence.bg,
+                  color: confidence.color, border: `1px solid ${confidence.border}`,
+                  whiteSpace: 'nowrap',
+                }}>
+                  {confidence.label}
+                </span>
+              )}
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 3, flexWrap: 'wrap' }}>
-            {match.league && <span style={{ fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap' }}>{match.league}</span>}
-            {confidence && (
-              <span style={{
-                fontSize: 10, fontWeight: 700, padding: '2px 6px',
-                borderRadius: 8, background: confidence.bg,
-                color: confidence.color, border: `1px solid ${confidence.border}`,
-                whiteSpace: 'nowrap',
-              }}>
-                {confidence.label}
-              </span>
-            )}
-          </div>
+          <TeamLogo name={match.away} img={match.awayImg} size={32} />
         </div>
-        <TeamLogo name={match.away} img={match.awayImg} size={32} />
         {isLive && (
           <div style={{ textAlign: 'center', flexShrink: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 3, justifyContent: 'center' }}>
