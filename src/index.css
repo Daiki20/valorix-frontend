@@ -320,8 +320,10 @@ html {
   .mobile-burger { display: flex !important; }
   .nav-username { display: none; }
 
-  /* Убираем двойной паддинг: секция уже имеет свой, container не нужен */
+  /* Убираем двойной паддинг у контейнеров внутри секций */
   .container { padding: 0 !important; }
+  /* Но навбару возвращаем паддинг — у него секция без своего паддинга */
+  nav .container { padding: 0 16px !important; }
 
   .hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
   .hero-title { font-size: 32px !important; letter-spacing: -0.5px !important; }

@@ -73,13 +73,13 @@ export default function MatchPreviewCard() {
             </div>
           </div>
 
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', flexShrink: 0 }}>
             <div style={{
               background: 'linear-gradient(135deg, #eff6ff, #e0e7ff)',
               border: '1px solid rgba(37,99,235,0.15)',
-              borderRadius: 12, padding: '6px 14px',
+              borderRadius: 10, padding: '4px 10px',
             }}>
-              <div style={{ fontSize: 18, fontWeight: 900, color: '#1a1a2e', letterSpacing: 2 }}>VS</div>
+              <div style={{ fontSize: 13, fontWeight: 900, color: '#1a1a2e', letterSpacing: 1 }}>VS</div>
             </div>
           </div>
 
@@ -154,7 +154,8 @@ export default function MatchPreviewCard() {
         </div>
 
         {/* Tabs below extra bets */}
-        <div className="preview-tabs" style={{ display: 'flex', padding: '14px 20px 0', gap: 6 }}>
+        <div style={{ height: 1, background: '#f1f5f9', margin: '14px 0 0' }} />
+        <div className="preview-tabs" style={{ display: 'flex', padding: '12px 20px 0', gap: 6 }}>
           {TABS.map((tab, i) => (
             <button key={i} onClick={() => setActiveTab(i)} style={{
               padding: '7px 14px', borderRadius: 10, border: 'none', cursor: 'pointer',

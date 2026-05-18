@@ -401,18 +401,22 @@ function MatchRow({ match, onClick, isLiveTab }) {
     >
       <div className="match-row-teams" style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
         <TeamLogo name={match.home} img={match.homeImg} size={32} />
-        <div style={{ minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-            <span className="match-row-name" style={{ fontWeight: 700, fontSize: 14, color: '#1a1a2e' }}>{match.home}</span>
-            <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 500 }}>vs</span>
-            <span className="match-row-name" style={{ fontWeight: 700, fontSize: 14, color: '#1a1a2e' }}>{match.away}</span>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          {/* Одна строка: "Команда А vs Команда Б" — без переносов */}
+          <div style={{
+            fontWeight: 700, fontSize: 13, color: '#1a1a2e',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>
+            {match.home}
+            <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 400, margin: '0 4px' }}>vs</span>
+            {match.away}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 3 }}>
-            {match.league && <span style={{ fontSize: 11, color: '#94a3b8' }}>{match.league}</span>}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 3, flexWrap: 'wrap' }}>
+            {match.league && <span style={{ fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap' }}>{match.league}</span>}
             {confidence && (
               <span style={{
-                fontSize: 10, fontWeight: 700, padding: '2px 7px',
-                borderRadius: 10, background: confidence.bg,
+                fontSize: 10, fontWeight: 700, padding: '2px 6px',
+                borderRadius: 8, background: confidence.bg,
                 color: confidence.color, border: `1px solid ${confidence.border}`,
                 whiteSpace: 'nowrap',
               }}>
@@ -421,17 +425,15 @@ function MatchRow({ match, onClick, isLiveTab }) {
             )}
           </div>
         </div>
-        <div style={{ textAlign: 'center', flexShrink: 0, padding: '0 4px', marginLeft: 'auto' }}>
-          {isLive ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', animation: 'pulse-ring 1.2s ease-out infinite' }} />
-                <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444' }}>LIVE</span>
-              </div>
-              {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#1a1a2e' }}>{match.score}</div>}
+        {isLive && (
+          <div style={{ textAlign: 'center', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 3, justifyContent: 'center' }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', animation: 'pulse-ring 1.2s ease-out infinite' }} />
+              <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444' }}>LIVE</span>
             </div>
-          ) : null}
-        </div>
+            {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#1a1a2e', marginTop: 2 }}>{match.score}</div>}
+          </div>
+        )}
         <TeamLogo name={match.away} img={match.awayImg} size={32} />
       </div>
 
