@@ -325,21 +325,15 @@ function buildEsportsPrompt(match, game, ctx = {}) {
   const gameNames = { cs2: 'CS2', dota2: 'Dota 2', valorant: 'Valorant', lol: 'League of Legends' }
   const gameName = gameNames[game] || game
 
-  // Players from screen (OCR)
-  const screenHome = match.homePlayers?.length ? match.homePlayers.join(', ') : null
-  const screenAway = match.awayPlayers?.length ? match.awayPlayers.join(', ') : null
-
-  // Players from Esports Data API (mrcupcake) — real roster
+  // Roster: API data first, OCR fallback
   const apiHomeRoster = ctx.homeRoster?.length
     ? ctx.homeRoster.map(p => p.role ? `${p.name} (${p.role})` : p.name).join(', ')
     : null
   const apiAwayRoster = ctx.awayRoster?.length
     ? ctx.awayRoster.map(p => p.role ? `${p.name} (${p.role})` : p.name).join(', ')
     : null
-
-  // Use API roster if available, otherwise fall back to screen OCR
-  const homeRoster = apiHomeRoster || screenHome
-  const awayRoster = apiAwayRoster || screenAway
+  const homeRoster = apiHomeRoster || (match.homePlayers?.length ? match.homePlayers.join(', ') : null)
+  const awayRoster = apiAwayRoster || (match.awayPlayers?.length ? match.awayPlayers.join(', ') : null)
   const hasRealRoster = !!(apiHomeRoster || apiAwayRoster)
 
   const rosterBlock = (homeRoster || awayRoster)
@@ -348,22 +342,14 @@ ${homeRoster ? `${match.home}: ${homeRoster}` : `${match.home}: состав н�
 ${awayRoster ? `${match.away}: ${awayRoster}` : `${match.away}: состав неизвестен`}`
     : `СОСТАВЫ: данные не получены — используй свои знания о командах`
 
-  // Rankings
   const rankBlock = (ctx.homeRank || ctx.awayRank)
     ? `МИРОВОЙ РЕЙТИНГ: ${match.home} #${ctx.homeRank || '?'} | ${match.away} #${ctx.awayRank || '?'}`
     : ''
 
-  // Recent results from Esports Data API
   const resultsBlock = (ctx.homeResults || ctx.awayResults)
-    ? `ПОСЛЕДНИЕ РЕЗУЛЬТАТЫ (реальные данные):
+    ? `ПОСЛЕДНИЕ РЕЗУЛЬТАТЫ:
 ${ctx.homeResults ? `${match.home}: ${ctx.homeResults}` : ''}
 ${ctx.awayResults ? `${match.away}: ${ctx.awayResults}` : ''}`.trim()
-    : ''
-
-  // Dota 2 hero meta from OpenDota
-  const metaBlock = match.dotaMeta?.length
-    ? `ТЕКУЩАЯ МЕТА Dota 2 (топ герои по про-винрейту):
-${match.dotaMeta.map(h => `${h.name}: ${h.winRate}% winrate (${h.pickRate} пиков)`).join('\n')}`
     : ''
 
   const oddsBlock = match.odds1x2
@@ -373,10 +359,84 @@ ${match.dotaMeta.map(h => `${h.name}: ${h.winRate}% winrate (${h.pickRate} пи�
   const scoreBlock = isLive ? `ТЕКУЩИЙ СЧЁТ: ${match.score}` : ''
 
   const dataQuality = hasRealRoster && (ctx.homeResults || ctx.awayResults)
-    ? 'Используй реальные данные выше как основу анализа — они актуальнее твоих знаний.'
-    : 'Реальные данные API недоступны — используй свои знания о командах, но будь честен если неуверен.'
+    ? '✓ Реальные данные получены — используй их как основу, они актуальнее твоих знаний.'
+    : '⚠ Реальных данных из API нет — используй свои знания, но честно укажи это в dataWarning.'
 
-  return `Ты профессиональный аналитик киберспорта с глубокими знаниями про сцену ${gameName}. Отвечай СТРОГО по-русски.
+  // ── Game-specific analysis block ──────────────────────────────────────────
+  let gameSpecificBlock = ''
+  let extraBetsInstruction = ''
+
+  if (game === 'cs2') {
+    gameSpecificBlock = `
+СПЕЦИФИКА CS2 — ОБЯЗАТЕЛЬНО проанализируй:
+1. КАРТЫ: у каждой команды есть пул карт. Какие карты фавориты ${match.home}? Какие у ${match.away}? Кто выиграет вето?
+2. СТОРОНЫ: кто сильнее за CT, кто за T? Это влияет на тотал раундов (CT-сильные команды = меньше раундов на своей половине)
+3. ПИСТОЛЕТНЫЕ РАУНДЫ: кто статистически выигрывает пистолет? Победа пистолета = экономическое преимущество на 2-3 раунда
+4. AWP-ДУЭЛЬ: сравни снайперов обеих команд — это ключевое противостояние в CS2
+5. КЛЮЧЕВЫЕ ИГРОКИ: кто главный fragmaker? Кто IGL (капитан, раздаёт тактику)? Кто clutch-игрок?
+6. ЭКОНОМИКА: если команда проигрывает — как управляет форс-байами и эко-раундами?
+7. ФОРМА: серия результатов из блока выше — идёт ли кто-то на волне побед?`
+
+    extraBetsInstruction = `ДОПОЛНИТЕЛЬНЫЕ СТАВКИ для CS2 (выбери 3-4 самые обоснованные):
+- Тотал карт в серии (больше/меньше 2.5) — на основе формы команд
+- Победитель первой карты — на основе пула карт и вето
+- Тотал раундов на карте (больше/меньше 26.5) — CT-сильные команды = меньше раундов
+- Победа на пистолетном раунде — если одна команда статистически доминирует
+- Овертайм на карте — если команды примерно равны
+- Handicap по картам — если одна команда явный фаворит`
+
+  } else if (game === 'dota2') {
+    const metaBlock = match.dotaMeta?.length
+      ? `ТЕКУЩАЯ МЕТА (топ герои по про-винрейту):\n${match.dotaMeta.map(h => `${h.name}: ${h.winRate}% WR (${h.pickRate} пиков)`).join('\n')}`
+      : ''
+
+    gameSpecificBlock = `
+${metaBlock}
+
+СПЕЦИФИКА DOTA 2 — ОБЯЗАТЕЛЬНО проанализируй:
+1. СИГНАТУРНЫЕ ГЕРОИ: кто на чём играет? Какие герои у каждого игрока — топ пики?
+2. МЕТА-СООТВЕТСТВИЕ: соотносятся ли сигнатурки с текущей метой выше? Кому мета помогает?
+3. ДРАФТ-СТИЛЬ: кто предпочитает агрессивный ранний драфт, кто лейт?
+4. КЛЮЧЕВЫЕ ИГРОКИ: кто carry, кто поддержка? Кто "несёт" команду?
+5. СЕРИЯ МАТЧЕЙ: сколько карт? Кто лучше держит длинные серии?`
+
+    extraBetsInstruction = `ДОПОЛНИТЕЛЬНЫЕ СТАВКИ для Dota 2:
+- Тотал карт в серии (больше/меньше 2.5)
+- Первая кровь — какая команда агрессивнее в начале?
+- Тотал убийств за матч (больше/меньше X)
+- Взятие первого Рошана
+- Тотал башен за матч`
+
+  } else if (game === 'valorant') {
+    gameSpecificBlock = `
+СПЕЦИФИКА VALORANT — ОБЯЗАТЕЛЬНО проанализируй:
+1. АГЕНТЫ: сигнатурные агенты каждого игрока — Duelists, Controllers, Initiators, Sentinels
+2. КАРТЫ: пул карт и вето — кто на каких картах доминирует?
+3. СТОРОНЫ: атака vs защита — кто сильнее на атаке, кто на защите?
+4. КЛЮЧЕВЫЕ ИГРОКИ: кто топ-фраггер, кто IGL?`
+
+    extraBetsInstruction = `ДОПОЛНИТЕЛЬНЫЕ СТАВКИ для Valorant:
+- Тотал карт (больше/меньше 2.5)
+- Победитель первой карты
+- Тотал раундов на карте
+- Первая кровь`
+
+  } else if (game === 'lol') {
+    gameSpecificBlock = `
+СПЕЦИФИКА LoL — ОБЯЗАТЕЛЬНО проанализируй:
+1. РОЛИ И ЧЕМПИОНЫ: сигнатурные чемпионы по ролям (Top, Jungle, Mid, ADC, Support)
+2. МЕТА: какие чемпионы сильны в текущем патче? Кому это выгодно?
+3. СТИЛЬ: ранняя агрессия vs поздняя игра — кто выиграет при затяжной партии?
+4. КЛЮЧЕВЫЕ ДУЭЛИ: Mid vs Mid, Jungle vs Jungle — это определяет игру`
+
+    extraBetsInstruction = `ДОПОЛНИТЕЛЬНЫЕ СТАВКИ для LoL:
+- Тотал карт (больше/меньше 2.5)
+- Первая кровь
+- Тотал убийств за матч
+- Победитель первого дракона/барона`
+  }
+
+  return `Ты профессиональный аналитик киберспорта, эксперт по ${gameName}. Отвечай СТРОГО по-русски.
 
 МАТЧ: ${match.home} vs ${match.away}
 ТУРНИР: ${match.league || 'неизвестно'}
@@ -387,24 +447,15 @@ ${rosterBlock}
 
 ${resultsBlock}
 
-${metaBlock}
-
 ${oddsBlock}
 
 ${dataQuality}
+${gameSpecificBlock}
 
-ОБЯЗАТЕЛЬНО включи в анализ:
-1. Конкретных игроков каждой команды по имени — их роли, сигнатурные герои (Dota) или специализацию (CS2/Valorant)
-2. Как сигнатурки/стиль игры соотносятся с текущей метой — кому мета помогает
-3. Форму команд по последним результатам — серии побед/поражений, против каких соперников
-4. Стиль игры каждой команды и историческое противостояние
-5. ЕСЛИ данных о конкретном игроке нет — укажи это в dataWarning, но анализ всё равно дай
-6. НЕ пиши общие фразы — только конкретика с именами и фактами
+НЕ пиши общие фразы — только конкретика с именами игроков и реальными фактами.
+ЕСЛИ данных по игроку нет — не выдумывай, укажи в dataWarning.
 
-Дополнительные ставки:
-- Dota 2: тотал карт, первая кровь, тотал убийств, взятие Рошана, тотал башен за матч
-- CS2: тотал раундов, победа на пистолете, тотал карт, овертайм на карте
-- Valorant/LoL: тотал карт, первая кровь, тотал убийств
+${extraBetsInstruction}
 
 Ответь строго в JSON:
 {
