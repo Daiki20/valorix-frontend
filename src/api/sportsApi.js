@@ -123,7 +123,9 @@ export async function getLiveMatches() {
     const results = await Promise.all([
       sstatsGet('/Games/list', { live: true, limit: 20 }).catch(() => ({ data: [] })),
     ])
-    return results.flatMap(r => r.data || []).map(normalizeGame)
+    const raw = results.flatMap(r => r.data || [])
+    if (raw.length > 0) console.log('[sstats live rawData sample]', JSON.stringify(raw[0], null, 2))
+    return raw.map(normalizeGame)
   } catch { return [] }
 }
 
@@ -876,12 +878,28 @@ ${dataAvailable
     : `• Данных из базы нет — используй только свои знания об этих командах
 • Чётко отмечай в reasons что данные основаны на общих знаниях, не на свежей статистике`}
 
-${isLive ? `ЗАДАЧА (ЛАЙВ-АНАЛИЗ):
-Матч идёт — счёт ${match.score} на ${match.minute != null ? match.minute + "'" : '?'} минуте.
-1. Проанализируй ход матча: кто доминирует по ударам, xG, владению? Кто давит?
-2. Оцени вероятность смены счёта — исходя из текущей статистики и исторических данных
-3. Найди лайв-ставки с ценностью: следующий гол, тотал, фора по ходу матча
-4. Verdict — что произойдёт в оставшееся время матча` :
+${isLive ? (() => {
+    const minute = match.minute != null ? Number(match.minute) : null
+    const remaining = minute != null ? Math.max(0, 90 - minute) : null
+    const scoreParts = (match.score || '0:0').split(':').map(Number)
+    const totalSoFar = (scoreParts[0] || 0) + (scoreParts[1] || 0)
+    return `ЗАДАЧА (ЛАЙВ-АНАЛИЗ):
+Матч идёт — счёт ${match.score} на ${minute != null ? minute + "'" : '?'} минуте.
+Осталось примерно ${remaining != null ? remaining : '?'} минут.
+Голов забито: ${totalSoFar}.
+
+КРИТИЧЕСКИ ВАЖНО для тоталов:
+- Чтобы прошёл тотал БОЛЬШЕ 2.5 нужно ещё ${Math.max(0, 3 - totalSoFar)} гол(а)
+- Чтобы прошёл тотал БОЛЬШЕ 1.5 нужно ещё ${Math.max(0, 2 - totalSoFar)} гол(а)
+- Чтобы прошёл тотал БОЛЬШЕ 0.5 нужно ещё ${Math.max(0, 1 - totalSoFar)} гол(а)
+- За ${remaining != null ? remaining : '?'} минут вероятность ${remaining != null && remaining < 30 ? 'забить 3+ голов ОЧЕНЬ НИЗКАЯ — не рекомендуй тотал 2.5' : 'забить голов снижается с каждой минутой'}
+- ЗАПРЕЩЕНО рекомендовать тотал, для которого нужно больше голов чем реалистично за оставшееся время
+
+1. Кто сейчас доминирует? (удары, владение, угловые из блока выше)
+2. Вероятность гола в оставшееся время — кто давит?
+3. Лайв-ставки: следующий гол, реалистичный тотал, фора. Только то что возможно за ${remaining != null ? remaining : '?'} минут.
+4. Verdict — чем закончится матч`
+  })() :
 `ЗАДАЧИ:
 1. Определи фаворита — аргументируй ЦИФРАМИ из данных выше
 2. Fair Odds: рассчитай справедливый коэффициент на основе вероятностей модели
