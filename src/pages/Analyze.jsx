@@ -392,44 +392,49 @@ function MatchRow({ match, onClick, isLiveTab }) {
       onMouseLeave={() => setHovered(false)}
       style={{
         padding: '16px 20px', cursor: 'pointer',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+        display: 'flex', alignItems: 'center', gap: 12,
         transition: 'all 0.15s',
         transform: hovered ? 'translateX(4px)' : 'none',
         border: isLive ? '1.5px solid rgba(239,68,68,0.3)' : hovered ? '1.5px solid #2563eb' : '1.5px solid transparent',
         background: isLive ? 'rgba(254,242,242,0.5)' : undefined,
       }}
     >
-      <div className="match-row-teams" style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
+      {/* ЛЕВАЯ ГРУППА: логотипы + имена — компактная, не растягивается */}
+      <div className="match-row-teams" style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '0 1 auto', minWidth: 0 }}>
         <TeamLogo name={match.home} img={match.homeImg} size={32} />
-        {/* Имена + лого гостей в одном блоке — лого не уходит вправо */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <div style={{
-              fontWeight: 700, fontSize: 13, color: '#1a1a2e',
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }}>
-              {match.home}
-              <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 400, margin: '0 4px' }}>vs</span>
-              {match.away}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 3, flexWrap: 'wrap' }}>
-              {match.league && <span style={{ fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap' }}>{match.league}</span>}
-              {confidence && (
-                <span style={{
-                  fontSize: 10, fontWeight: 700, padding: '2px 6px',
-                  borderRadius: 8, background: confidence.bg,
-                  color: confidence.color, border: `1px solid ${confidence.border}`,
-                  whiteSpace: 'nowrap',
-                }}>
-                  {confidence.label}
-                </span>
-              )}
-            </div>
+        <div style={{ minWidth: 0, overflow: 'hidden' }}>
+          <div style={{
+            fontWeight: 700, fontSize: 13, color: '#1a1a2e',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>
+            {match.home}
+            <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 400, margin: '0 4px' }}>vs</span>
+            {match.away}
           </div>
-          <TeamLogo name={match.away} img={match.awayImg} size={32} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 3, flexWrap: 'wrap' }}>
+            {match.league && <span style={{ fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap' }}>{match.league}</span>}
+            {confidence && (
+              <span style={{
+                fontSize: 10, fontWeight: 700, padding: '2px 6px',
+                borderRadius: 8, background: confidence.bg,
+                color: confidence.color, border: `1px solid ${confidence.border}`,
+                whiteSpace: 'nowrap',
+              }}>
+                {confidence.label}
+              </span>
+            )}
+          </div>
         </div>
+        <TeamLogo name={match.away} img={match.awayImg} size={32} />
+      </div>
+
+      {/* Распорка — занимает всё свободное пространство между группами */}
+      <div style={{ flex: 1 }} />
+
+      {/* ПРАВАЯ ГРУППА: LIVE-счёт, коэфы, кнопка — прижата к правому краю */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
         {isLive && (
-          <div style={{ textAlign: 'center', flexShrink: 0 }}>
+          <div style={{ textAlign: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 3, justifyContent: 'center' }}>
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', animation: 'pulse-ring 1.2s ease-out infinite' }} />
               <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444' }}>LIVE</span>
@@ -437,32 +442,32 @@ function MatchRow({ match, onClick, isLiveTab }) {
             {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#1a1a2e', marginTop: 2 }}>{match.score}</div>}
           </div>
         )}
-      </div>
 
-      {odds && !isLive && (
-        <div className="match-row-odds" style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-          {[{ label: '1', val: odds.home }, { label: 'X', val: odds.draw }, { label: '2', val: odds.away }].map(o => (
-            <div key={o.label} style={{
-              textAlign: 'center', background: '#f8fafc',
-              border: '1px solid #e2e8f0', borderRadius: 8, padding: '4px 7px', minWidth: 40,
-            }}>
-              <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600 }}>{o.label}</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e' }}>{o.val}</div>
-            </div>
-          ))}
+        {odds && !isLive && (
+          <div className="match-row-odds" style={{ display: 'flex', gap: 4 }}>
+            {[{ label: '1', val: odds.home }, { label: 'X', val: odds.draw }, { label: '2', val: odds.away }].map(o => (
+              <div key={o.label} style={{
+                textAlign: 'center', background: '#f8fafc',
+                border: '1px solid #e2e8f0', borderRadius: 8, padding: '4px 7px', minWidth: 40,
+              }}>
+                <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600 }}>{o.label}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e' }}>{o.val}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="match-row-btn" style={{
+          background: hovered ? '#1a1a2e' : '#f1f5f9',
+          color: hovered ? 'white' : '#64748b',
+          borderRadius: 20, padding: '6px 12px',
+          fontSize: 13, fontWeight: 600,
+          display: 'flex', alignItems: 'center', gap: 5,
+          transition: 'all 0.15s',
+        }}>
+          <Zap size={13} /> Анализ
         </div>
-      )}
-
-      <div className="match-row-btn" style={{
-        background: hovered ? '#1a1a2e' : '#f1f5f9',
-        color: hovered ? 'white' : '#64748b',
-        borderRadius: 20, padding: '6px 12px',
-        fontSize: 13, fontWeight: 600,
-        display: 'flex', alignItems: 'center', gap: 5,
-        transition: 'all 0.15s', flexShrink: 0,
-      }}>
-        <Zap size={13} /> Анализ
-      </div>
+      </div>{/* end right group */}
     </div>
   )
 }
