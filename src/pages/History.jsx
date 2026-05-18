@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Zap, Clock, TrendingUp, Search } from 'lucide-react'
+import { ArrowLeft, Zap, Clock, TrendingUp, Search, X } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import { authApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
+import AnalysisResult from '../components/AnalysisResult'
 
 export default function History() {
   const { user } = useAuth()
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selected, setSelected] = useState(null)
 
   useEffect(() => {
     authApi.history()
@@ -65,15 +67,58 @@ export default function History() {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {history.map(item => <HistoryRow key={item.id} item={item} />)}
+            {history.map(item => <HistoryRow key={item.id} item={item} onClick={() => setSelected(item)} />)}
           </div>
         )}
       </div>
+
+      {selected && <AnalysisModal item={selected} onClose={() => setSelected(null)} />}
     </div>
   )
 }
 
-function HistoryRow({ item }) {
+function AnalysisModal({ item, onClose }) {
+  let result = {}
+  try { result = JSON.parse(item.result || '{}') } catch {}
+  const analysis = result.matches?.[0] || result
+  const match = {
+    home: item.match_home,
+    away: item.match_away,
+    league: item.league || '',
+    date: new Date(item.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
+  }
+
+  return (
+    <>
+      <div onClick={onClose} style={{
+        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
+        zIndex: 200, backdropFilter: 'blur(4px)',
+      }} />
+      <div style={{
+        position: 'fixed', top: 0, right: 0, bottom: 0,
+        width: '100%', maxWidth: 640, zIndex: 201,
+        overflowY: 'auto', background: '#f0f2f5', padding: '24px 20px',
+        boxShadow: '-8px 0 32px rgba(0,0,0,0.15)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div style={{ fontWeight: 800, fontSize: 18, color: '#1a1a2e' }}>
+            {item.match_home} — {item.match_away}
+          </div>
+          <button onClick={onClose} style={{
+            background: '#e2e8f0', border: 'none', borderRadius: '50%',
+            width: 36, height: 36, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            <X size={18} color="#64748b" />
+          </button>
+        </div>
+        <AnalysisResult match={match} analysis={analysis} shareToken={item.share_token} />
+      </div>
+    </>
+  )
+}
+
+function HistoryRow({ item, onClick }) {
   let result = {}
   try { result = JSON.parse(item.result || '{}') } catch {}
 
@@ -87,7 +132,10 @@ function HistoryRow({ item }) {
   const verdictColor = v.includes('ничья') ? '#f59e0b' : (v.includes('победа') || verdict) ? '#2563eb' : '#64748b'
 
   return (
-    <div className="card" style={{ padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16 }}>
+    <div className="card" onClick={onClick} style={{ padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16, cursor: 'pointer', transition: 'box-shadow 0.15s' }}
+      onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(37,99,235,0.12)'}
+      onMouseLeave={e => e.currentTarget.style.boxShadow = ''}
+    >
       <div style={{
         width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
         background: 'linear-gradient(135deg, #eff6ff, #e0e7ff)',
