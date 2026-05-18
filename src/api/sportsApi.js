@@ -125,7 +125,8 @@ export async function getLiveMatches() {
     ])
     const raw = results.flatMap(r => r.data || [])
     if (raw.length > 0) console.log('[sstats live rawData sample]', JSON.stringify(raw[0], null, 2))
-    return raw.map(normalizeGame)
+    // Force isLive: true for all live-tab matches so cache is always skipped
+    return raw.map(g => ({ ...normalizeGame(g), isLive: true }))
   } catch { return [] }
 }
 
@@ -172,6 +173,26 @@ async function fetchLiveStats(gameId) {
   } catch { return null }
 }
 
+// Fetch single game data — returns live score/minute for ongoing matches
+async function fetchLiveScore(gameId) {
+  try {
+    const res = await sstatsGet(`/Games/${gameId}`)
+    const g = res?.data || res
+    if (!g) return null
+    console.log('[sstats single game]', JSON.stringify(g, null, 2))
+    const homeScore = g.homeScore ?? g.score?.home ?? g.result?.home ?? g.liveData?.homeScore
+      ?? g.homeGoals ?? g.home_score ?? g.scoreHome ?? null
+    const awayScore = g.awayScore ?? g.score?.away ?? g.result?.away ?? g.liveData?.awayScore
+      ?? g.awayGoals ?? g.away_score ?? g.scoreAway ?? null
+    const minute = g.minute ?? g.elapsed ?? g.status?.minute ?? g.liveData?.minute
+      ?? g.matchMinute ?? g.currentMinute ?? null
+    if (homeScore != null && awayScore != null) {
+      return { score: `${homeScore}:${awayScore}`, minute }
+    }
+    return null
+  } catch { return null }
+}
+
 // Format live stats object/array into readable block for AI prompt
 function formatLiveStats(liveStats, home, away) {
   if (!liveStats) return null
@@ -200,7 +221,8 @@ function formatLiveStats(liveStats, home, away) {
 }
 
 // Main AI analysis for a match
-export async function analyzeMatch(match) {
+export async function analyzeMatch(matchInput) {
+  let match = { ...matchInput }
   const isLive = !!(match.isLive || match.score)
   let stats = null
   let glicko = null
@@ -214,14 +236,23 @@ export async function analyzeMatch(match) {
       sstatsGet(`/Odds/${match.id}`),
       getPariOdds(match),
     ]
-    // For live matches — also fetch current in-game stats
-    if (isLive) apiCalls.push(fetchLiveStats(match.id))
+    // For live matches — also fetch current score + in-game stats
+    if (isLive) {
+      apiCalls.push(fetchLiveScore(match.id))
+      apiCalls.push(fetchLiveStats(match.id))
+    }
 
-    const [statsRes, glickoRes, oddsRes, pariRes, liveStatsRes] = await Promise.allSettled(apiCalls)
+    const [statsRes, glickoRes, oddsRes, pariRes, liveScoreRes, liveStatsRes] = await Promise.allSettled(apiCalls)
     if (statsRes.status === 'fulfilled') stats = statsRes.value
     if (glickoRes.status === 'fulfilled') glicko = glickoRes.value?.data?.glicko
     if (oddsRes.status === 'fulfilled') realOdds = extractBookmakerOdds(oddsRes.value?.data || [])
     if (liveStatsRes?.status === 'fulfilled' && liveStatsRes.value) liveStats = liveStatsRes.value
+
+    // Override score/minute from single-game fetch if we got it
+    if (liveScoreRes?.status === 'fulfilled' && liveScoreRes.value) {
+      const ls = liveScoreRes.value
+      if (ls.score) match = { ...match, score: ls.score, minute: ls.minute ?? match.minute }
+    }
 
     const pariOdds = pariRes.status === 'fulfilled' ? pariRes.value : null
     if (pariOdds) realOdds = [pariOdds, ...realOdds]
