@@ -136,25 +136,27 @@ function ExpressLabel({ text, color1, color2, border, bg }) {
   )
 }
 
-function SummaryModal({ summary, cfg, onClose }) {
+function SummaryModal({ picks, cfg, onClose }) {
   return (
     <div onClick={onClose} style={{
       position: 'fixed', inset: 0, zIndex: 1000,
       background: 'rgba(10,12,30,0.65)', backdropFilter: 'blur(6px)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: 20, animation: 'fadeInUp 0.2s ease',
+      overflowY: 'auto',
     }}>
       <div onClick={e => e.stopPropagation()} style={{
-        background: 'white', borderRadius: 24, maxWidth: 480, width: '100%',
+        background: 'white', borderRadius: 24, maxWidth: 520, width: '100%',
         boxShadow: '0 32px 80px rgba(0,0,0,0.25)',
         overflow: 'hidden', position: 'relative',
+        margin: 'auto',
       }}>
         {/* Top gradient bar */}
         <div style={{ height: 4, background: cfg.accentLine }} />
 
         <div style={{ padding: '28px 28px 24px' }}>
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{
                 width: 44, height: 44, borderRadius: 14,
@@ -178,15 +180,44 @@ function SummaryModal({ summary, cfg, onClose }) {
             </button>
           </div>
 
-          {/* Content */}
-          <div style={{
-            background: 'linear-gradient(135deg, #f8faff, #f0f4ff)',
-            border: '1px solid #e0e7ff',
-            borderRadius: 14, padding: '18px 20px',
-          }}>
-            <div style={{ fontSize: 14, color: '#1e293b', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>
-              {summary}
-            </div>
+          {/* Per-pick reasoning */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {picks.map((pick, i) => (
+              <div key={i} style={{
+                borderRadius: 14, overflow: 'hidden',
+                border: `1px solid ${cfg.border}`,
+              }}>
+                {/* Pick header */}
+                <div style={{
+                  background: cfg.bg, padding: '10px 16px',
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  borderBottom: `1px solid ${cfg.border}`,
+                }}>
+                  <div style={{
+                    width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+                    background: cfg.gradient,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 11, fontWeight: 800, color: 'white',
+                  }}>
+                    {i + 1}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 800, fontSize: 13, color: '#1a1a2e' }}>
+                      {pick.home} — {pick.away}
+                    </div>
+                    <div style={{ fontSize: 11, color: cfg.oddsColor, fontWeight: 700, marginTop: 1 }}>
+                      {pick.prediction} · ×{pick.odds}
+                    </div>
+                  </div>
+                </div>
+                {/* Reasoning */}
+                <div style={{ padding: '12px 16px', background: 'white' }}>
+                  <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
+                    {pick.reasoning || 'Обоснование недоступно'}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div style={{
@@ -384,7 +415,7 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
         )}
       </div>
 
-      {showSummary && <SummaryModal summary={data.summary} cfg={cfg} onClose={() => setShowSummary(false)} />}
+      {showSummary && <SummaryModal picks={data.picks || []} cfg={cfg} onClose={() => setShowSummary(false)} />}
     </div>
   )
 }
