@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ToastProvider } from './context/ToastContext'
+import ErrorBoundary from './components/ErrorBoundary'
 import Landing from './pages/Landing'
 import Analyze from './pages/Analyze'
 import UploadScreen from './pages/UploadScreen'
@@ -15,6 +16,7 @@ import SharePage from './pages/SharePage'
 
 export default function App() {
   return (
+    <ErrorBoundary>
     <AuthProvider>
       <ToastProvider>
         <BrowserRouter>
@@ -34,5 +36,6 @@ export default function App() {
         </BrowserRouter>
       </ToastProvider>
     </AuthProvider>
+    </ErrorBoundary>
   )
 }

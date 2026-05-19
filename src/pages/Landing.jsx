@@ -15,7 +15,9 @@ export default function Landing() {
   const [showAuth, setShowAuth] = useState(false)
 
   useEffect(() => {
-    if (user && !localStorage.getItem('valorix_onboarded')) {
+    let onboarded = false
+    try { onboarded = !!localStorage.getItem('valorix_onboarded') } catch {}
+    if (user && !onboarded) {
       const t = setTimeout(() => setShowOnboarding(true), 600)
       return () => clearTimeout(t)
     }

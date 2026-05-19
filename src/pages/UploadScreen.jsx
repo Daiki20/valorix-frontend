@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { ArrowLeft, Upload, X, Zap, AlertCircle, Lock } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
@@ -338,11 +338,11 @@ function AnalysisSteps() {
   ]
   const [step, setStep] = useState(0)
 
-  useState(() => {
+  useEffect(() => {
     const timings = [1500, 3000, 5000, 8000]
     const timers = timings.map((t, i) => setTimeout(() => setStep(i + 1), t))
     return () => timers.forEach(clearTimeout)
-  })
+  }, [])
 
   return (
     <div style={{ padding: '24px 0' }}>

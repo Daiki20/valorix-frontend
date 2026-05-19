@@ -25,7 +25,7 @@ export default function CoinsModal({ onClose }) {
     setLoading(true)
     try {
       const { confirmationUrl, paymentId } = await coinsApi.createPayment(selectedId, paymentMethod)
-      localStorage.setItem('valorix_pending_payment', paymentId)
+      try { localStorage.setItem('valorix_pending_payment', paymentId) } catch {}
       window.location.href = confirmationUrl
     } catch (err) {
       alert(err.message)

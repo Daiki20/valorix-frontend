@@ -77,7 +77,7 @@ export default function AuthModal({ onClose }) {
         saveAuth(data)
         fireConfetti()
         toast.success('Email подтверждён! Вам начислено 38 монет')
-        localStorage.removeItem('valorix_onboarded')
+        try { localStorage.removeItem('valorix_onboarded') } catch {}
         onClose()
         return
       }
@@ -100,7 +100,7 @@ export default function AuthModal({ onClose }) {
         saveAuth(data)
         fireConfetti()
         toast.success('Добро пожаловать! Вам начислено 38 монет')
-        localStorage.removeItem('valorix_onboarded')
+        try { localStorage.removeItem('valorix_onboarded') } catch {}
         onClose()
       }
     } catch (err) {

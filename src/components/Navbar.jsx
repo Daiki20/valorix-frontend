@@ -163,7 +163,7 @@ function UserMenu({ user, show, onToggle, onClose, onLogout }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 11, fontWeight: 800,
         }}>
-          {user.username[0].toUpperCase()}
+          {(user.username || user.email || '?')[0].toUpperCase()}
         </div>
         <span className="nav-username">{user.username}</span>
       </button>

@@ -8,21 +8,22 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const token = localStorage.getItem('valorix_token')
+    let token
+    try { token = localStorage.getItem('valorix_token') } catch { setLoading(false); return }
     if (!token) { setLoading(false); return }
     authApi.me()
       .then(data => setUser(data.user))
-      .catch(() => localStorage.removeItem('valorix_token'))
+      .catch(() => { try { localStorage.removeItem('valorix_token') } catch {} })
       .finally(() => setLoading(false))
   }, [])
 
   function saveAuth({ token, user }) {
-    localStorage.setItem('valorix_token', token)
+    try { localStorage.setItem('valorix_token', token) } catch {}
     setUser(user)
   }
 
   function logout() {
-    localStorage.removeItem('valorix_token')
+    try { localStorage.removeItem('valorix_token') } catch {}
     setUser(null)
   }
 

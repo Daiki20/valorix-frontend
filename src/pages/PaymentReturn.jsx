@@ -14,7 +14,9 @@ export default function PaymentReturn() {
   const toast = useToast()
 
   useEffect(() => {
-    const paymentId = searchParams.get('payment_id') || localStorage.getItem('valorix_pending_payment')
+    let storedId
+    try { storedId = localStorage.getItem('valorix_pending_payment') } catch {}
+    const paymentId = searchParams.get('payment_id') || storedId
     if (!paymentId) { setStatus('failed'); return }
 
     coinsApi.verifyPayment(paymentId)
@@ -22,7 +24,7 @@ export default function PaymentReturn() {
         if (data.status === 'credited' || data.status === 'already_credited') {
           setCoins(data.coins)
           updateCoins(data.coins)
-          localStorage.removeItem('valorix_pending_payment')
+          try { localStorage.removeItem('valorix_pending_payment') } catch {}
           setStatus('credited')
           toast.success(`Монеты зачислены! Баланс: ${data.coins}`)
         } else {
