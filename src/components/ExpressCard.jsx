@@ -38,6 +38,7 @@ const RESPONSIVE_STYLES = `
     flex-direction: row;
     gap: 16px;
     margin-bottom: 24px;
+    align-items: flex-start;
   }
   .express-col {
     flex: 1;
