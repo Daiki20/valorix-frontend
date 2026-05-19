@@ -38,7 +38,7 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
   const cfg = CONFIG[type]
 
   if (!data) return (
-    <div className="card" style={{ padding: '20px 24px', flex: 1 }}>
+    <div className="card" style={{ padding: '20px 24px' }}>
       <div className="skeleton" style={{ height: 18, width: 160, marginBottom: 16 }} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {[1, 2].map(i => <div key={i} className="skeleton" style={{ height: 52, borderRadius: 10 }} />)}
@@ -65,7 +65,7 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
 
   return (
     <div className="card" style={{
-      padding: '20px 24px', flex: 1,
+      padding: '20px 24px',
       border: `1.5px solid ${cfg.border}`,
       background: cfg.bg,
       position: 'relative', overflow: 'hidden',
@@ -243,7 +243,7 @@ export default function ExpressCard({ onAuthRequired }) {
   if (error || (!standard && !high)) return null
 
   return (
-    <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 }}>
       <SingleExpressCard data={standard} type="standard" onAuthRequired={onAuthRequired} onUpdate={handleUpdate} />
       <SingleExpressCard data={high} type="high" onAuthRequired={onAuthRequired} onUpdate={handleUpdate} />
     </div>
