@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Zap, LogOut, User, History, Menu, X, Shield } from 'lucide-react'
+import { Zap, LogOut, User, History, Menu, X, Shield, BarChart2, Upload } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import AuthModal from './AuthModal'
@@ -32,11 +32,15 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop nav links */}
-          <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-            <a href="/#how" style={{ color: '#4b5563', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
-              Как это работает?
+          <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <NavPill to="/" icon={<Zap size={14} color="#2563eb" fill="#2563eb" />} label="Экспресс" />
+            <NavPill to="/analyze" icon={<BarChart2 size={14} color="#7c3aed" />} label="Анализ" accent="#7c3aed" accentBg="#f5f3ff" />
+            <NavPill to="/upload" icon={<Upload size={14} color="#0891b2" />} label="Скриншот" accent="#0891b2" accentBg="#ecfeff" />
+            <div style={{ width: 1, height: 20, background: '#e2e8f0', margin: '0 8px' }} />
+            <a href="/#how" style={{ color: '#4b5563', textDecoration: 'none', fontSize: 13, fontWeight: 500 }}>
+              Как работает?
             </a>
-            <a href="/#faq" style={{ color: '#4b5563', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
+            <a href="/#faq" style={{ color: '#4b5563', textDecoration: 'none', fontSize: 13, fontWeight: 500 }}>
               FAQ
             </a>
           </div>
@@ -85,6 +89,12 @@ export default function Navbar() {
             padding: '16px 24px 20px',
             display: 'flex', flexDirection: 'column', gap: 12,
           }}>
+            <div style={{ display: 'flex', gap: 8, paddingBottom: 4 }}>
+              <NavPill to="/" icon={<Zap size={14} color="#2563eb" fill="#2563eb" />} label="Экспресс" onClick={() => setMobileOpen(false)} />
+              <NavPill to="/analyze" icon={<BarChart2 size={14} color="#7c3aed" />} label="Анализ" accent="#7c3aed" accentBg="#f5f3ff" onClick={() => setMobileOpen(false)} />
+              <NavPill to="/upload" icon={<Upload size={14} color="#0891b2" />} label="Скриншот" accent="#0891b2" accentBg="#ecfeff" onClick={() => setMobileOpen(false)} />
+            </div>
+            <div style={{ height: 1, background: '#e2e8f0', margin: '4px 0' }} />
             <a href="/#how" onClick={() => setMobileOpen(false)} style={{ color: '#4b5563', textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>Как это работает?</a>
             <a href="/#faq" onClick={() => setMobileOpen(false)} style={{ color: '#4b5563', textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>FAQ</a>
             {user && <Link to="/history" onClick={() => setMobileOpen(false)} style={{ color: '#4b5563', textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>История анализов</Link>}
@@ -111,6 +121,25 @@ export default function Navbar() {
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
       {showCoins && <CoinsModal onClose={() => setShowCoins(false)} />}
     </>
+  )
+}
+
+function NavPill({ to, icon, label, accent = '#2563eb', accentBg = '#eff6ff', onClick }) {
+  return (
+    <Link to={to} onClick={onClick} style={{
+      display: 'inline-flex', alignItems: 'center', gap: 6,
+      padding: '7px 14px', borderRadius: 20,
+      background: accentBg, border: `1.5px solid ${accent}22`,
+      textDecoration: 'none', fontSize: 13, fontWeight: 700,
+      color: accent, whiteSpace: 'nowrap',
+      transition: 'box-shadow 0.18s, background 0.18s',
+    }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 2px 10px ${accent}33`; e.currentTarget.style.background = accentBg }}
+      onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none' }}
+    >
+      {icon}
+      {label}
+    </Link>
   )
 }
 
