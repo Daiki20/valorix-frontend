@@ -136,98 +136,54 @@ function ExpressLabel({ text, color1, color2, border, bg }) {
   )
 }
 
-function SummaryModal({ picks, cfg, onClose }) {
+function ReasoningPanel({ picks, cfg }) {
   return (
-    <div onClick={onClose} style={{
-      position: 'fixed', inset: 0, zIndex: 1000,
-      background: 'rgba(10,12,30,0.65)', backdropFilter: 'blur(6px)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: 20, animation: 'fadeInUp 0.2s ease',
-      overflowY: 'auto',
+    <div style={{
+      marginTop: 12, borderTop: `1px solid ${cfg.border}`,
+      paddingTop: 14, display: 'flex', flexDirection: 'column', gap: 10,
+      animation: 'fadeInUp 0.2s ease',
     }}>
-      <div onClick={e => e.stopPropagation()} style={{
-        background: 'white', borderRadius: 24, maxWidth: 520, width: '100%',
-        boxShadow: '0 32px 80px rgba(0,0,0,0.25)',
-        overflow: 'hidden', position: 'relative',
-        margin: 'auto',
-      }}>
-        {/* Top gradient bar */}
-        <div style={{ height: 4, background: cfg.accentLine }} />
-
-        <div style={{ padding: '28px 28px 24px' }}>
-          {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{
-                width: 44, height: 44, borderRadius: 14,
-                background: cfg.gradient,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0,
-              }}>
-                <Brain size={22} color="white" />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+        <Brain size={14} color={cfg.oddsColor} />
+        <span style={{ fontSize: 12, fontWeight: 700, color: cfg.oddsColor }}>Логика AI</span>
+        <span style={{ fontSize: 11, color: '#94a3b8' }}>— почему выбраны эти ставки</span>
+      </div>
+      {picks.map((pick, i) => (
+        <div key={i} style={{
+          borderRadius: 12, overflow: 'hidden',
+          border: `1px solid ${cfg.border}`,
+        }}>
+          <div style={{
+            background: cfg.bg, padding: '8px 14px',
+            display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            <div style={{
+              width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
+              background: cfg.gradient,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 10, fontWeight: 800, color: 'white',
+            }}>
+              {i + 1}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontWeight: 800, fontSize: 12, color: '#1a1a2e' }}>
+                {pick.home} — {pick.away}
               </div>
-              <div>
-                <div style={{ fontWeight: 900, fontSize: 16, color: '#1a1a2e' }}>Логика AI</div>
-                <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>Почему выбраны эти ставки</div>
+              <div style={{ fontSize: 11, color: cfg.oddsColor, fontWeight: 700 }}>
+                {pick.prediction} · ×{pick.odds}
               </div>
             </div>
-            <button onClick={onClose} style={{
-              background: '#f1f5f9', border: 'none', borderRadius: 10,
-              width: 32, height: 32, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-            }}>
-              <X size={16} color="#64748b" />
-            </button>
           </div>
-
-          {/* Per-pick reasoning */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {picks.map((pick, i) => (
-              <div key={i} style={{
-                borderRadius: 14, overflow: 'hidden',
-                border: `1px solid ${cfg.border}`,
-              }}>
-                {/* Pick header */}
-                <div style={{
-                  background: cfg.bg, padding: '10px 16px',
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  borderBottom: `1px solid ${cfg.border}`,
-                }}>
-                  <div style={{
-                    width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
-                    background: cfg.gradient,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 11, fontWeight: 800, color: 'white',
-                  }}>
-                    {i + 1}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 800, fontSize: 13, color: '#1a1a2e' }}>
-                      {pick.home} — {pick.away}
-                    </div>
-                    <div style={{ fontSize: 11, color: cfg.oddsColor, fontWeight: 700, marginTop: 1 }}>
-                      {pick.prediction} · ×{pick.odds}
-                    </div>
-                  </div>
-                </div>
-                {/* Reasoning */}
-                <div style={{ padding: '12px 16px', background: 'white' }}>
-                  <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.7 }}>
-                    {pick.reasoning || 'Обоснование недоступно'}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{
-            marginTop: 16, display: 'flex', alignItems: 'center', gap: 8,
-            fontSize: 12, color: '#94a3b8',
-          }}>
-            <Sparkles size={13} color="#94a3b8" />
-            Анализ сгенерирован AI на основе статистики
+          <div style={{ padding: '10px 14px', background: 'white' }}>
+            <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.65 }}>
+              {pick.reasoning || 'Обоснование недоступно'}
+            </div>
           </div>
         </div>
+      ))}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
+        <Sparkles size={11} color="#94a3b8" />
+        Анализ сгенерирован AI на основе статистики
       </div>
     </div>
   )
@@ -368,23 +324,19 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
                 <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>Итоговый коэф.</div>
                 <div style={{ fontSize: 20, fontWeight: 900, color: cfg.oddsColor }}>× {data.total_odds?.toFixed(2)}</div>
               </div>
-              {data.summary && (
-                <button onClick={() => setShowSummary(true)} style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  background: 'white', border: `1.5px solid ${type === 'high' ? '#fcd34d' : '#c7d2fe'}`,
-                  borderRadius: 20, padding: '7px 14px',
-                  fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                  color: cfg.oddsColor, whiteSpace: 'nowrap',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                  transition: 'box-shadow 0.18s',
-                }}
-                  onMouseEnter={e => e.currentTarget.style.boxShadow = `0 4px 16px ${cfg.oddsColor}33`}
-                  onMouseLeave={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'}
-                >
-                  <Brain size={13} />
-                  Логика AI
-                </button>
-              )}
+              <button onClick={() => setShowSummary(s => !s)} style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                background: showSummary ? cfg.oddsColor : 'white',
+                border: `1.5px solid ${type === 'high' ? '#fcd34d' : '#c7d2fe'}`,
+                borderRadius: 20, padding: '7px 14px',
+                fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                color: showSummary ? 'white' : cfg.oddsColor, whiteSpace: 'nowrap',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                transition: 'all 0.18s',
+              }}>
+                <Brain size={13} />
+                {showSummary ? 'Свернуть' : 'Логика AI'}
+              </button>
             </div>
           </div>
         ) : (
@@ -415,7 +367,7 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
         )}
       </div>
 
-      {showSummary && <SummaryModal picks={data.picks || []} cfg={cfg} onClose={() => setShowSummary(false)} />}
+      {showSummary && isPurchased && <ReasoningPanel picks={data.picks || []} cfg={cfg} />}
     </div>
   )
 }
