@@ -32,6 +32,32 @@ const CONFIG = {
   },
 }
 
+function ExpressLabel({ text, color1, color2, border, bg }) {
+  const id = text.replace(/\s/g, '')
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+      <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg, transparent, ${border})` }} />
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 6,
+        background: bg, border: `1.5px dashed ${border}`,
+        borderRadius: 20, padding: '5px 14px',
+        fontSize: 11, fontWeight: 700, letterSpacing: 0.8,
+        animation: `labelPulse_${id} 2s ease-in-out infinite`,
+      }}>
+        <style>{`
+          @keyframes labelPulse_${id} {
+            0%, 100% { color: ${color1}; border-color: ${border}; }
+            50% { color: ${color2}; border-color: ${color2}40; }
+          }
+        `}</style>
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor', display: 'inline-block' }} />
+        {text}
+      </div>
+      <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg, ${border}, transparent)` }} />
+    </div>
+  )
+}
+
 function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
   const { user, updateCoins } = useAuth()
   const [buying, setBuying] = useState(false)
@@ -130,10 +156,16 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
               {i + 1}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 700, fontSize: 12, color: '#1a1a2e', lineHeight: 1.3 }}>
+              <div style={{
+                fontWeight: 700, fontSize: 12, color: '#1a1a2e', lineHeight: 1.3,
+                ...(isPurchased ? {} : { filter: 'blur(4px)', userSelect: 'none' }),
+              }}>
                 {pick.home} — {pick.away}
               </div>
-              <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>{pick.league}</div>
+              <div style={{
+                fontSize: 11, color: '#94a3b8', marginTop: 2,
+                ...(isPurchased ? {} : { filter: 'blur(3px)', userSelect: 'none' }),
+              }}>{pick.league}</div>
             </div>
             <div style={{ flexShrink: 0, textAlign: 'right' }}>
               {isPurchased ? (
@@ -244,23 +276,11 @@ export default function ExpressCard({ onAuthRequired }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'row', gap: 16, marginBottom: 24 }}>
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <div style={{ textAlign: 'center' }}>
-          <span style={{
-            fontWeight: 900, fontSize: 15, color: '#2563eb', letterSpacing: -0.3,
-            background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          }}>AI Экспресс Lite</span>
-        </div>
+        <ExpressLabel text="AI ЭКСПРЕСС · LITE" color1="#2563eb" color2="#7c3aed" border="#93c5fd" bg="#eff6ff" />
         <SingleExpressCard data={standard} type="standard" onAuthRequired={onAuthRequired} onUpdate={handleUpdate} />
       </div>
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <div style={{ textAlign: 'center' }}>
-          <span style={{
-            fontWeight: 900, fontSize: 15,
-            background: 'linear-gradient(135deg, #d97706, #dc2626)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          }}>AI Экспресс Hard</span>
-        </div>
+        <ExpressLabel text="AI ЭКСПРЕСС · HARD" color1="#d97706" color2="#dc2626" border="#fcd34d" bg="#fffbeb" />
         <SingleExpressCard data={high} type="high" onAuthRequired={onAuthRequired} onUpdate={handleUpdate} />
       </div>
     </div>
