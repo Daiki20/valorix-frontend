@@ -104,7 +104,7 @@ export default function Landing() {
         <div className="glow-divider" />
 
         {/* ── Express of the Day ── */}
-        <div style={{ maxWidth: 960, margin: '0 auto', padding: '40px 24px 0' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 24px 0' }}>
           <ExpressCard onAuthRequired={() => setShowAuth(true)} />
         </div>
 

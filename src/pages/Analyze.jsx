@@ -120,7 +120,7 @@ export default function Analyze() {
     return (
       <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
         <Navbar />
-        <div className="analyze-page-content" style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px' }}>
+        <div className="analyze-page-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 24px' }}>
           <button
             onClick={() => { setSelectedMatch(null); setLocked(false); setRevealed(false); setShareToken(null); pendingResult.current = null }}
             style={{
@@ -169,7 +169,7 @@ export default function Analyze() {
   return (
     <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
       <Navbar />
-      <div className="analyze-page-content" style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px' }}>
+      <div className="analyze-page-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 24px' }}>
         <Link to="/" style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           color: '#64748b', fontSize: 14, fontWeight: 600, marginBottom: 24,
