@@ -65,7 +65,7 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
 
   return (
     <div className="card" style={{
-      padding: '20px 24px',
+      padding: '20px 24px', flex: 1, minWidth: 0,
       border: `1.5px solid ${cfg.border}`,
       background: cfg.bg,
       position: 'relative', overflow: 'hidden',
@@ -243,7 +243,7 @@ export default function ExpressCard({ onAuthRequired }) {
   if (error || (!standard && !high)) return null
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'row', gap: 16, marginBottom: 24 }}>
       <SingleExpressCard data={standard} type="standard" onAuthRequired={onAuthRequired} onUpdate={handleUpdate} />
       <SingleExpressCard data={high} type="high" onAuthRequired={onAuthRequired} onUpdate={handleUpdate} />
     </div>
