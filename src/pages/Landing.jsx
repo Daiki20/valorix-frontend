@@ -68,13 +68,13 @@ export default function Landing() {
                   <Link to="/analyze" className="btn-primary">
                     <Search size={16} />
                     Анализ матча
-                    <span style={{ background: 'rgba(255,255,255,0.2)', borderRadius: 20, padding: '2px 8px', fontSize: 12, fontWeight: 700 }}>28</span>
+                    <span style={{ background: 'rgba(255,255,255,0.2)', borderRadius: 20, padding: '2px 8px', fontSize: 12, fontWeight: 700 }}>19</span>
                     <Zap size={14} fill="white" />
                   </Link>
                   <Link to="/upload" className="btn-outline">
                     <Upload size={16} />
                     Загрузить скрин
-                    <span style={{ background: '#1a1a2e', borderRadius: 20, padding: '2px 8px', fontSize: 12, fontWeight: 700, color: 'white' }}>28</span>
+                    <span style={{ background: '#1a1a2e', borderRadius: 20, padding: '2px 8px', fontSize: 12, fontWeight: 700, color: 'white' }}>19</span>
                     <Zap size={14} />
                   </Link>
                 </div>
@@ -217,7 +217,7 @@ export default function Landing() {
               {[
                 { q: 'Насколько точен AI-анализ?', a: 'AI анализирует сотни факторов и показывает индекс доверия. Мы не гарантируем результат — это аналитический инструмент для принятия решений.' },
                 { q: 'Что значит "загрузить скрин"?', a: 'Сделай скриншот линии у букмекера и загрузи его. AI прочитает коэффициенты и проанализирует где есть Value.' },
-                { q: 'Сколько стоит один анализ?', a: 'Один анализ стоит 28 монет. Монеты можно пополнить в любое время через раздел "Пополнить".' },
+                { q: 'Сколько стоит один анализ?', a: 'Один анализ стоит 19 монет. Монеты можно пополнить в любое время через раздел "Пополнить".' },
                 { q: 'Какие виды спорта поддерживаются?', a: 'Сейчас поддерживается футбол. В ближайшее время добавим теннис, баскетбол и хоккей.' },
               ].map((item, i) => (
                 <FaqItem key={i} q={item.q} a={item.a} />
