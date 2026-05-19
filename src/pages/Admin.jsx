@@ -4,7 +4,8 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import Navbar from '../components/Navbar'
 import { getStats, getUsers, getTransactions, addCoins, setAdmin, setBlocked } from '../api/adminApi'
-import { Users, Zap, BarChart3, RefreshCw, Shield, Ban, Plus, Minus, Search, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Users, Zap, BarChart3, RefreshCw, Shield, Ban, Plus, Minus, Search, ChevronLeft, ChevronRight, Star } from 'lucide-react'
+const API_BASE = import.meta.env.VITE_API_URL || ''
 
 const TABS = ['Дашборд', 'Пользователи', 'Транзакции']
 
@@ -55,11 +56,34 @@ export default function Admin() {
 
 /* ─── Dashboard ─── */
 function DashboardTab({ toast }) {
+  const { user } = useAuth()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [coinForm, setCoinForm] = useState({ email: '', amount: '', reason: '' })
   const [coinLoading, setCoinLoading] = useState(false)
   const [coinMode, setCoinMode] = useState('add') // 'add' | 'remove'
+  const [expressLoading, setExpressLoading] = useState(false)
+  const [expressResult, setExpressResult] = useState(null)
+
+  const handleGenerateExpress = async () => {
+    setExpressLoading(true)
+    setExpressResult(null)
+    try {
+      const token = localStorage.getItem('valorix_token')
+      const res = await fetch(`${API_BASE}/express/generate`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      if (data.error) { toast.error(data.error); return }
+      setExpressResult(data)
+      toast.success('Экспресс сгенерирован!')
+    } catch {
+      toast.error('Ошибка генерации')
+    } finally {
+      setExpressLoading(false)
+    }
+  }
 
   const load = async () => {
     setLoading(true)
@@ -161,6 +185,36 @@ function DashboardTab({ toast }) {
             {coinLoading ? '...' : coinMode === 'add' ? '+ Начислить' : '− Снять'}
           </button>
         </form>
+      </div>
+
+      {/* Express generator */}
+      <div className="card" style={{ padding: 24 }}>
+        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#1a1a2e', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Star size={16} color="#7c3aed" fill="#7c3aed" />
+          Экспресс дня
+        </h3>
+        <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>
+          Сгенерировать новый экспресс на завтра (перезапишет текущий)
+        </p>
+        <button onClick={handleGenerateExpress} disabled={expressLoading} style={{
+          padding: '10px 22px', fontSize: 14, fontWeight: 700, border: 'none', borderRadius: 10,
+          background: expressLoading ? '#94a3b8' : 'linear-gradient(135deg,#2563eb,#7c3aed)',
+          color: 'white', cursor: expressLoading ? 'not-allowed' : 'pointer',
+        }}>
+          {expressLoading ? 'Генерируем...' : '⚡ Сгенерировать экспресс'}
+        </button>
+        {expressResult && (
+          <div style={{ marginTop: 14, background: '#f0fdf4', borderRadius: 10, padding: '12px 16px', border: '1px solid #bbf7d0' }}>
+            <div style={{ fontWeight: 700, fontSize: 13, color: '#16a34a', marginBottom: 6 }}>
+              Готово — {expressResult.date} | Итоговый коэф: × {expressResult.total_odds?.toFixed(2)}
+            </div>
+            {expressResult.picks?.map((p, i) => (
+              <div key={i} style={{ fontSize: 12, color: '#374151', marginBottom: 2 }}>
+                {i + 1}. {p.home} — {p.away} · <b>{p.prediction}</b> × {p.odds}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Recent users */}
