@@ -41,7 +41,7 @@ export const coinsApi = {
 
 export const expressApi = {
   today: () => fetch(`${BASE}/express/today`, { headers: authHeaders() }).then(r => r.json()),
-  purchase: () => request('POST', '/express/purchase'),
+  purchase: (type = 'standard') => request('POST', '/express/purchase', { type }),
   generate: () => request('POST', '/express/generate'),
 }
 
