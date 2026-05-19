@@ -1,5 +1,5 @@
 const SSTATS_KEY = import.meta.env.VITE_SSTATS_API_KEY
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_BASE = import.meta.env.VITE_API_URL || ''
 const BASE = 'https://api.sstats.net'
 
 function sstatsUrl(path, params = {}) {
