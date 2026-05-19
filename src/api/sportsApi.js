@@ -296,14 +296,15 @@ export async function analyzeScreenshot(base64Image) {
 
 // Step 1: GPT-4o reads the screenshot
 async function extractFromScreenshot(base64Image) {
-  const token = localStorage.getItem('valorix_token')
-  const res = await fetch(`${API_BASE}/analyze/chat`, {
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
+      model: 'gpt-4o',
       max_tokens: 800,
       messages: [{
         role: 'user',
@@ -366,7 +367,7 @@ async function extractFromScreenshot(base64Image) {
     throw new Error(err.error || `Server error ${res.status}`)
   }
   const data = await res.json()
-  return JSON.parse(data.content)
+  return JSON.parse(data.choices[0].message.content)
 }
 
 // Fetch esports team context from backend (Esports Data API by mrcupcake)
@@ -995,25 +996,26 @@ async function getMatchContext(home, away, leagueId) {
 }
 
 async function callOpenAI(prompt, cacheKey = null) {
-  const token = localStorage.getItem('valorix_token')
-  const res = await fetch(`${API_BASE}/analyze/chat`, {
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+  if (!apiKey) throw new Error('OpenAI API key not configured')
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
+      model: 'gpt-4o',
       messages: [{ role: 'user', content: prompt }],
-      ...(cacheKey ? { cacheKey } : {}),
     }),
   })
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
-    throw new Error(err.error || `Server error ${res.status}`)
+    throw new Error(err.error?.message || `OpenAI error ${res.status}`)
   }
   const data = await res.json()
-  return data.content
+  return data.choices[0].message.content
 }
 
 function parseAnalysis(jsonStr, match) {
