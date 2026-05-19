@@ -392,7 +392,8 @@ async function extractFromScreenshot(base64Image) {
     throw new Error(err.error || `Server error ${res.status}`)
   }
   const data = await res.json()
-  return JSON.parse(data.choices[0].message.content)
+  const raw = data.choices?.[0]?.message?.content || ''
+  return JSON.parse(raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim())
 }
 
 // Fetch esports team context from backend (Esports Data API by mrcupcake)
@@ -1085,7 +1086,8 @@ async function callOpenAI(prompt, cacheKey = null) {
 
 function parseAnalysis(jsonStr, match) {
   try {
-    const p = JSON.parse(jsonStr)
+    const cleaned = (jsonStr || '').replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim()
+    const p = JSON.parse(cleaned)
     return {
       verdict: p.verdict || `Победа ${match.home}`,
       summary: p.summary || '',
