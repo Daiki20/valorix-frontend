@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext'
 
 const CONFIG = {
   standard: {
-    cost: 36,
+    cost: 39,
     label: 'Экспресс дня',
     sublabel: 'Надёжный',
     icon: <Star size={14} color="white" fill="white" />,
@@ -18,7 +18,7 @@ const CONFIG = {
     oddsColor: '#2563eb',
   },
   high: {
-    cost: 46,
+    cost: 49,
     label: 'Экспресс дня',
     sublabel: 'Высокодоходный',
     icon: <Flame size={14} color="white" fill="white" />,
