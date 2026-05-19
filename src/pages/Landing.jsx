@@ -105,6 +105,15 @@ export default function Landing() {
 
         {/* ── Express of the Day ── */}
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 24px 0' }}>
+          <div style={{ textAlign: 'center', marginBottom: 28 }}>
+            <div className="badge" style={{ marginBottom: 12 }}>ЕЖЕДНЕВНО</div>
+            <h2 style={{ fontSize: 36, fontWeight: 900, color: '#1a1a2e', letterSpacing: -1, margin: 0 }}>
+              Топовые AI экспрессы
+            </h2>
+            <p style={{ color: '#64748b', fontSize: 15, marginTop: 10, marginBottom: 0 }}>
+              Каждый день — два готовых экспресса на основе реальных коэффициентов
+            </p>
+          </div>
           <ExpressCard onAuthRequired={() => setShowAuth(true)} />
         </div>
 
