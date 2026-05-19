@@ -95,6 +95,7 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
       border: `1.5px solid ${cfg.border}`,
       background: cfg.bg,
       position: 'relative', overflow: 'hidden',
+      display: 'flex', flexDirection: 'column',
     }}>
       {/* accent line */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: cfg.accentLine }} />
@@ -189,6 +190,7 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
       </div>
 
       {/* Footer */}
+      <div style={{ marginTop: 'auto' }}>
       {isPurchased ? (
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -230,6 +232,7 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
           )}
         </button>
       )}
+      </div>
 
     </div>
   )
