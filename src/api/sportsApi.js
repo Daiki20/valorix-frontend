@@ -213,6 +213,7 @@ export async function analyzeMatch(matchInput) {
   let glicko = null
   let realOdds = []
   let liveStats = null
+  let h2h = []
 
   if (SSTATS_KEY && match.id) {
     const apiCalls = [
@@ -221,22 +222,42 @@ export async function analyzeMatch(matchInput) {
       sstatsGet(`/Odds/${match.id}`),
       getPariOdds(match),
     ]
+    // h2h — fetch last 5 meetings between the two teams
+    if (match.homeId && match.awayId) {
+      apiCalls.push(
+        sstatsGet('/Games/list', { ended: true, bothTeams: `${match.homeId},${match.awayId}`, limit: 5 })
+          .catch(() => null)
+      )
+    }
     // For live matches — also fetch current score + in-game stats
     if (isLive) {
       apiCalls.push(fetchLiveScore(match.id))
       apiCalls.push(fetchLiveStats(match.id))
     }
 
-    const [statsRes, glickoRes, oddsRes, pariRes, liveScoreRes, liveStatsRes] = await Promise.allSettled(apiCalls)
+    const results = await Promise.allSettled(apiCalls)
+    const [statsRes, glickoRes, oddsRes, pariRes, ...rest] = results
+
     if (statsRes.status === 'fulfilled') stats = statsRes.value
     if (glickoRes.status === 'fulfilled') glicko = glickoRes.value?.data?.glicko
     if (oddsRes.status === 'fulfilled') realOdds = extractBookmakerOdds(oddsRes.value?.data || [])
-    if (liveStatsRes?.status === 'fulfilled' && liveStatsRes.value) liveStats = liveStatsRes.value
 
-    // Override score/minute from single-game fetch if we got it
-    if (liveScoreRes?.status === 'fulfilled' && liveScoreRes.value) {
-      const ls = liveScoreRes.value
-      if (ls.score) match = { ...match, score: ls.score, minute: ls.minute ?? match.minute }
+    // h2h is 5th result (index 4) when homeId/awayId present
+    const h2hIdx = (match.homeId && match.awayId) ? 0 : -1
+    if (h2hIdx >= 0 && rest[h2hIdx]?.status === 'fulfilled' && rest[h2hIdx]?.value?.data) {
+      h2h = rest[h2hIdx].value.data.slice(0, 5)
+    }
+
+    // Live stats/score come after h2h
+    if (isLive) {
+      const liveOffset = (match.homeId && match.awayId) ? 1 : 0
+      const liveScoreRes = rest[liveOffset]
+      const liveStatsRes = rest[liveOffset + 1]
+      if (liveStatsRes?.status === 'fulfilled' && liveStatsRes.value) liveStats = liveStatsRes.value
+      if (liveScoreRes?.status === 'fulfilled' && liveScoreRes.value) {
+        const ls = liveScoreRes.value
+        if (ls.score) match = { ...match, score: ls.score, minute: ls.minute ?? match.minute }
+      }
     }
 
     const pariOdds = pariRes.status === 'fulfilled' ? pariRes.value : null
@@ -244,7 +265,7 @@ export async function analyzeMatch(matchInput) {
   }
 
   const context = await getMatchContext(match.home, match.away, match.leagueId).catch(() => ({}))
-  const prompt = buildPrompt(match, stats, glicko, context, liveStats)
+  const prompt = buildPrompt(match, stats, glicko, context, liveStats, h2h)
 
   // Live matches — no cache (stats change every minute)
   const cacheKey = isLive ? null :
@@ -810,7 +831,7 @@ function extractBookmakerOdds(bookmakers) {
   return result.sort((a, b) => Number(b.odds) - Number(a.odds)).slice(0, 5)
 }
 
-function buildPrompt(match, stats, glicko, ctx = {}, liveStats = null) {
+function buildPrompt(match, stats, glicko, ctx = {}, liveStats = null, h2h = []) {
   const homeStats = stats?.home
   const awayStats = stats?.away
   const hasStats = !!(homeStats && awayStats)
@@ -832,6 +853,40 @@ ${match.away} — последние ${awayStats.gamesCount} матчей В Г�
   Голы: ${awayStats.avgScore?.toFixed(2)} забито / ${awayStats.avgConceded?.toFixed(2)} пропущено за матч
   Удары: ${awayStats.avgShots?.toFixed(1)} нанесено / ${awayStats.avgOppShots?.toFixed(1)} допущено за матч${aCorners ? `\n  Угловые: ${aCorners} в среднем за матч` : ''}`
   }
+
+  // H2H — last meetings between teams
+  let h2hBlock = ''
+  if (h2h.length > 0) {
+    const lines = h2h.map(g => {
+      const hScore = g.homeFTResult ?? g.homeScore ?? '?'
+      const aScore = g.awayFTResult ?? g.awayScore ?? '?'
+      const date = (g.date || '').slice(0, 10)
+      return `  ${date}: ${g.homeTeam?.name} ${hScore}:${aScore} ${g.awayTeam?.name}`
+    })
+    h2hBlock = `── ЛИЧНЫЕ ВСТРЕЧИ (последние ${h2h.length}) ──\n${lines.join('\n')}`
+  }
+
+  // Detect high-stakes / derby match for extra context instruction
+  const isDerby = (() => {
+    const name = `${match.home} ${match.away}`.toLowerCase()
+    const derbies = [
+      ['real madrid','barcelona'], ['atletico','real madrid'], ['atletico','barcelona'],
+      ['milan','inter'], ['juventus','inter'], ['juventus','roma'], ['napoli','juventus'],
+      ['liverpool','manchester united'], ['liverpool','everton'], ['manchester city','manchester united'],
+      ['arsenal','tottenham'], ['chelsea','arsenal'], ['chelsea','tottenham'],
+      ['psg','marseille'], ['psg','lyon'], ['marseille','lyon'],
+      ['dortmund','schalke'], ['dortmund','bayern'], ['bayern','schalke'],
+      ['ajax','psv'], ['ajax','feyenoord'],
+      ['benfica','porto'], ['benfica','sporting'], ['porto','sporting'],
+      ['celtic','rangers'],
+      ['spartak','cska'], ['spartak','zenit'], ['cska','zenit'], ['zenit','spartak'],
+      ['river plate','boca'], ['boca','river'],
+      ['galatasaray','fenerbahce'], ['galatasaray','besiktas'],
+    ]
+    return derbies.some(([a, b]) => name.includes(a) && name.includes(b))
+  })()
+
+  const isChampionsLeague = [2, 3, 848].includes(match.leagueId)
 
   // xG + Glicko probabilities
   let glickoBlock = ''
@@ -900,9 +955,10 @@ ${as_ ? `${match.away}: ${as_.rank || as_.position} место | ${as_.points} �
   return `Ты профессиональный спортивный аналитик. Отвечай СТРОГО по-русски.
 
 МАТЧ: ${match.home} vs ${match.away}
-ЛИГА: ${match.league} | ДАТА: ${match.date}
+ЛИГА: ${match.league} | ДАТА: ${match.date}${isDerby ? ' 🔥 ДЕРБИ' : ''}${isChampionsLeague ? ' 🏆 ЕВРОКУБОК' : ''}
 ${liveBlock}
 ${statsBlock}
+${h2hBlock}
 ${glickoBlock}
 ${standingsBlock}
 ${lineupsBlock}
@@ -947,9 +1003,12 @@ ${isLive ? (() => {
 `ЗАДАЧИ:
 1. Определи фаворита — аргументируй конкретными фактами о командах (форма, состав, h2h, мотивация)
    ЗАПРЕЩЕНО: писать "является фаворитом с коэффициентом X" как главный аргумент — это не анализ
+${h2h.length > 0 ? `   ИСПОЛЬЗУЙ h2h блок выше: упомяни реальный счёт последних встреч и кто доминировал исторически` : ''}
+${isDerby ? `   ЭТО ДЕРБИ: особое внимание на психологический фактор, историю встреч, мотивацию. В дерби статистика формы менее предсказуема — учти это в confidence` : ''}
+${isChampionsLeague ? `   ЕВРОКУБОК: учти важность выездного гола, тактику на два матча, опыт команд в еврокубках` : ''}
 2. Fair Odds: рассчитай справедливый коэффициент на основе реальных вероятностей, НЕ просто инверсия букмекерских коэфов
 3. Value: сравни свою оценку вероятности с букмекерской — есть ли расхождение?
-4. Дай 4-5 конкретных причин прогноза с реальными фактами о командах
+4. Дай 4-5 конкретных причин прогноза с реальными фактами о командах${h2h.length > 0 ? ' и h2h статистикой' : ''}
 5. Найди 2-3 дополнительные ставки с РЕАЛЬНОЙ ЦЕННОСТЬЮ:
    ОБЯЗАТЕЛЬНЫЕ ТРЕБОВАНИЯ к каждой ставке:
    - Минимальный коэффициент: 1.75 (ставки с коэфом ниже 1.75 НЕ интересны — слишком очевидны)
