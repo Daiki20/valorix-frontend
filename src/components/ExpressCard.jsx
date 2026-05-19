@@ -74,12 +74,14 @@ export default function ExpressCard({ onAuthRequired }) {
           <span style={{ fontWeight: 900, fontSize: 15, color: '#1a1a2e', letterSpacing: -0.3 }}>
             Экспресс дня
           </span>
-          <span style={{
-            background: '#eff6ff', color: '#2563eb', fontSize: 11,
-            fontWeight: 700, padding: '2px 8px', borderRadius: 20, border: '1px solid #bfdbfe',
-          }}>
-            {express.picks_count || express.picks?.length || 2}-3 матча
-          </span>
+          {express.date && (
+            <span style={{
+              background: '#f0fdf4', color: '#16a34a', fontSize: 11,
+              fontWeight: 700, padding: '2px 8px', borderRadius: 20, border: '1px solid #bbf7d0',
+            }}>
+              {express.date}
+            </span>
+          )}
         </div>
         {isPurchased && (
           <div style={{
@@ -179,8 +181,8 @@ export default function ExpressCard({ onAuthRequired }) {
       )}
 
       {!isPurchased && (
-        <div style={{ textAlign: 'center', fontSize: 11, color: '#94a3b8', marginTop: 8 }}>
-          Итоговый коэф: × <span style={{ filter: 'blur(4px)', display: 'inline-block' }}>{express.total_odds?.toFixed(2) || '3.47'}</span>
+        <div style={{ textAlign: 'center', fontSize: 11, color: '#64748b', marginTop: 8, fontWeight: 600 }}>
+          Итоговый коэф: × <span style={{ color: '#2563eb', fontWeight: 800 }}>{express.total_odds?.toFixed(2) || '—'}</span>
         </div>
       )}
     </div>
