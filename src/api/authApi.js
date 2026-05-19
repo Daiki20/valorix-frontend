@@ -16,13 +16,19 @@ async function request(method, path, body) {
     body: body ? JSON.stringify(body) : undefined,
   })
   const data = await res.json()
-  if (!res.ok) throw new Error(data.error || 'Ошибка сервера')
+  if (!res.ok) {
+    const err = new Error(data.error || 'Ошибка сервера')
+    err.data = data
+    throw err
+  }
   return data
 }
 
 export const authApi = {
   register: (email, password, username) => request('POST', '/auth/register', { email, password, username }),
   login: (email, password) => request('POST', '/auth/login', { email, password }),
+  verifyEmail: (email, code) => request('POST', '/auth/verify-email', { email, code }),
+  resendCode: (email) => request('POST', '/auth/resend-code', { email }),
   me: () => request('GET', '/auth/me'),
   history: () => request('GET', '/auth/history'),
   forgotPassword: (email) => request('POST', '/auth/forgot-password', { email }),
