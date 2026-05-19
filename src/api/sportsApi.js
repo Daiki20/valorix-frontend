@@ -115,53 +115,37 @@ const LEAGUE_PRIORITY = {
   106: 350, 383: 350, 218: 350,           // Poland / Czech / Slovakia
 }
 
-// Get live matches
+// Get live matches — via backend proxy (avoids browser rate-limiting sstats)
 export async function getLiveMatches() {
-  if (!SSTATS_KEY) return []
   try {
-    const results = await Promise.all([
-      sstatsGet('/Games/list', { live: true, limit: 20 }).catch(() => ({ data: [] })),
-    ])
-    const raw = results.flatMap(r => r.data || [])
+    const res = await fetch(`${API_BASE}/matches/live`)
+    if (!res.ok) return []
+    const { data } = await res.json()
+    const raw = data || []
     if (raw.length > 0) console.log('[sstats live rawData sample]', JSON.stringify(raw[0], null, 2))
-    // Force isLive: true for all live-tab matches so cache is always skipped
     return raw.map(g => ({ ...normalizeGame(g), isLive: true }))
   } catch { return [] }
 }
 
-// Get upcoming matches (default list, sorted by priority then date)
+// Get upcoming matches — via backend proxy (cached 15 min, avoids 35 parallel browser requests)
 export async function getUpcomingMatches(limit = 50) {
-  if (!SSTATS_KEY) return MOCK_MATCHES
+  try {
+    const res = await fetch(`${API_BASE}/matches/upcoming`)
+    if (!res.ok) return MOCK_MATCHES
+    const { data } = await res.json()
+    const allGames = data || []
 
-  const leagueIds = [
-    2, 3, 848,           // UCL, UEL, UECL
-    39, 140, 135, 78, 61, // Big 5
-    94, 88, 144, 203, 179, 207, 197, 210, // Top Europe
-    235, 236,            // Russia
-    71, 128, 131, 13,    // South America
-    253, 262,            // North America
-    98, 292, 480,        // Asia
-    169, 113, 119,       // Scandinavia
-    40, 79, 62,          // Second tiers
-    106, 383, 218,       // Eastern Europe
-  ]
-
-  const promises = leagueIds.map(id =>
-    sstatsGet('/Games/list', { upcoming: true, leagueid: id, limit: 5 }).catch(() => ({ data: [] }))
-  )
-  const results = await Promise.all(promises)
-  const allGames = results.flatMap(r => r.data || [])
-
-  return allGames
-    .map(normalizeGame)
-    .filter(m => m.odds1x2)
-    .sort((a, b) => {
-      const pa = LEAGUE_PRIORITY[a.leagueId] || 0
-      const pb = LEAGUE_PRIORITY[b.leagueId] || 0
-      if (pb !== pa) return pb - pa
-      return new Date(a.date) - new Date(b.date)
-    })
-    .slice(0, limit)
+    return allGames
+      .map(normalizeGame)
+      .filter(m => m.odds1x2)
+      .sort((a, b) => {
+        const pa = LEAGUE_PRIORITY[a.leagueId] || 0
+        const pb = LEAGUE_PRIORITY[b.leagueId] || 0
+        if (pb !== pa) return pb - pa
+        return new Date(a.date) - new Date(b.date)
+      })
+      .slice(0, limit)
+  } catch { return MOCK_MATCHES }
 }
 
 // Fetch live in-game statistics (shots, possession, corners, cards)
