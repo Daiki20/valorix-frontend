@@ -8,7 +8,7 @@ import { analyzeScreenshot } from '../api/sportsApi'
 import { coinsApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
 
-const ANALYSIS_COST = 28
+const ANALYSIS_COST = 19
 
 export default function UploadScreen() {
   const { user, updateCoins } = useAuth()
