@@ -33,7 +33,7 @@ export default function Navbar() {
 
           {/* Desktop nav links */}
           <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <NavPill to="/" icon={<Zap size={14} color="#2563eb" fill="#2563eb" />} label="Экспресс" />
+            <ExpressPill />
             <NavPill to="/analyze" icon={<BarChart2 size={14} color="#7c3aed" />} label="Анализ" accent="#7c3aed" accentBg="#f5f3ff" />
             <NavPill to="/upload" icon={<Upload size={14} color="#0891b2" />} label="Скриншот" accent="#0891b2" accentBg="#ecfeff" />
             <div style={{ width: 1, height: 20, background: '#e2e8f0', margin: '0 8px' }} />
@@ -90,7 +90,7 @@ export default function Navbar() {
             display: 'flex', flexDirection: 'column', gap: 12,
           }}>
             <div style={{ display: 'flex', gap: 8, paddingBottom: 4 }}>
-              <NavPill to="/" icon={<Zap size={14} color="#2563eb" fill="#2563eb" />} label="Экспресс" onClick={() => setMobileOpen(false)} />
+              <ExpressPill onClick={() => setMobileOpen(false)} />
               <NavPill to="/analyze" icon={<BarChart2 size={14} color="#7c3aed" />} label="Анализ" accent="#7c3aed" accentBg="#f5f3ff" onClick={() => setMobileOpen(false)} />
               <NavPill to="/upload" icon={<Upload size={14} color="#0891b2" />} label="Скриншот" accent="#0891b2" accentBg="#ecfeff" onClick={() => setMobileOpen(false)} />
             </div>
@@ -121,6 +121,25 @@ export default function Navbar() {
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
       {showCoins && <CoinsModal onClose={() => setShowCoins(false)} />}
     </>
+  )
+}
+
+function ExpressPill({ onClick }) {
+  return (
+    <a href="/#express" onClick={onClick} style={{
+      display: 'inline-flex', alignItems: 'center', gap: 6,
+      padding: '7px 14px', borderRadius: 20,
+      background: 'linear-gradient(90deg, #2563eb, #7c3aed, #2563eb)',
+      backgroundSize: '200% 100%',
+      animation: 'shimmer 2.5s linear infinite',
+      textDecoration: 'none', fontSize: 13, fontWeight: 700,
+      color: 'white', whiteSpace: 'nowrap',
+      boxShadow: '0 2px 12px rgba(37,99,235,0.35)',
+      border: 'none',
+    }}>
+      <Zap size={14} color="white" fill="white" />
+      AI Экспресс
+    </a>
   )
 }
 
