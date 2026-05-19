@@ -38,7 +38,7 @@ export default function AuthModal({ onClose }) {
       saveAuth(data)
       if (mode === 'register') {
         fireConfetti()
-        toast.success('Добро пожаловать! Вам начислено 50 монет')
+        toast.success('Добро пожаловать! Вам начислено 34 монеты')
         localStorage.removeItem('valorix_onboarded')
       } else {
         toast.success('Вы вошли в аккаунт')
@@ -185,7 +185,7 @@ export default function AuthModal({ onClose }) {
           {mode === 'register' && (
             <div style={{ marginTop: 16, padding: '12px 16px', background: '#eff6ff', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#1e40af' }}>
               <Zap size={14} fill="#2563eb" color="#2563eb" />
-              <span><strong>50 монет</strong> в подарок при регистрации</span>
+              <span><strong>34 монеты</strong> в подарок при регистрации</span>
             </div>
           )}
         </div>

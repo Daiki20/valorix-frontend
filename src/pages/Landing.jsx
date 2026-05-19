@@ -239,7 +239,7 @@ export default function Landing() {
               Готов к умным ставкам?
             </h2>
             <p style={{ fontSize: 16, color: '#64748b', marginBottom: 36, lineHeight: 1.7 }}>
-              Зарегистрируйся и получи <strong style={{ color: '#1a1a2e' }}>50 монет бесплатно</strong> для первого анализа
+              Зарегистрируйся и получи <strong style={{ color: '#1a1a2e' }}>34 монеты бесплатно</strong> для первого анализа
             </p>
             <Link to="/analyze" className="btn-primary" style={{ fontSize: 16, padding: '16px 40px', margin: '0 auto', boxShadow: '0 8px 32px rgba(37,99,235,0.3)' }}>
               <Zap size={18} fill="white" />
