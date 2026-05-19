@@ -2,6 +2,8 @@ const SSTATS_KEY = import.meta.env.VITE_SSTATS_API_KEY
 const API_BASE = import.meta.env.VITE_API_URL || ''
 const BASE = 'https://api.sstats.net'
 
+import { translateTeam } from './teamNames.js'
+
 function sstatsUrl(path, params = {}) {
   const q = new URLSearchParams({ ...params, apikey: SSTATS_KEY })
   return `${BASE}${path}?${q}`
@@ -1059,8 +1061,8 @@ function normalizeGame(g) {
   return {
     id: g.id,
     flashId: g.flashId,
-    home: g.homeTeam?.name || '?',
-    away: g.awayTeam?.name || '?',
+    home: translateTeam(g.homeTeam?.name) || '?',
+    away: translateTeam(g.awayTeam?.name) || '?',
     homeId: g.homeTeam?.id,
     awayId: g.awayTeam?.id,
     league: g.season?.league?.name || '',
