@@ -1014,11 +1014,24 @@ async function getMatchContext(home, away, leagueId) {
 }
 
 async function callOpenAI(prompt, cacheKey = null) {
-  const data = await workerFetch({
-    model: 'gpt-4o',
-    messages: [{ role: 'user', content: prompt }],
+  const token = localStorage.getItem('valorix_token')
+  const res = await fetch(`${API_BASE}/analyze/chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({
+      messages: [{ role: 'user', content: prompt }],
+      cacheKey,
+    }),
   })
-  return data.choices[0].message.content
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.error || `AI error ${res.status}`)
+  }
+  const data = await res.json()
+  return data.content
 }
 
 function parseAnalysis(jsonStr, match) {
