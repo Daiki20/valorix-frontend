@@ -98,13 +98,17 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
             </span>
           )}
         </div>
-        {isPurchased && (
+        {isPurchased ? (
           <div style={{
             background: '#f0fdf4', color: '#16a34a', fontSize: 12,
             fontWeight: 700, padding: '3px 10px', borderRadius: 20, border: '1px solid #bbf7d0',
             display: 'flex', alignItems: 'center', gap: 4,
           }}>
             <TrendingUp size={11} /> Открыт
+          </div>
+        ) : (
+          <div style={{ fontWeight: 900, fontSize: 26, color: cfg.oddsColor, letterSpacing: -1 }}>
+            ×{data.total_odds?.toFixed(2) || '—'}
           </div>
         )}
       </div>
@@ -195,11 +199,6 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
         </button>
       )}
 
-      {!isPurchased && (
-        <div style={{ textAlign: 'center', fontSize: 11, color: '#64748b', marginTop: 8, fontWeight: 600 }}>
-          Итоговый коэф: × <span style={{ color: cfg.oddsColor, fontWeight: 800 }}>{data.total_odds?.toFixed(2) || '—'}</span>
-        </div>
-      )}
     </div>
   )
 }
@@ -244,8 +243,26 @@ export default function ExpressCard({ onAuthRequired }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'row', gap: 16, marginBottom: 24 }}>
-      <SingleExpressCard data={standard} type="standard" onAuthRequired={onAuthRequired} onUpdate={handleUpdate} />
-      <SingleExpressCard data={high} type="high" onAuthRequired={onAuthRequired} onUpdate={handleUpdate} />
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ textAlign: 'center' }}>
+          <span style={{
+            fontWeight: 900, fontSize: 15, color: '#2563eb', letterSpacing: -0.3,
+            background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          }}>AI Экспресс Lite</span>
+        </div>
+        <SingleExpressCard data={standard} type="standard" onAuthRequired={onAuthRequired} onUpdate={handleUpdate} />
+      </div>
+      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ textAlign: 'center' }}>
+          <span style={{
+            fontWeight: 900, fontSize: 15,
+            background: 'linear-gradient(135deg, #d97706, #dc2626)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          }}>AI Экспресс Hard</span>
+        </div>
+        <SingleExpressCard data={high} type="high" onAuthRequired={onAuthRequired} onUpdate={handleUpdate} />
+      </div>
     </div>
   )
 }
