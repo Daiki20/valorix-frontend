@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Zap, Lock, Star, TrendingUp, ChevronRight, Flame } from 'lucide-react'
+import { Zap, Lock, Star, TrendingUp, ChevronRight, Flame, Sparkles, X, Brain } from 'lucide-react'
 import { expressApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
 
@@ -136,9 +136,76 @@ function ExpressLabel({ text, color1, color2, border, bg }) {
   )
 }
 
+function SummaryModal({ summary, cfg, onClose }) {
+  return (
+    <div onClick={onClose} style={{
+      position: 'fixed', inset: 0, zIndex: 1000,
+      background: 'rgba(10,12,30,0.65)', backdropFilter: 'blur(6px)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: 20, animation: 'fadeInUp 0.2s ease',
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: 'white', borderRadius: 24, maxWidth: 480, width: '100%',
+        boxShadow: '0 32px 80px rgba(0,0,0,0.25)',
+        overflow: 'hidden', position: 'relative',
+      }}>
+        {/* Top gradient bar */}
+        <div style={{ height: 4, background: cfg.accentLine }} />
+
+        <div style={{ padding: '28px 28px 24px' }}>
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 14,
+                background: cfg.gradient,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
+              }}>
+                <Brain size={22} color="white" />
+              </div>
+              <div>
+                <div style={{ fontWeight: 900, fontSize: 16, color: '#1a1a2e' }}>Логика AI</div>
+                <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>Почему выбраны эти ставки</div>
+              </div>
+            </div>
+            <button onClick={onClose} style={{
+              background: '#f1f5f9', border: 'none', borderRadius: 10,
+              width: 32, height: 32, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            }}>
+              <X size={16} color="#64748b" />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div style={{
+            background: 'linear-gradient(135deg, #f8faff, #f0f4ff)',
+            border: '1px solid #e0e7ff',
+            borderRadius: 14, padding: '18px 20px',
+          }}>
+            <div style={{ fontSize: 14, color: '#1e293b', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>
+              {summary}
+            </div>
+          </div>
+
+          <div style={{
+            marginTop: 16, display: 'flex', alignItems: 'center', gap: 8,
+            fontSize: 12, color: '#94a3b8',
+          }}>
+            <Sparkles size={13} color="#94a3b8" />
+            Анализ сгенерирован AI на основе статистики
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
   const { user, updateCoins } = useAuth()
   const [buying, setBuying] = useState(false)
+  const [showSummary, setShowSummary] = useState(false)
   const cfg = CONFIG[type]
 
   if (!data) return (
@@ -265,13 +332,27 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
             background: type === 'high' ? 'linear-gradient(135deg, #fef3c7, #fde68a)' : 'linear-gradient(135deg, #eff6ff, #e0e7ff)',
             borderRadius: 10, padding: '10px 14px',
           }}>
-            <div className="express-footer">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <div>
                 <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>Итоговый коэф.</div>
                 <div style={{ fontSize: 20, fontWeight: 900, color: cfg.oddsColor }}>× {data.total_odds?.toFixed(2)}</div>
               </div>
               {data.summary && (
-                <div className="express-summary">{data.summary}</div>
+                <button onClick={() => setShowSummary(true)} style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  background: 'white', border: `1.5px solid ${type === 'high' ? '#fcd34d' : '#c7d2fe'}`,
+                  borderRadius: 20, padding: '7px 14px',
+                  fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                  color: cfg.oddsColor, whiteSpace: 'nowrap',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                  transition: 'box-shadow 0.18s',
+                }}
+                  onMouseEnter={e => e.currentTarget.style.boxShadow = `0 4px 16px ${cfg.oddsColor}33`}
+                  onMouseLeave={e => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'}
+                >
+                  <Brain size={13} />
+                  Логика AI
+                </button>
               )}
             </div>
           </div>
@@ -302,6 +383,8 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
           </button>
         )}
       </div>
+
+      {showSummary && <SummaryModal summary={data.summary} cfg={cfg} onClose={() => setShowSummary(false)} />}
     </div>
   )
 }
