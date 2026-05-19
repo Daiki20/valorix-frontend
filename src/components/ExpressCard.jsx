@@ -126,10 +126,10 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
               {i + 1}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 700, fontSize: 13, color: '#1a1a2e', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontWeight: 700, fontSize: 12, color: '#1a1a2e', lineHeight: 1.3 }}>
                 {pick.home} — {pick.away}
               </div>
-              <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>{pick.league}</div>
+              <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>{pick.league}</div>
             </div>
             <div style={{ flexShrink: 0, textAlign: 'right' }}>
               {isPurchased ? (
