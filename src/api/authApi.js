@@ -10,11 +10,16 @@ function authHeaders() {
 }
 
 async function request(method, path, body) {
-  const res = await fetch(`${BASE}${path}`, {
-    method,
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
-    body: body ? JSON.stringify(body) : undefined,
-  })
+  let res
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      method,
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: body ? JSON.stringify(body) : undefined,
+    })
+  } catch {
+    throw new Error('Нет соединения с сервером. Проверьте интернет и попробуйте снова.')
+  }
   const data = await res.json()
   if (!res.ok) {
     const err = new Error(data.error || 'Ошибка сервера')
