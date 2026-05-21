@@ -821,67 +821,158 @@ ${isLive
 
 export async function analyzeHockeyMatch(matchInput) {
   const match = { ...matchInput }
-  const prompt = buildHockeyPrompt(match)
+
+  // Fetch real stats from backend (form, h2h, standings) if we have team IDs
+  let realStats = {}
+  if (match.homeTeamId && match.awayTeamId) {
+    try {
+      const params = new URLSearchParams({
+        homeId: match.homeTeamId,
+        awayId: match.awayTeamId,
+        ...(match.tournamentId ? { tournamentId: match.tournamentId } : {}),
+        ...(match.seasonId    ? { seasonId:    match.seasonId    } : {}),
+      })
+      const res = await fetch(`${API_BASE}/matches/hockey-stats?${params}`)
+      if (res.ok) realStats = await res.json()
+    } catch { /* real stats are optional, fall back to GPT knowledge */ }
+  }
+
+  const prompt = buildHockeyPrompt(match, realStats)
+  // Don't cache: stats are live, analysis must stay fresh
   const cacheKey = `hk_${(match.home || '').toLowerCase().replace(/\s/g, '')}_${(match.away || '').toLowerCase().replace(/\s/g, '')}`
   const jsonStr = await callOpenAI(prompt, cacheKey)
   return parseAnalysis(jsonStr, match)
 }
 
-function buildHockeyPrompt(match) {
-  const isKHL = !match.league || match.league.toLowerCase().includes('кхл') || match.league.toLowerCase().includes('khl')
-  const isNHL = match.league?.toLowerCase().includes('нхл') || match.league?.toLowerCase().includes('nhl')
-  const leagueContext = isNHL
-    ? 'НХЛ (North American hockey, shootout determines winner, no draws)'
-    : isKHL
-      ? 'КХЛ (российский хоккей, возможна ничья в основное время + овертайм + буллиты)'
-      : match.league || 'хоккейный турнир'
+function buildHockeyPrompt(match, realStats = {}) {
+  const { homeForm = [], awayForm = [], standings = [] } = realStats
+  const hasRealData = homeForm.length > 0 || awayForm.length > 0 || standings.length > 0
+
+  const isKHL  = match.league?.toLowerCase().includes('кхл') || match.league?.toLowerCase().includes('khl')
+  const isNHL  = match.league?.toLowerCase().includes('нхл') || match.league?.toLowerCase().includes('nhl')
+  const isIIHF = match.league?.toLowerCase().includes('iihf') || match.league?.toLowerCase().includes('чемпионат мира')
+  const leagueContext = isNHL  ? 'НХЛ (shootout, без ничьих, тотал 5.5-6.5)' :
+                        isKHL  ? 'КХЛ (возможна ничья + ОТ + буллиты, тотал 4.5-5.5)' :
+                        isIIHF ? 'IIHF Чемпионат мира (формат сборных, без ничьих в плей-офф)' :
+                        match.league || 'хоккейный турнир'
+
+  // ── Format team recent form ───────────────────────────────────────────────
+  const formatForm = (events, teamId) => {
+    if (!events?.length) return '  нет данных'
+    // Take last 7 finished matches
+    const last7 = events.filter(e => e.status?.type === 'finished').slice(-7)
+    if (!last7.length) return '  нет данных'
+    return last7.map(e => {
+      const hs  = e.homeScore?.normaltime ?? e.homeScore?.current ?? '?'
+      const as_ = e.awayScore?.normaltime ?? e.awayScore?.current ?? '?'
+      const h = e.homeTeam?.name, a = e.awayTeam?.name
+      const won = teamId === e.homeTeam?.id ? Number(hs) > Number(as_) : Number(as_) > Number(hs)
+      const lost= teamId === e.homeTeam?.id ? Number(hs) < Number(as_) : Number(as_) < Number(hs)
+      const mark = won ? '✓' : lost ? '✗' : '='
+      return `  ${mark} ${h} ${hs}:${as_} ${a}`
+    }).join('\n')
+  }
+
+  const formBlock = hasRealData && (homeForm.length || awayForm.length) ? `
+РЕАЛЬНАЯ ФОРМА (из базы данных):
+${match.home} — последние матчи:
+${formatForm(homeForm, match.homeTeamId)}
+
+${match.away} — последние матчи:
+${formatForm(awayForm, match.awayTeamId)}` : ''
+
+  // ── H2H from home team's history (filter matches vs opponent) ────────────
+  const h2hMatches = homeForm.length && match.awayTeamId
+    ? homeForm.filter(e => e.homeTeam?.id === match.awayTeamId || e.awayTeam?.id === match.awayTeamId)
+              .filter(e => e.status?.type === 'finished').slice(-6)
+    : []
+
+  const h2hBlock = h2hMatches.length ? `
+ОЧНЫЕ ВСТРЕЧИ (последние ${h2hMatches.length}, реальные данные):
+${h2hMatches.map(e => {
+    const hs = e.homeScore?.normaltime ?? e.homeScore?.current ?? '?'
+    const as_ = e.awayScore?.normaltime ?? e.awayScore?.current ?? '?'
+    return `  ${e.homeTeam?.name} ${hs}:${as_} ${e.awayTeam?.name}`
+  }).join('\n')}` : ''
+
+  // ── Standings block ───────────────────────────────────────────────────────
+  let standingsBlock = ''
+  if (standings.length > 0) {
+    const findRow = (teamId) => {
+      for (const g of standings) {
+        const row = (g.rows || []).find(r => r.team?.id === teamId)
+        if (row) return row
+      }
+      return null
+    }
+    const hRow = findRow(match.homeTeamId)
+    const aRow = findRow(match.awayTeamId)
+    const fmt = (name, r) => r
+      ? `${name}: ${r.matches}и ${r.wins}П ${r.losses}П ${r.points}оч ГЗ/ГП=${r.scoresFor}/${r.scoresAgainst}`
+      : null
+    const lines = [fmt(match.home, hRow), fmt(match.away, aRow)].filter(Boolean)
+    if (lines.length) standingsBlock = `\nТУРНИРНАЯ ТАБЛИЦА (реальные данные):\n${lines.join('\n')}`
+  }
+
+  // ── Rules block ──────────────────────────────────────────────────────────
+  const dataRules = hasRealData
+    ? `══ ПРАВИЛА РАБОТЫ С ДАННЫМИ ══
+• ИСПОЛЬЗУЙ цифры из блоков выше — они из реальной базы данных
+• ЗАПРЕЩЕНО придумывать статистику которой нет в блоках выше
+• Про вратарей, PP%, PK% — пиши только если знаешь точно (это текущий сезон), иначе НЕ упоминай
+• В reasons ОБЯЗАТЕЛЬНО ссылайся на конкретные матчи из данных выше (счёт, серия побед/поражений)
+• Своими знаниями о командах дополняй контекст (стиль игры, ключевые игроки), но НЕ статистику`
+    : `══ ПРАВИЛА ══
+• Реальных данных из базы нет — опирайся на свои знания об этих командах
+• В dataWarning ОБЯЗАТЕЛЬНО укажи что это оценка на основе общих знаний, не свежей статистики
+• НЕ выдумывай конкретные цифры — пиши "по общим данным" или "предположительно"`
 
   const oddsBlock = match.odds1x2
     ? `КОЭФФИЦИЕНТЫ: П1 ${match.odds1x2.home}${match.odds1x2.draw ? ` | Ничья ${match.odds1x2.draw}` : ''} | П2 ${match.odds1x2.away}`
     : ''
-
   const scoreBlock = match.score ? `ТЕКУЩИЙ СЧЁТ: ${match.score}${match.minute ? ` (${match.minute} мин)` : ''}` : ''
 
-  return `Ты эксперт по хоккею. Используй свои знания об этих командах. Отвечай СТРОГО по-русски.
+  return `Ты профессиональный хоккейный аналитик. Отвечай СТРОГО по-русски.
 
 МАТЧ: ${match.home} vs ${match.away}
 ТУРНИР: ${leagueContext}
 ${scoreBlock}
 ${oddsBlock}
+${formBlock}
+${h2hBlock}
+${standingsBlock}
 
-Проанализируй матч:
-1. ФОРМА: последние 5-10 матчей каждой команды — кто на волне?
-2. ВРАТАРИ: это ключевой фактор в хоккее — сравни вратарей (% отражённых бросков, GAA)
-3. ГОЛЕВАЯ СТАТИСТИКА: среднее голов за матч, реализация большинства (PP%), надёжность меньшинства (PK%)
-4. ОЧНЫЕ ВСТРЕЧИ (h2h): история матчей этих команд в текущем и прошлых сезонах
-5. СТИЛЬ ИГРЫ: кто давит через скорость, кто через силовую игру, кто тактически?
-6. ОСОБЕННОСТИ: усталость (back-to-back игры), повреждения ключевых игроков
+${dataRules}
 
-${isNHL ? `НХЛ-СПЕЦИФИКА: нет обычных ничьих — только основное время или ОТ/буллиты. Тотал обычно 5.5-6.5 голов.` : ''}
-${isKHL ? `КХЛ-СПЕЦИФИКА: возможна ничья в основное время. Тотал обычно 4.5-5.5 голов. Русские клубы — учти домашнее преимущество.` : ''}
+ЗАДАЧА: предматчевый анализ.
+1. ФОРМА: кто на волне по данным выше? Сколько побед/поражений подряд?
+2. ОЧНЫЕ: как складывались последние встречи? Кто выигрывал чаще?
+3. ВРАТАРИ: только если знаешь реальное имя и % сейвов за ЭТОТ сезон
+4. СТИЛЬ: что знаешь об игровом стиле этих команд?
+5. ТОТАЛ: оцени сколько голов ожидается по форме
 
-СТАВКИ (ОБЯЗАТЕЛЬНО 3-4 штуки, коэф ≥ 1.75):
-- Тотал голов (больше/меньше 4.5, 5.5 или 6.5)
-- Победа в основное время (без ОТ)
+СТАВКИ (ОБЯЗАТЕЛЬНО 3-4 штуки, коэф ≥ 1.75, используй данные выше):
+- Тотал голов (больше/меньше 4.5 или 5.5) — обоснуй цифрами из истории встреч
+- Победа в основное время
 - Фора по голам
-- Первый гол забьёт команда X (если очевидный фаворит в старте)
-- Обе команды забьют 2+ / 3+ голов
+- Обе команды забьют 2+
 
 Ответь строго в JSON (без markdown):
 {
   "verdict": "кто победит и как (основное/ОТ/буллиты)",
-  "summary": "3-4 предложения глубокого анализа с именами игроков и конкретными фактами",
+  "summary": "3-4 предложения анализа — ТОЛЬКО факты из данных выше + известные факты о командах",
   "confidence": число 0-100,
   "risk": "low | medium | high",
   "fairOdds": "справедливый коэф на фаворита",
   "bookOdds": "коэф букмекера если есть",
   "value": число,
-  "reasons": ["факт 1", "факт 2", "факт 3", "факт 4"],
+  "dataWarning": "предупреждение если каких-то данных не хватает, или null",
+  "reasons": ["факт с КОНКРЕТНОЙ цифрой/матчем из данных 1", "факт 2", "факт 3", "факт 4"],
   "extraBets": [
     {
       "type": "Название ставки по-русски",
       "confidence": число 50-95,
-      "reason": "конкретное обоснование"
+      "reason": "цифра из данных: например 'из 6 очных Лока выиграла 4, тотал под 5.5 в 5 из 6'"
     }
   ],
   "bestOdds": []
