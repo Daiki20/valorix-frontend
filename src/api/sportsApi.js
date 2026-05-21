@@ -127,6 +127,16 @@ export async function getUpcomingHockeyMatches() {
   } catch { return [] }
 }
 
+// Get upcoming esports matches (CS2, Dota 2, Valorant, LoL)
+export async function getUpcomingEsportsMatches() {
+  try {
+    const res = await fetch(`${API_BASE}/matches/esports`)
+    if (!res.ok) return []
+    const { data } = await res.json()
+    return data || []
+  } catch { return [] }
+}
+
 // Get live matches — via backend proxy (avoids browser rate-limiting sstats)
 export async function getLiveMatches() {
   try {
@@ -815,6 +825,40 @@ ${isLive
   ],
   "bestOdds": []
 }`
+}
+
+// ── Esports analysis (direct match — not via screenshot) ────────────────────
+export async function analyzeEsportsMatch(matchInput) {
+  const match = { ...matchInput }
+  const game = match.game || 'cs2'
+
+  // Fetch real roster + rank + recent results in parallel with Dota meta
+  const [esportsCtx, dotaMeta] = await Promise.all([
+    getEsportsContext(
+      game,
+      match.home, match.away,
+      match.homePlayers || [],
+      match.awayPlayers || []
+    ).catch(() => ({})),
+    game === 'dota2' ? fetchDotaMeta().catch(() => null) : Promise.resolve(null),
+  ])
+
+  const matchObj = {
+    home: match.home,
+    away: match.away,
+    league: match.league || '',
+    score: match.score || null,
+    minute: match.minute || null,
+    odds1x2: match.odds1x2 || null,
+    homePlayers: match.homePlayers || [],
+    awayPlayers: match.awayPlayers || [],
+    dotaMeta,
+  }
+
+  const prompt = buildEsportsPrompt(matchObj, game, esportsCtx)
+  const cacheKey = `e_${game}_${(match.home || '').toLowerCase().replace(/\s/g, '')}_${(match.away || '').toLowerCase().replace(/\s/g, '')}`
+  const jsonStr = await callOpenAI(prompt, cacheKey)
+  return parseAnalysis(jsonStr, matchObj)
 }
 
 // ── Hockey analysis ─────────────────────────────────────────────────────────
