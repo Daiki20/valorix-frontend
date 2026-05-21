@@ -640,7 +640,7 @@ async function enrichAndAnalyze(matchInfo, game = 'football') {
       dotaMeta,
     }
     const prompt = buildEsportsPrompt(match, game, esportsCtx)
-    const cacheKey = `e_${game}_${(matchInfo.home||'').toLowerCase().replace(/\s/g,'')}_${(matchInfo.away||'').toLowerCase().replace(/\s/g,'')}`
+    const cacheKey = `e2_${game}_${(matchInfo.home||'').toLowerCase().replace(/\s/g,'')}_${(matchInfo.away||'').toLowerCase().replace(/\s/g,'')}`
     const jsonStr = await callOpenAI(prompt, cacheKey)
     const analysis = parseAnalysis(jsonStr, match)
     return {
@@ -857,7 +857,7 @@ export async function analyzeEsportsMatch(matchInput) {
   }
 
   const prompt = buildEsportsPrompt(matchObj, game, esportsCtx)
-  const cacheKey = `e_${game}_${(match.home || '').toLowerCase().replace(/\s/g, '')}_${(match.away || '').toLowerCase().replace(/\s/g, '')}`
+  const cacheKey = `e2_${game}_${(match.home || '').toLowerCase().replace(/\s/g, '')}_${(match.away || '').toLowerCase().replace(/\s/g, '')}`
   const jsonStr = await callOpenAI(prompt, cacheKey)
   return parseAnalysis(jsonStr, matchObj)
 }
