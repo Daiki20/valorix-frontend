@@ -22,13 +22,13 @@ const CONFIG = {
     label: 'Экспресс дня',
     sublabel: 'Высокодоходный',
     icon: <Flame size={14} color="white" fill="white" />,
-    gradient: 'linear-gradient(135deg, #d97706, #dc2626)',
-    accentLine: 'linear-gradient(90deg, #f59e0b, #dc2626)',
-    border: '#fde68a',
-    bg: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
-    numberBg: 'linear-gradient(135deg, #fef3c7, #fde68a)',
-    numberColor: '#d97706',
-    oddsColor: '#d97706',
+    gradient: 'linear-gradient(135deg, #ea580c, #dc2626)',
+    accentLine: 'linear-gradient(90deg, #f97316, #dc2626)',
+    border: '#fed7aa',
+    bg: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)',
+    numberBg: 'linear-gradient(135deg, #ffedd5, #fed7aa)',
+    numberColor: '#ea580c',
+    oddsColor: '#ea580c',
   },
 }
 
@@ -190,7 +190,7 @@ function ReasoningPanel({ picks, cfg }) {
   )
 }
 
-function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
+function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onUpdate }) {
   const { user, updateCoins } = useAuth()
   const [buying, setBuying] = useState(false)
   const [showSummary, setShowSummary] = useState(false)
@@ -211,7 +211,7 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
     if (!user) { onAuthRequired?.(); return }
     setBuying(true)
     try {
-      const res = await expressApi.purchase(type)
+      const res = await expressApi.purchase(type, sport)
       if (res.error) { alert(res.error); return }
       onUpdate(type, res)
       if (res.coins !== undefined) updateCoins(res.coins)
@@ -373,15 +373,40 @@ function SingleExpressCard({ data, type, onAuthRequired, onUpdate }) {
   )
 }
 
+const SPORT_OPTIONS = [
+  { id: 'football', label: 'Футбол',  emoji: '⚽', grad: 'linear-gradient(135deg, #2563eb, #7c3aed)', glow: 'rgba(37,99,235,0.35)' },
+  { id: 'hockey',   label: 'Хоккей',  emoji: '🏒', grad: 'linear-gradient(135deg, #0ea5e9, #2563eb)', glow: 'rgba(14,165,233,0.35)' },
+  { id: 'cs2',      label: 'CS2',     emoji: '🔫', grad: 'linear-gradient(135deg, #f97316, #ef4444)', glow: 'rgba(249,115,22,0.35)' },
+  { id: 'dota2',    label: 'Dota 2',  emoji: '🧙', grad: 'linear-gradient(135deg, #dc2626, #7c3aed)', glow: 'rgba(220,38,38,0.35)' },
+  { id: 'valorant', label: 'Valorant',emoji: '🎯', grad: 'linear-gradient(135deg, #ec4899, #ef4444)', glow: 'rgba(236,72,153,0.35)' },
+  { id: 'lol',      label: 'LoL',     emoji: '⚔️', grad: 'linear-gradient(135deg, #ea580c, #dc2626)', glow: 'rgba(234,88,12,0.35)'  },
+]
+
+const SPORT_LABEL_COLORS = {
+  football: { color1: '#2563eb', color2: '#7c3aed', border: '#93c5fd', bg: '#eff6ff' },
+  hockey:   { color1: '#0ea5e9', color2: '#2563eb', border: '#7dd3fc', bg: '#f0f9ff' },
+  cs2:      { color1: '#f97316', color2: '#ef4444', border: '#fdba74', bg: '#fff7ed' },
+  dota2:    { color1: '#dc2626', color2: '#7c3aed', border: '#f9a8d4', bg: '#fdf2f8' },
+  valorant: { color1: '#ec4899', color2: '#ef4444', border: '#fca5a5', bg: '#fff1f2' },
+  lol:      { color1: '#ea580c', color2: '#dc2626', border: '#fdba74', bg: '#fff7ed' },
+}
+
 export default function ExpressCard({ onAuthRequired }) {
   const { user } = useAuth()
+  const [selectedSport, setSelectedSport] = useState(null)
   const [standard, setStandard] = useState(null)
   const [high, setHigh] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [hoveredSport, setHoveredSport] = useState(null)
 
-  useEffect(() => {
-    expressApi.today()
+  function loadSport(sport) {
+    setSelectedSport(sport)
+    setLoading(true)
+    setError(null)
+    setStandard(null)
+    setHigh(null)
+    expressApi.today(sport)
       .then(data => {
         if (data.error) { setError(data.error); return }
         setStandard(data.standard || null)
@@ -389,16 +414,79 @@ export default function ExpressCard({ onAuthRequired }) {
       })
       .catch(() => setError('Не удалось загрузить экспресс'))
       .finally(() => setLoading(false))
-  }, [user?.id])
+  }
 
   function handleUpdate(type, newData) {
     if (type === 'standard') setStandard(newData)
     else setHigh(newData)
   }
 
+  // ── Sport selector ──────────────────────────────────────────────────────────
+  if (!selectedSport) {
+    return (
+      <div style={{ marginBottom: 24 }}>
+        <style>{RESPONSIVE_STYLES}</style>
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: '#1a1a2e', letterSpacing: 0.3, marginBottom: 4 }}>
+            ⚡ AI ЭКСПРЕСС
+          </div>
+          <div style={{ fontSize: 12, color: '#94a3b8' }}>Выберите вид спорта — AI составит два экспресса</div>
+        </div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 10,
+        }}>
+          {SPORT_OPTIONS.map(s => (
+            <button
+              key={s.id}
+              onClick={() => loadSport(s.id)}
+              onMouseEnter={() => setHoveredSport(s.id)}
+              onMouseLeave={() => setHoveredSport(null)}
+              style={{
+                background: s.grad,
+                color: 'white',
+                border: 'none',
+                borderRadius: 14,
+                padding: '14px 10px',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: 12,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 7,
+                boxShadow: hoveredSport === s.id
+                  ? `0 6px 20px ${s.glow}`
+                  : `0 2px 8px ${s.glow}`,
+                transform: hoveredSport === s.id ? 'translateY(-2px)' : 'none',
+                transition: 'all 0.18s ease',
+                lineHeight: 1.3,
+              }}
+            >
+              <span style={{ fontSize: 22 }}>{s.emoji}</span>
+              <span>AI Экспресс</span>
+              <span style={{ fontWeight: 900, fontSize: 13 }}>{s.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  // ── Loading ─────────────────────────────────────────────────────────────────
+  const sportInfo = SPORT_OPTIONS.find(s => s.id === selectedSport)
+
   if (loading) return (
     <>
       <style>{RESPONSIVE_STYLES}</style>
+      <div style={{ marginBottom: 8 }}>
+        <button onClick={() => setSelectedSport(null)} style={{
+          background: 'none', border: 'none', cursor: 'pointer',
+          fontSize: 13, color: '#64748b', fontWeight: 600,
+          display: 'flex', alignItems: 'center', gap: 4, padding: '4px 0',
+        }}>← Назад к выбору</button>
+      </div>
       <div className="express-grid">
         {[1, 2].map(i => (
           <div key={i} className="express-col">
@@ -414,33 +502,69 @@ export default function ExpressCard({ onAuthRequired }) {
     </>
   )
 
+  // ── Error / empty ───────────────────────────────────────────────────────────
   if (error || (!standard && !high)) return (
-    <div style={{
-      textAlign: 'center', padding: '40px 24px',
-      background: 'white', borderRadius: 16,
-      border: '1.5px dashed #e2e8f0',
-    }}>
-      <div style={{ fontSize: 40, marginBottom: 14 }}>📅</div>
-      <div style={{ fontWeight: 800, fontSize: 16, color: '#1a1a2e', marginBottom: 8 }}>
-        На завтра нет матчей в топ-лигах
+    <>
+      <style>{RESPONSIVE_STYLES}</style>
+      <div style={{ marginBottom: 8 }}>
+        <button onClick={() => setSelectedSport(null)} style={{
+          background: 'none', border: 'none', cursor: 'pointer',
+          fontSize: 13, color: '#64748b', fontWeight: 600,
+          display: 'flex', alignItems: 'center', gap: 4, padding: '4px 0',
+        }}>← Назад к выбору</button>
       </div>
-      <div style={{ fontSize: 13, color: '#94a3b8', maxWidth: 320, margin: '0 auto' }}>
-        В топовых лигах завтра нет игр. Экспресс появится когда будет достаточно матчей.
+      <div style={{
+        textAlign: 'center', padding: '40px 24px',
+        background: 'white', borderRadius: 16, border: '1.5px dashed #e2e8f0',
+      }}>
+        <div style={{ fontSize: 40, marginBottom: 14 }}>{sportInfo?.emoji || '📅'}</div>
+        <div style={{ fontWeight: 800, fontSize: 16, color: '#1a1a2e', marginBottom: 8 }}>
+          Экспресс генерируется...
+        </div>
+        <div style={{ fontSize: 13, color: '#94a3b8', maxWidth: 320, margin: '0 auto' }}>
+          {error || 'Нет доступных матчей. Попробуйте позже.'}
+        </div>
+        <button onClick={() => loadSport(selectedSport)} style={{
+          marginTop: 16, padding: '8px 20px', borderRadius: 10,
+          background: sportInfo?.grad || '#2563eb', color: 'white',
+          border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+        }}>Попробовать снова</button>
       </div>
-    </div>
+    </>
   )
 
+  // ── Express cards ───────────────────────────────────────────────────────────
+  const lc = SPORT_LABEL_COLORS[selectedSport] || SPORT_LABEL_COLORS.football
   return (
     <>
       <style>{RESPONSIVE_STYLES}</style>
+      <div style={{ marginBottom: 8 }}>
+        <button onClick={() => setSelectedSport(null)} style={{
+          background: 'none', border: 'none', cursor: 'pointer',
+          fontSize: 13, color: '#64748b', fontWeight: 600,
+          display: 'flex', alignItems: 'center', gap: 4, padding: '4px 0',
+        }}>← Назад к выбору</button>
+      </div>
       <div className="express-grid">
         <div className="express-col">
-          <ExpressLabel text="AI ЭКСПРЕСС · LITE" color1="#2563eb" color2="#7c3aed" border="#93c5fd" bg="#eff6ff" />
-          <SingleExpressCard data={standard} type="standard" onAuthRequired={onAuthRequired} onUpdate={handleUpdate} />
+          <ExpressLabel
+            text={`AI ЭКСПРЕСС ${sportInfo?.emoji || ''} · LITE`}
+            color1={lc.color1} color2={lc.color2} border={lc.border} bg={lc.bg}
+          />
+          <SingleExpressCard
+            data={standard} type="standard" sport={selectedSport}
+            onAuthRequired={onAuthRequired} onUpdate={handleUpdate}
+          />
         </div>
         <div className="express-col">
-          <ExpressLabel text="AI ЭКСПРЕСС · HARD" color1="#d97706" color2="#dc2626" border="#fcd34d" bg="#fffbeb" />
-          <SingleExpressCard data={high} type="high" onAuthRequired={onAuthRequired} onUpdate={handleUpdate} />
+          <ExpressLabel
+            text={`AI ЭКСПРЕСС ${sportInfo?.emoji || ''} · HARD`}
+            color1="#ea580c" color2="#dc2626" border="#fed7aa" bg="#fff7ed"
+          />
+          <SingleExpressCard
+            data={high} type="high" sport={selectedSport}
+            onAuthRequired={onAuthRequired} onUpdate={handleUpdate}
+          />
         </div>
       </div>
     </>
