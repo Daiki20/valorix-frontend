@@ -43,6 +43,7 @@ export default function Analyze() {
   const [esportsHome, setEsportsHome] = useState('')
   const [esportsAway, setEsportsAway] = useState('')
   const [esportsGame, setEsportsGame] = useState('cs2')
+  const [esportsGameFilter, setEsportsGameFilter] = useState('all')
 
   useEffect(() => {
     getUpcomingMatches(20)
@@ -366,41 +367,91 @@ export default function Analyze() {
 
         {activeTab === 'esports' && (
           <>
+            {/* Game filter sub-tabs */}
+            {!esportsLoading && (
+              <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
+                {[
+                  { id: 'all',      label: '🎮 Все' },
+                  { id: 'cs2',      label: '🔫 CS2' },
+                  { id: 'dota2',    label: '🧙 Dota 2' },
+                  { id: 'valorant', label: '🎯 Valorant' },
+                  { id: 'lol',      label: '⚔️ LoL' },
+                ].map(g => {
+                  const cnt = g.id === 'all' ? esportsMatches.length : esportsMatches.filter(m => m.game === g.id).length
+                  return (
+                    <button key={g.id} onClick={() => setEsportsGameFilter(g.id)} style={{
+                      padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+                      border: `1.5px solid ${esportsGameFilter === g.id ? '#8b5cf6' : '#e2e8f0'}`,
+                      background: esportsGameFilter === g.id ? '#f5f3ff' : 'white',
+                      color: esportsGameFilter === g.id ? '#7c3aed' : '#64748b',
+                      cursor: 'pointer', transition: 'all 0.15s',
+                      display: 'flex', alignItems: 'center', gap: 5,
+                    }}>
+                      {g.label}
+                      {cnt > 0 && (
+                        <span style={{
+                          background: esportsGameFilter === g.id ? '#8b5cf6' : '#e2e8f0',
+                          color: esportsGameFilter === g.id ? 'white' : '#64748b',
+                          borderRadius: 10, padding: '1px 6px', fontSize: 10, fontWeight: 800,
+                        }}>{cnt}</span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+
             {esportsLoading ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {[1,2,3,4].map(i => (
                   <div key={i} className="card" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <div className="skeleton" style={{ width: 34, height: 34, borderRadius: 10, flexShrink: 0 }} />
+                    <div className="skeleton" style={{ width: 34, height: 34, borderRadius: '50%', flexShrink: 0 }} />
                     <div className="skeleton" style={{ height: 15, flex: 1, maxWidth: 140 }} />
                     <div className="skeleton" style={{ height: 15, width: 60 }} />
                     <div className="skeleton" style={{ height: 15, flex: 1, maxWidth: 140 }} />
+                    <div className="skeleton" style={{ width: 34, height: 34, borderRadius: '50%', flexShrink: 0 }} />
                   </div>
                 ))}
               </div>
-            ) : esportsMatches.length > 0 ? (
-              <>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
-                  {esportsMatches.map(match => (
-                    <EsportsMatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} />
-                  ))}
+            ) : (() => {
+              const filtered = esportsGameFilter === 'all'
+                ? esportsMatches
+                : esportsMatches.filter(m => m.game === esportsGameFilter)
+              // Sort: live first, then by rawDate ascending (closest first)
+              const sorted = [...filtered].sort((a, b) => {
+                if (a.isLive && !b.isLive) return -1
+                if (!a.isLive && b.isLive) return 1
+                return new Date(a.rawDate || 0) - new Date(b.rawDate || 0)
+              })
+              return sorted.length > 0 ? (
+                <>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+                    {sorted.map(match => (
+                      <EsportsMatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} />
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setShowEsportsForm(f => !f)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      background: 'none', border: '1.5px dashed #cbd5e1',
+                      borderRadius: 10, padding: '10px 16px', cursor: 'pointer',
+                      fontSize: 13, fontWeight: 600, color: '#64748b',
+                      marginBottom: 16, width: '100%', transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#8b5cf6'; e.currentTarget.style.color = '#8b5cf6' }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.color = '#64748b' }}
+                  >
+                    {showEsportsForm ? '✕ Скрыть форму' : '+ Другой матч (ввести вручную)'}
+                  </button>
+                </>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8' }}>
+                  <div style={{ fontSize: 40, marginBottom: 12 }}>🎮</div>
+                  <p>Нет предстоящих матчей{esportsGameFilter !== 'all' ? ` по ${esportsGameFilter.toUpperCase()}` : ''}</p>
                 </div>
-                <button
-                  onClick={() => setShowEsportsForm(f => !f)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    background: 'none', border: '1.5px dashed #cbd5e1',
-                    borderRadius: 10, padding: '10px 16px', cursor: 'pointer',
-                    fontSize: 13, fontWeight: 600, color: '#64748b',
-                    marginBottom: 16, width: '100%',
-                    transition: 'all 0.15s',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#8b5cf6'; e.currentTarget.style.color = '#8b5cf6' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.color = '#64748b' }}
-                >
-                  {showEsportsForm ? '✕ Скрыть форму' : '+ Другой матч (ввести вручную)'}
-                </button>
-              </>
-            ) : null}
+              )
+            })()}
 
             {(showEsportsForm || (!esportsLoading && esportsMatches.length === 0)) && (
               <EsportsInputForm
@@ -852,10 +903,11 @@ function EsportsMatchRow({ match, onClick }) {
   const isLive = match.isLive
   const game = match.game || 'cs2'
   const colors = GAME_COLORS[game] || { bg: 'linear-gradient(135deg, #8b5cf6, #6d28d9)', emoji: '🎮' }
+  const odds = match.odds1x2
 
   return (
     <div
-      className="card"
+      className="card match-row"
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -868,51 +920,89 @@ function EsportsMatchRow({ match, onClick }) {
         background: isLive ? 'rgba(254,242,242,0.5)' : undefined,
       }}
     >
-      {/* Game icon */}
-      <div style={{
-        width: 34, height: 34, borderRadius: 10, flexShrink: 0,
-        background: colors.bg,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 16,
-      }}>{colors.emoji}</div>
-
-      {/* Teams + league */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          fontWeight: 700, fontSize: 13, color: '#1a1a2e',
-          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-        }}>
-          {match.home}
-          <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 400, margin: '0 5px' }}>vs</span>
-          {match.away}
-        </div>
-        <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
-          {match.league}{match.date ? ` · ${match.date}` : ''}
-        </div>
-      </div>
-
-      {/* Live badge */}
-      {isLive && (
-        <div style={{ textAlign: 'center', flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 3, justifyContent: 'center' }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', animation: 'pulse-ring 1.2s ease-out infinite' }} />
-            <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444' }}>LIVE</span>
+      {/* LEFT: logos + team names */}
+      <div className="match-row-teams" style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '0 1 auto', minWidth: 0 }}>
+        <EsportsTeamLogo name={match.home} img={match.homeImg} size={32} colors={colors} />
+        <div style={{ minWidth: 0, overflow: 'hidden' }}>
+          <div style={{
+            fontWeight: 700, fontSize: 13, color: '#1a1a2e',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>
+            {match.home}
+            <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 400, margin: '0 4px' }}>vs</span>
+            {match.away}
           </div>
-          {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#1a1a2e', marginTop: 2 }}>{match.score}</div>}
+          <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
+            {match.league}{match.date ? ` · ${match.date}` : ''}
+          </div>
         </div>
-      )}
-
-      {/* Analyze button */}
-      <div style={{
-        background: hovered ? '#8b5cf6' : '#f5f3ff',
-        color: hovered ? 'white' : '#7c3aed',
-        borderRadius: 20, padding: '6px 12px',
-        fontSize: 13, fontWeight: 600, flexShrink: 0,
-        display: 'flex', alignItems: 'center', gap: 5,
-        transition: 'all 0.15s',
-      }}>
-        <Zap size={13} /> Анализ
+        <EsportsTeamLogo name={match.away} img={match.awayImg} size={32} colors={colors} />
       </div>
+
+      {/* SPACER */}
+      <div style={{ flex: 1 }} />
+
+      {/* RIGHT: live score / odds / button */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        {isLive && (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 3, justifyContent: 'center' }}>
+              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', animation: 'pulse-ring 1.2s ease-out infinite' }} />
+              <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444' }}>LIVE</span>
+            </div>
+            {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#1a1a2e', marginTop: 2 }}>{match.score}</div>}
+          </div>
+        )}
+
+        {odds && !isLive && (
+          <div className="match-row-odds" style={{ display: 'flex', gap: 4 }}>
+            {[{ label: '1', val: odds.home }, { label: '2', val: odds.away }].map(o => (
+              <div key={o.label} style={{
+                textAlign: 'center', background: '#faf5ff',
+                border: '1px solid #ede9fe', borderRadius: 8, padding: '4px 7px', minWidth: 40,
+              }}>
+                <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600 }}>{o.label}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#7c3aed' }}>{o.val}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="match-row-btn" style={{
+          background: hovered ? '#8b5cf6' : '#f5f3ff',
+          color: hovered ? 'white' : '#7c3aed',
+          borderRadius: 20, padding: '6px 12px',
+          fontSize: 13, fontWeight: 600,
+          display: 'flex', alignItems: 'center', gap: 5,
+          transition: 'all 0.15s',
+        }}>
+          <Zap size={13} /> Анализ
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Team logo for esports — uses PandaScore CDN image, falls back to colored circle with game icon
+function EsportsTeamLogo({ name, img, size = 32, colors }) {
+  const [imgError, setImgError] = useState(false)
+  if (img && !imgError) {
+    return (
+      <img
+        src={img} alt={name}
+        onError={() => setImgError(true)}
+        style={{ width: size, height: size, borderRadius: '50%', objectFit: 'contain', background: '#f8fafc', flexShrink: 0 }}
+      />
+    )
+  }
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%', flexShrink: 0,
+      background: colors?.bg || 'linear-gradient(135deg,#8b5cf6,#6d28d9)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: size * 0.44, fontWeight: 800, color: 'white',
+    }}>
+      {(name || '?')[0].toUpperCase()}
     </div>
   )
 }
