@@ -43,7 +43,8 @@ export default function Analyze() {
   const [esportsHome, setEsportsHome] = useState('')
   const [esportsAway, setEsportsAway] = useState('')
   const [esportsGame, setEsportsGame] = useState('cs2')
-  const [esportsGameFilter, setEsportsGameFilter] = useState('all')
+  const [esportsGameFilter, setEsportsGameFilter] = useState('cs2')
+  const [liveFilter, setLiveFilter] = useState('football')
 
   useEffect(() => {
     getUpcomingMatches(20)
@@ -71,11 +72,16 @@ export default function Analyze() {
   }, [activeTab])
 
   useEffect(() => {
-    if (activeTab !== 'esports' || esportsMatches.length > 0) return
+    const needsEsports = activeTab === 'esports' || activeTab === 'live'
+    if (!needsEsports || esportsMatches.length > 0) return
     setEsportsLoading(true)
     getUpcomingEsportsMatches()
-      .then(m => { setEsportsMatches(m); if (m.length === 0) setShowEsportsForm(true) })
-      .catch(() => setShowEsportsForm(true))
+      .then(m => {
+        setEsportsMatches(m)
+        const nonLive = m.filter(x => !x.isLive)
+        if (nonLive.length === 0 && activeTab === 'esports') setShowEsportsForm(true)
+      })
+      .catch(() => { if (activeTab === 'esports') setShowEsportsForm(true) })
       .finally(() => setEsportsLoading(false))
   }, [activeTab])
 
@@ -367,17 +373,16 @@ export default function Analyze() {
 
         {activeTab === 'esports' && (
           <>
-            {/* Game filter sub-tabs */}
+            {/* Game filter sub-tabs (no "All", live excluded from this tab) */}
             {!esportsLoading && (
               <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
                 {[
-                  { id: 'all',      label: '🎮 Все' },
                   { id: 'cs2',      label: '🔫 CS2' },
                   { id: 'dota2',    label: '🧙 Dota 2' },
                   { id: 'valorant', label: '🎯 Valorant' },
                   { id: 'lol',      label: '⚔️ LoL' },
                 ].map(g => {
-                  const cnt = g.id === 'all' ? esportsMatches.length : esportsMatches.filter(m => m.game === g.id).length
+                  const cnt = esportsMatches.filter(m => m.game === g.id && !m.isLive).length
                   return (
                     <button key={g.id} onClick={() => setEsportsGameFilter(g.id)} style={{
                       padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
@@ -414,15 +419,12 @@ export default function Analyze() {
                 ))}
               </div>
             ) : (() => {
-              const filtered = esportsGameFilter === 'all'
-                ? esportsMatches
-                : esportsMatches.filter(m => m.game === esportsGameFilter)
-              // Sort: live first, then by rawDate ascending (closest first)
-              const sorted = [...filtered].sort((a, b) => {
-                if (a.isLive && !b.isLive) return -1
-                if (!a.isLive && b.isLive) return 1
-                return new Date(a.rawDate || 0) - new Date(b.rawDate || 0)
-              })
+              // Live matches go to the Live tab — exclude them here
+              const filtered = esportsMatches.filter(m => !m.isLive && m.game === esportsGameFilter)
+              // Sort by date ascending (closest first)
+              const sorted = [...filtered].sort((a, b) =>
+                new Date(a.rawDate || 0) - new Date(b.rawDate || 0)
+              )
               return sorted.length > 0 ? (
                 <>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
@@ -465,18 +467,80 @@ export default function Analyze() {
           </>
         )}
 
-        {activeTab === 'live' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {liveMatches.length > 0 ? liveMatches.map(match => (
-              <MatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} isLiveTab />
-            )) : (
-              <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8' }}>
-                <div style={{ fontSize: 40, marginBottom: 12 }}>🔴</div>
-                <p>Сейчас нет лайв матчей</p>
+        {activeTab === 'live' && (() => {
+          const LIVE_TABS = [
+            { id: 'football', label: '⚽ Футбол' },
+            { id: 'hockey',   label: '🏒 Хоккей' },
+            { id: 'cs2',      label: '🔫 CS2' },
+            { id: 'dota2',    label: '🧙 Dota 2' },
+            { id: 'valorant', label: '🎯 Valorant' },
+            { id: 'lol',      label: '⚔️ LoL' },
+          ]
+          const liveEsports = esportsMatches.filter(m => m.isLive)
+          const liveHockey  = hockeyMatches.filter(m => m.isLive)
+
+          const countFor = id => {
+            if (id === 'football') return liveMatches.length
+            if (id === 'hockey')   return liveHockey.length
+            return liveEsports.filter(m => m.game === id).length
+          }
+
+          const isEsportsFilter = !['football', 'hockey'].includes(liveFilter)
+          const currentMatches = liveFilter === 'football' ? liveMatches
+            : liveFilter === 'hockey' ? liveHockey
+            : liveEsports.filter(m => m.game === liveFilter)
+
+          return (
+            <>
+              {/* Live sport sub-tabs */}
+              <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
+                {LIVE_TABS.map(t => {
+                  const cnt = countFor(t.id)
+                  const isActive = liveFilter === t.id
+                  const accentColor = isEsportsFilter || t.id.match(/cs2|dota2|valorant|lol/) ? '#8b5cf6' : t.id === 'hockey' ? '#0ea5e9' : '#ef4444'
+                  return (
+                    <button key={t.id} onClick={() => setLiveFilter(t.id)} style={{
+                      padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+                      border: `1.5px solid ${isActive ? accentColor : '#e2e8f0'}`,
+                      background: isActive ? (t.id.match(/cs2|dota2|valorant|lol/) ? '#f5f3ff' : t.id === 'hockey' ? '#f0f9ff' : '#fff1f2') : 'white',
+                      color: isActive ? accentColor : '#64748b',
+                      cursor: 'pointer', transition: 'all 0.15s',
+                      display: 'flex', alignItems: 'center', gap: 5,
+                    }}>
+                      {t.label}
+                      {cnt > 0 && (
+                        <span style={{
+                          background: isActive ? accentColor : '#e2e8f0',
+                          color: isActive ? 'white' : '#64748b',
+                          borderRadius: 10, padding: '1px 6px', fontSize: 10, fontWeight: 800,
+                        }}>{cnt}</span>
+                      )}
+                    </button>
+                  )
+                })}
               </div>
-            )}
-          </div>
-        )}
+
+              {/* Live match list */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {currentMatches.length > 0
+                  ? currentMatches.map(match =>
+                      isEsportsFilter
+                        ? <EsportsMatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} />
+                        : liveFilter === 'hockey'
+                          ? <HockeyMatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} />
+                          : <MatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} isLiveTab />
+                    )
+                  : (
+                    <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8' }}>
+                      <div style={{ fontSize: 40, marginBottom: 12 }}>🔴</div>
+                      <p>Нет лайв матчей{liveFilter !== 'football' ? ` по ${LIVE_TABS.find(t => t.id === liveFilter)?.label || liveFilter}` : ''}</p>
+                    </div>
+                  )
+                }
+              </div>
+            </>
+          )
+        })()}
       </div>
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
     </div>
