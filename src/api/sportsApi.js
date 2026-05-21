@@ -117,6 +117,16 @@ const LEAGUE_PRIORITY = {
   106: 350, 383: 350, 218: 350,           // Poland / Czech / Slovakia
 }
 
+// Get upcoming hockey matches (NHL free API + КХЛ via sstats)
+export async function getUpcomingHockeyMatches() {
+  try {
+    const res = await fetch(`${API_BASE}/matches/hockey`)
+    if (!res.ok) return []
+    const { data } = await res.json()
+    return (data || []).map(g => ({ ...g, homeImg: null, awayImg: null }))
+  } catch { return [] }
+}
+
 // Get live matches — via backend proxy (avoids browser rate-limiting sstats)
 export async function getLiveMatches() {
   try {
