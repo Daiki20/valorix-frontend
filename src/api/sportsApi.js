@@ -807,6 +807,77 @@ ${isLive
 }`
 }
 
+// ── Hockey analysis ─────────────────────────────────────────────────────────
+
+export async function analyzeHockeyMatch(matchInput) {
+  const match = { ...matchInput }
+  const prompt = buildHockeyPrompt(match)
+  const cacheKey = `hk_${(match.home || '').toLowerCase().replace(/\s/g, '')}_${(match.away || '').toLowerCase().replace(/\s/g, '')}`
+  const jsonStr = await callOpenAI(prompt, cacheKey)
+  return parseAnalysis(jsonStr, match)
+}
+
+function buildHockeyPrompt(match) {
+  const isKHL = !match.league || match.league.toLowerCase().includes('кхл') || match.league.toLowerCase().includes('khl')
+  const isNHL = match.league?.toLowerCase().includes('нхл') || match.league?.toLowerCase().includes('nhl')
+  const leagueContext = isNHL
+    ? 'НХЛ (North American hockey, shootout determines winner, no draws)'
+    : isKHL
+      ? 'КХЛ (российский хоккей, возможна ничья в основное время + овертайм + буллиты)'
+      : match.league || 'хоккейный турнир'
+
+  const oddsBlock = match.odds1x2
+    ? `КОЭФФИЦИЕНТЫ: П1 ${match.odds1x2.home}${match.odds1x2.draw ? ` | Ничья ${match.odds1x2.draw}` : ''} | П2 ${match.odds1x2.away}`
+    : ''
+
+  const scoreBlock = match.score ? `ТЕКУЩИЙ СЧЁТ: ${match.score}${match.minute ? ` (${match.minute} мин)` : ''}` : ''
+
+  return `Ты эксперт по хоккею. Используй свои знания об этих командах. Отвечай СТРОГО по-русски.
+
+МАТЧ: ${match.home} vs ${match.away}
+ТУРНИР: ${leagueContext}
+${scoreBlock}
+${oddsBlock}
+
+Проанализируй матч:
+1. ФОРМА: последние 5-10 матчей каждой команды — кто на волне?
+2. ВРАТАРИ: это ключевой фактор в хоккее — сравни вратарей (% отражённых бросков, GAA)
+3. ГОЛЕВАЯ СТАТИСТИКА: среднее голов за матч, реализация большинства (PP%), надёжность меньшинства (PK%)
+4. ОЧНЫЕ ВСТРЕЧИ (h2h): история матчей этих команд в текущем и прошлых сезонах
+5. СТИЛЬ ИГРЫ: кто давит через скорость, кто через силовую игру, кто тактически?
+6. ОСОБЕННОСТИ: усталость (back-to-back игры), повреждения ключевых игроков
+
+${isNHL ? `НХЛ-СПЕЦИФИКА: нет обычных ничьих — только основное время или ОТ/буллиты. Тотал обычно 5.5-6.5 голов.` : ''}
+${isKHL ? `КХЛ-СПЕЦИФИКА: возможна ничья в основное время. Тотал обычно 4.5-5.5 голов. Русские клубы — учти домашнее преимущество.` : ''}
+
+СТАВКИ (ОБЯЗАТЕЛЬНО 3-4 штуки, коэф ≥ 1.75):
+- Тотал голов (больше/меньше 4.5, 5.5 или 6.5)
+- Победа в основное время (без ОТ)
+- Фора по голам
+- Первый гол забьёт команда X (если очевидный фаворит в старте)
+- Обе команды забьют 2+ / 3+ голов
+
+Ответь строго в JSON (без markdown):
+{
+  "verdict": "кто победит и как (основное/ОТ/буллиты)",
+  "summary": "3-4 предложения глубокого анализа с именами игроков и конкретными фактами",
+  "confidence": число 0-100,
+  "risk": "low | medium | high",
+  "fairOdds": "справедливый коэф на фаворита",
+  "bookOdds": "коэф букмекера если есть",
+  "value": число,
+  "reasons": ["факт 1", "факт 2", "факт 3", "факт 4"],
+  "extraBets": [
+    {
+      "type": "Название ставки по-русски",
+      "confidence": число 50-95,
+      "reason": "конкретное обоснование"
+    }
+  ],
+  "bestOdds": []
+}`
+}
+
 // --- Internal helpers ---
 
 // Extract 1X2 home win odds per bookmaker, sorted best first
