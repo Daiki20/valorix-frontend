@@ -414,7 +414,21 @@ export default function ExpressCard({ onAuthRequired }) {
     </>
   )
 
-  if (error || (!standard && !high)) return null
+  if (error || (!standard && !high)) return (
+    <div style={{
+      textAlign: 'center', padding: '40px 24px',
+      background: 'white', borderRadius: 16,
+      border: '1.5px dashed #e2e8f0',
+    }}>
+      <div style={{ fontSize: 40, marginBottom: 14 }}>📅</div>
+      <div style={{ fontWeight: 800, fontSize: 16, color: '#1a1a2e', marginBottom: 8 }}>
+        На завтра нет матчей в топ-лигах
+      </div>
+      <div style={{ fontSize: 13, color: '#94a3b8', maxWidth: 320, margin: '0 auto' }}>
+        В топовых лигах завтра нет игр. Экспресс появится когда будет достаточно матчей.
+      </div>
+    </div>
+  )
 
   return (
     <>
