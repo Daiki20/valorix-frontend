@@ -130,11 +130,13 @@ export async function getUpcomingHockeyMatches() {
     const res = await fetch(`${API_BASE}/matches/hockey`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return (data || []).map(g => ({
-      ...g,
-      homeImg: resolveImg(g.homeImg),
-      awayImg: resolveImg(g.awayImg),
-    }))
+    return (data || [])
+      .map(g => ({
+        ...g,
+        homeImg: resolveImg(g.homeImg),
+        awayImg: resolveImg(g.awayImg),
+      }))
+      .sort((a, b) => new Date(a.rawDate || 0) - new Date(b.rawDate || 0))
   } catch { return [] }
 }
 
@@ -161,12 +163,7 @@ export async function getUpcomingMatches(limit = 50) {
     return allGames
       .map(normalizeGame)
       .filter(m => m.odds1x2)
-      .sort((a, b) => {
-        const pa = LEAGUE_PRIORITY[a.leagueId] || 0
-        const pb = LEAGUE_PRIORITY[b.leagueId] || 0
-        if (pb !== pa) return pb - pa
-        return new Date(a.date) - new Date(b.date)
-      })
+      .sort((a, b) => new Date(a.rawData?.date || 0) - new Date(b.rawData?.date || 0))
       .slice(0, limit)
   } catch { return MOCK_MATCHES }
 }
