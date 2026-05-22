@@ -890,8 +890,8 @@ export async function analyzeHockeyMatch(matchInput) {
 }
 
 function buildHockeyPrompt(match, realStats = {}) {
-  const { homeForm = [], awayForm = [], standings = [] } = realStats
-  const hasRealData = homeForm.length > 0 || awayForm.length > 0 || standings.length > 0
+  const { homeForm = [], awayForm = [], standings = [], homeSeasonStats = null, awaySeasonStats = null } = realStats
+  const hasRealData = homeForm.length > 0 || awayForm.length > 0 || standings.length > 0 || !!homeSeasonStats || !!awaySeasonStats
 
   const isKHL  = match.league?.toLowerCase().includes('кхл') || match.league?.toLowerCase().includes('khl')
   const isNHL  = match.league?.toLowerCase().includes('нхл') || match.league?.toLowerCase().includes('nhl')
@@ -959,6 +959,27 @@ ${h2hMatches.map(e => {
     if (lines.length) standingsBlock = `\nТУРНИРНАЯ ТАБЛИЦА (реальные данные):\n${lines.join('\n')}`
   }
 
+  // ── Season statistics from IceHockeyApi (PP%, PK%, goals/game, shots) ───────
+  const formatSeasonStats = (stats, teamName) => {
+    if (!stats) return null
+    const lines = []
+    if (stats.goalsPerGame != null) lines.push(`  Голов за матч: ${Number(stats.goalsPerGame).toFixed(2)}`)
+    if (stats.goalsAgainstPerGame != null) lines.push(`  Пропускает за матч: ${Number(stats.goalsAgainstPerGame).toFixed(2)}`)
+    if (stats.powerPlayPercentage != null) lines.push(`  Большинство: ${Number(stats.powerPlayPercentage).toFixed(1)}%`)
+    if (stats.penaltyKillPercentage != null) lines.push(`  Меньшинство (нейтр.): ${Number(stats.penaltyKillPercentage).toFixed(1)}%`)
+    if (stats.shotsPerGame != null) lines.push(`  Бросков за матч: ${Number(stats.shotsPerGame).toFixed(1)}`)
+    const svp = stats.savePctg ?? stats.savePercentage
+    if (svp != null) lines.push(`  % сейвов вратаря: ${(Number(svp) * (Number(svp) > 1 ? 1 : 100)).toFixed(1)}%`)
+    if (stats.wins != null && stats.losses != null) lines.push(`  Победы/Поражения: ${stats.wins}П / ${stats.losses}П`)
+    return lines.length ? `${teamName}:\n${lines.join('\n')}` : null
+  }
+
+  const homeSeasonFmt = formatSeasonStats(homeSeasonStats, match.home)
+  const awaySeasonFmt = formatSeasonStats(awaySeasonStats, match.away)
+  const seasonStatsBlock = (homeSeasonFmt || awaySeasonFmt) ? `
+СТАТИСТИКА СЕЗОНА (реальные данные):
+${[homeSeasonFmt, awaySeasonFmt].filter(Boolean).join('\n\n')}` : ''
+
   // ── Rules block ──────────────────────────────────────────────────────────
   const dataRules = hasRealData
     ? `══ ПРАВИЛА РАБОТЫ С ДАННЫМИ ══
@@ -986,15 +1007,17 @@ ${oddsBlock}
 ${formBlock}
 ${h2hBlock}
 ${standingsBlock}
+${seasonStatsBlock}
 
 ${dataRules}
 
 ЗАДАЧА: предматчевый анализ.
 1. ФОРМА: кто на волне по данным выше? Сколько побед/поражений подряд?
 2. ОЧНЫЕ: как складывались последние встречи? Кто выигрывал чаще?
-3. ВРАТАРИ: только если знаешь реальное имя и % сейвов за ЭТОТ сезон
-4. СТИЛЬ: что знаешь об игровом стиле этих команд?
-5. ТОТАЛ: оцени сколько голов ожидается по форме
+3. СПЕЦБРИГАДЫ: если есть данные PP%/PK% выше — обязательно сравни большинство/меньшинство команд
+4. ВРАТАРИ: только если знаешь реальное имя и % сейвов за ЭТОТ сезон (или если данные в блоке выше)
+5. СТИЛЬ: что знаешь об игровом стиле этих команд?
+6. ТОТАЛ: оцени сколько голов ожидается по форме и голам за матч из статистики сезона
 
 СТАВКИ (ОБЯЗАТЕЛЬНО 3-4 штуки, коэф ≥ 1.75, используй данные выше):
 - Тотал голов (больше/меньше 4.5 или 5.5) — обоснуй цифрами из истории встреч
