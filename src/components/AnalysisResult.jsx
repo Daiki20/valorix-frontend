@@ -250,7 +250,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
         </div>
       )}
 
-      {/* Data warning (esports) */}
+      {/* Data warning */}
       {analysis.dataWarning && analysis.dataWarning !== 'null' && (
         <div style={{
           background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 12,

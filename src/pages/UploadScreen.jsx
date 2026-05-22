@@ -76,7 +76,7 @@ export default function UploadScreen() {
         matchHome: firstMatch?.home || 'Скриншот',
         matchAway: firstMatch?.away || '',
         league: firstMatch?.league || '',
-        sport: res?.screenType === 'esports' ? 'esports' : (res?.game || 'football'),
+        sport: res?.game || 'football',
         result: res,
       })
       updateCoins(data.coins)
