@@ -117,13 +117,24 @@ const LEAGUE_PRIORITY = {
   106: 350, 383: 350, 218: 350,           // Poland / Czech / Slovakia
 }
 
-// Get upcoming hockey matches (NHL free API + КХЛ via sstats)
+// Resolve image URL: relative paths get API_BASE prepended, absolute URLs pass through
+function resolveImg(url) {
+  if (!url) return null
+  if (url.startsWith('http')) return url          // absolute (NHL CDN etc.)
+  return `${API_BASE}${url}`                       // relative → proxy via backend
+}
+
+// Get upcoming hockey matches (NHL free API + ИИХФ/КХЛ via AllSportsApi2)
 export async function getUpcomingHockeyMatches() {
   try {
     const res = await fetch(`${API_BASE}/matches/hockey`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return (data || []).map(g => ({ ...g, homeImg: null, awayImg: null }))
+    return (data || []).map(g => ({
+      ...g,
+      homeImg: resolveImg(g.homeImg),
+      awayImg: resolveImg(g.awayImg),
+    }))
   } catch { return [] }
 }
 
