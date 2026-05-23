@@ -106,7 +106,7 @@ export default function Landing() {
         <div className="glow-divider" />
 
         {/* ── Express of the Day ── */}
-        <div id="express" style={{ maxWidth: 1440, margin: '0 auto', padding: '40px 32px 0' }}>
+        <div id="express" className="express-section" style={{ maxWidth: 1440, margin: '0 auto', padding: '40px 32px 0' }}>
           <div style={{ textAlign: 'center', marginBottom: 28 }}>
             <div className="badge" style={{ marginBottom: 12 }}>ЕЖЕДНЕВНО</div>
             <h2 style={{ fontSize: 36, fontWeight: 900, color: '#1a1a2e', letterSpacing: -1, margin: 0 }}>
@@ -229,7 +229,7 @@ export default function Landing() {
         </section>
 
         {/* ── CTA ── */}
-        <section style={{ padding: '100px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <section className="section-pad" style={{ padding: '100px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
           <div style={{
             position: 'absolute', inset: 0,
             background: 'radial-gradient(ellipse at center, rgba(37,99,235,0.07) 0%, transparent 70%)',

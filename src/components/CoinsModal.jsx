@@ -108,13 +108,13 @@ export default function CoinsModal({ onClose }) {
             <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', letterSpacing: 0.5, marginBottom: 10 }}>
               СПОСОБ ОПЛАТЫ
             </div>
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {PAYMENT_METHODS.map(m => (
                 <button
                   key={m.id}
                   onClick={() => setPaymentMethod(m.id)}
                   style={{
-                    flex: 1, padding: '10px 8px', borderRadius: 10,
+                    flex: '1 1 calc(50% - 4px)', minWidth: 80, padding: '10px 8px', borderRadius: 10,
                     border: `2px solid ${paymentMethod === m.id ? '#2563eb' : '#e2e8f0'}`,
                     background: paymentMethod === m.id ? '#eff6ff' : 'white',
                     cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center',
