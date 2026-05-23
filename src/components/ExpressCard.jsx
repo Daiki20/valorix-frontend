@@ -168,7 +168,7 @@ function ReasoningPanel({ picks, cfg }) {
               {i + 1}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 800, fontSize: 12, color: '#1a1a2e' }}>
+              <div style={{ fontWeight: 800, fontSize: 12, color: '#dde4ee' }}>
                 {pick.home} — {pick.away}
               </div>
               <div style={{ fontSize: 11, color: cfg.oddsColor, fontWeight: 700 }}>
@@ -176,8 +176,8 @@ function ReasoningPanel({ picks, cfg }) {
               </div>
             </div>
           </div>
-          <div style={{ padding: '10px 14px', background: 'white' }}>
-            <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.65 }}>
+          <div style={{ padding: '10px 14px', background: '#0c0f18' }}>
+            <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.65 }}>
               {pick.reasoning || 'Обоснование недоступно'}
             </div>
           </div>
@@ -246,7 +246,7 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
             {cfg.icon}
           </div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 900, fontSize: 14, color: '#1a1a2e', letterSpacing: -0.3 }}>
+            <div style={{ fontWeight: 900, fontSize: 14, color: '#dde4ee', letterSpacing: -0.3 }}>
               {cfg.label}
             </div>
             <div style={{ fontSize: 11, color: cfg.numberColor, fontWeight: 700 }}>
@@ -261,7 +261,7 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
         </div>
         {isPurchased ? (
           <div style={{
-            background: '#f0fdf4', color: '#16a34a', fontSize: 12,
+            background: 'rgba(34,197,94,0.08)', color: '#16a34a', fontSize: 12,
             fontWeight: 700, padding: '3px 10px', borderRadius: 20, border: '1px solid #bbf7d0',
             display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0,
           }}>
@@ -278,8 +278,8 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
         {data.picks?.map((pick, i) => (
           <div key={i} style={{
-            background: 'white', borderRadius: 10, padding: '10px 12px',
-            border: '1px solid #e2e8f0',
+            background: '#0c0f18', borderRadius: 10, padding: '10px 12px',
+            border: '1px solid rgba(255,255,255,0.07)',
             boxSizing: 'border-box',
           }}>
             <div className="express-pick-row">
@@ -491,10 +491,10 @@ export default function ExpressCard({ onAuthRequired }) {
       <SportTabs />
       <div style={{
         textAlign: 'center', padding: '40px 24px',
-        background: 'white', borderRadius: 16, border: '1.5px dashed #e2e8f0',
+        background: '#0c0f18', borderRadius: 16, border: '1.5px dashed #e2e8f0',
       }}>
         <div style={{ fontSize: 40, marginBottom: 14 }}>{sportInfo?.emoji || '📅'}</div>
-        <div style={{ fontWeight: 800, fontSize: 16, color: '#1a1a2e', marginBottom: 8 }}>
+        <div style={{ fontWeight: 800, fontSize: 16, color: '#dde4ee', marginBottom: 8 }}>
           Экспресс ещё не готов
         </div>
         <div style={{ fontSize: 13, color: '#94a3b8', maxWidth: 320, margin: '0 auto' }}>

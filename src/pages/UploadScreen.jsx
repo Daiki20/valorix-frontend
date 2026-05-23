@@ -92,7 +92,7 @@ export default function UploadScreen() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
+    <div style={{ minHeight: '100vh', background: '#07090f' }}>
       <Navbar />
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 24px' }}>
         <Link to="/" style={{
@@ -104,7 +104,7 @@ export default function UploadScreen() {
         </Link>
 
         <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 32, fontWeight: 900, color: '#1a1a2e', letterSpacing: -0.5, marginBottom: 8 }}>
+          <h1 style={{ fontSize: 32, fontWeight: 900, color: '#dde4ee', letterSpacing: -0.5, marginBottom: 8 }}>
             Загрузить скрин линии
           </h1>
           <p style={{ color: '#64748b', fontSize: 15 }}>
@@ -131,12 +131,12 @@ export default function UploadScreen() {
               style={{ display: 'none' }} onChange={e => handleFile(e.target.files[0])} />
             <div style={{
               width: 72, height: 72, borderRadius: '50%',
-              background: '#eff6ff', margin: '0 auto 16px',
+              background: 'rgba(163,255,78,0.08)', margin: '0 auto 16px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <Upload size={32} color="#2563eb" />
             </div>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e', marginBottom: 8 }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: '#dde4ee', marginBottom: 8 }}>
               Перетащи скриншот сюда
             </h3>
             <p style={{ color: '#94a3b8', fontSize: 14 }}>
@@ -148,7 +148,7 @@ export default function UploadScreen() {
             {/* Preview image */}
             <div style={{ position: 'relative', marginBottom: 16 }}>
               <img src={preview} alt="preview"
-                style={{ width: '100%', borderRadius: 10, maxHeight: 400, objectFit: 'contain', background: '#f8fafc' }} />
+                style={{ width: '100%', borderRadius: 10, maxHeight: 400, objectFit: 'contain', background: 'rgba(255,255,255,0.04)' }} />
               {!loading && !locked && !revealed && (
                 <button
                   onClick={() => { setFile(null); setPreview(null); setError(null) }}
@@ -177,7 +177,7 @@ export default function UploadScreen() {
 
             {error && (
               <div style={{
-                background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10,
+                background: 'rgba(220,38,38,0.08)', border: '1px solid #fecaca', borderRadius: 10,
                 padding: '14px 18px', display: 'flex', gap: 10, alignItems: 'center', marginTop: 12,
               }}>
                 <AlertCircle size={18} color="#ef4444" />
@@ -242,12 +242,12 @@ function LockedResult({ cost, userCoins, loading, onConfirm }) {
     <div style={{ position: 'relative', borderRadius: 16, overflow: 'hidden', marginTop: 16 }}>
       {/* Blurred fake content */}
       <div style={{ filter: 'blur(7px)', pointerEvents: 'none', userSelect: 'none' }}>
-        <div style={{ background: '#f8fafc', borderRadius: 12, padding: 20, marginBottom: 10 }}>
+        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 20, marginBottom: 10 }}>
           {[80, 60, 90, 50, 70].map((w, i) => (
             <div key={i} style={{ height: 14, background: '#e2e8f0', borderRadius: 6, marginBottom: 10, width: `${w}%` }} />
           ))}
         </div>
-        <div style={{ background: '#eff6ff', borderRadius: 12, padding: 20 }}>
+        <div style={{ background: 'rgba(163,255,78,0.08)', borderRadius: 12, padding: 20 }}>
           {[100, 75, 85].map((w, i) => (
             <div key={i} style={{ height: 16, background: '#bfdbfe', borderRadius: 6, marginBottom: 10, width: `${w}%` }} />
           ))}
@@ -263,20 +263,20 @@ function LockedResult({ cost, userCoins, loading, onConfirm }) {
         padding: 24,
       }}>
         <div style={{
-          background: 'white', borderRadius: 20,
+          background: '#0c0f18', borderRadius: 20,
           padding: '32px 36px', maxWidth: 360, width: '100%',
           textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
         }}>
           <div style={{
             width: 60, height: 60, borderRadius: '50%',
-            background: '#eff6ff', display: 'flex',
+            background: 'rgba(163,255,78,0.08)', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 16px',
           }}>
             <Lock size={26} color="#2563eb" />
           </div>
 
-          <div style={{ fontWeight: 800, fontSize: 18, color: '#1a1a2e', marginBottom: 6 }}>
+          <div style={{ fontWeight: 800, fontSize: 18, color: '#dde4ee', marginBottom: 6 }}>
             Анализ готов
           </div>
           <div style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>
@@ -284,11 +284,11 @@ function LockedResult({ cost, userCoins, loading, onConfirm }) {
           </div>
 
           <div style={{
-            background: '#f8fafc', borderRadius: 10, padding: '10px 16px',
+            background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '10px 16px',
             marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <span style={{ fontSize: 14, color: '#64748b' }}>Стоимость</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 800, fontSize: 16, color: '#1a1a2e' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 800, fontSize: 16, color: '#dde4ee' }}>
               <Zap size={15} color="#2563eb" fill="#2563eb" />
               {cost} монет
             </div>
@@ -296,7 +296,7 @@ function LockedResult({ cost, userCoins, loading, onConfirm }) {
 
           {notEnough && (
             <div style={{
-              background: '#fef2f2', border: '1px solid #fecaca',
+              background: 'rgba(220,38,38,0.08)', border: '1px solid #fecaca',
               borderRadius: 8, padding: '9px 12px',
               fontSize: 13, color: '#dc2626', marginBottom: 14,
             }}>

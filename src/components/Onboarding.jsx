@@ -51,7 +51,7 @@ export default function Onboarding({ onClose }) {
       }}>
         <div className="card" style={{ padding: '40px 36px', position: 'relative', overflow: 'hidden' }}>
           {/* Progress bar */}
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: '#f1f5f9' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'rgba(255,255,255,0.04)' }}>
             <div style={{
               height: '100%', background: 'linear-gradient(90deg, #2563eb, #7c3aed)',
               width: `${((step + 1) / STEPS.length) * 100}%`,
@@ -61,7 +61,7 @@ export default function Onboarding({ onClose }) {
 
           <button onClick={finish} style={{
             position: 'absolute', top: 14, right: 14,
-            background: '#f1f5f9', border: 'none', borderRadius: '50%',
+            background: 'rgba(255,255,255,0.04)', border: 'none', borderRadius: '50%',
             width: 30, height: 30, cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
@@ -89,7 +89,7 @@ export default function Onboarding({ onClose }) {
             {current.icon}
           </div>
 
-          <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1a1a2e', marginBottom: 12, lineHeight: 1.3 }}>
+          <h2 style={{ fontSize: 20, fontWeight: 800, color: '#dde4ee', marginBottom: 12, lineHeight: 1.3 }}>
             {current.title}
           </h2>
           <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.75, marginBottom: 24 }}>
@@ -98,7 +98,7 @@ export default function Onboarding({ onClose }) {
 
           {current.hint && (
             <div style={{
-              background: '#eff6ff', borderRadius: 10, padding: '10px 14px',
+              background: 'rgba(163,255,78,0.08)', borderRadius: 10, padding: '10px 14px',
               fontSize: 13, color: '#2563eb', fontWeight: 600,
               display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24,
             }}>
@@ -110,8 +110,8 @@ export default function Onboarding({ onClose }) {
           <div style={{ display: 'flex', gap: 10 }}>
             {step > 0 && (
               <button onClick={() => setStep(s => s - 1)} style={{
-                flex: 1, padding: '12px', border: '1.5px solid #e2e8f0',
-                borderRadius: 10, background: 'white', cursor: 'pointer',
+                flex: 1, padding: '12px', border: '1.5px solid rgba(255,255,255,0.07)',
+                borderRadius: 10, background: '#0c0f18', cursor: 'pointer',
                 fontSize: 14, fontWeight: 600, color: '#64748b',
               }}>
                 Назад

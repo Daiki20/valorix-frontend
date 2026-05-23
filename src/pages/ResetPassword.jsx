@@ -39,7 +39,7 @@ export default function ResetPassword() {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#f0f2f5',
+      minHeight: '100vh', background: '#07090f',
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
     }}>
       <div style={{ width: '100%', maxWidth: 420 }}>
@@ -51,12 +51,12 @@ export default function ResetPassword() {
           {done ? (
             <div style={{ textAlign: 'center' }}>
               <div style={{
-                width: 60, height: 60, borderRadius: '50%', background: '#f0fdf4',
+                width: 60, height: 60, borderRadius: '50%', background: 'rgba(34,197,94,0.08)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px',
               }}>
                 <CheckCircle size={30} color="#10b981" />
               </div>
-              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1a1a2e', marginBottom: 10 }}>Пароль изменён!</h2>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: '#dde4ee', marginBottom: 10 }}>Пароль изменён!</h2>
               <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
                 Теперь вы можете войти с новым паролем.
               </p>
@@ -67,7 +67,7 @@ export default function ResetPassword() {
           ) : (
             <>
               <div style={{ marginBottom: 24 }}>
-                <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1a1a2e', marginBottom: 6 }}>Новый пароль</h2>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: '#dde4ee', marginBottom: 6 }}>Новый пароль</h2>
                 <p style={{ color: '#64748b', fontSize: 14 }}>Введите новый пароль для вашего аккаунта</p>
               </div>
 
@@ -107,7 +107,7 @@ export default function ResetPassword() {
                 </div>
 
                 {error && (
-                  <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#dc2626', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#dc2626', display: 'flex', alignItems: 'center', gap: 8 }}>
                     <XCircle size={14} />
                     {error}
                   </div>
@@ -132,7 +132,7 @@ export default function ResetPassword() {
 
 const inputStyle = {
   width: '100%', padding: '12px 14px 12px 40px', paddingRight: 44,
-  border: '1.5px solid #e2e8f0', borderRadius: 10, fontSize: 14,
-  outline: 'none', background: 'white', transition: 'border-color 0.2s',
+  border: '1.5px solid rgba(255,255,255,0.07)', borderRadius: 10, fontSize: 14,
+  outline: 'none', background: '#0c0f18', transition: 'border-color 0.2s',
   fontFamily: 'Montserrat, sans-serif',
 }

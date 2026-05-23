@@ -12,7 +12,7 @@ export default function MatchPreviewCard() {
         <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, transparent, #e2e8f0)' }} />
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6,
-          background: '#eff6ff', border: '1.5px dashed #93c5fd',
+          background: 'rgba(163,255,78,0.08)', border: '1.5px dashed #93c5fd',
           borderRadius: 20, padding: '5px 14px',
           fontSize: 11, fontWeight: 700, letterSpacing: 0.8,
           textAlign: 'center', animation: 'samplePulse 2s ease-in-out infinite',
@@ -30,7 +30,7 @@ export default function MatchPreviewCard() {
       </div>
 
       <div style={{
-        background: 'white', borderRadius: 24,
+        background: '#0c0f18', borderRadius: 24,
         boxShadow: '0 24px 80px rgba(37,99,235,0.13), 0 4px 16px rgba(0,0,0,0.06)',
         overflow: 'hidden', width: '100%',
         border: '1px solid rgba(37,99,235,0.1)',
@@ -68,7 +68,7 @@ export default function MatchPreviewCard() {
               boxShadow: '0 4px 12px rgba(239,68,68,0.35)',
             }}>A</div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: 16, color: '#1a1a2e' }}>Arsenal</div>
+              <div style={{ fontWeight: 800, fontSize: 16, color: '#dde4ee' }}>Arsenal</div>
               <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 500 }}>Хозяева</div>
             </div>
           </div>
@@ -79,13 +79,13 @@ export default function MatchPreviewCard() {
               border: '1px solid rgba(37,99,235,0.15)',
               borderRadius: 10, padding: '4px 10px',
             }}>
-              <div style={{ fontSize: 13, fontWeight: 900, color: '#1a1a2e', letterSpacing: 1 }}>VS</div>
+              <div style={{ fontSize: 13, fontWeight: 900, color: '#dde4ee', letterSpacing: 1 }}>VS</div>
             </div>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontWeight: 800, fontSize: 16, color: '#1a1a2e' }}>Juventus</div>
+              <div style={{ fontWeight: 800, fontSize: 16, color: '#dde4ee' }}>Juventus</div>
               <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 500 }}>Гости</div>
             </div>
             <div style={{
@@ -144,7 +144,7 @@ export default function MatchPreviewCard() {
                     <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>увер.</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e', marginBottom: 2 }}>{bet.type}</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#dde4ee', marginBottom: 2 }}>{bet.type}</div>
                     <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.4 }}>{bet.reason}</div>
                   </div>
                 </div>
@@ -154,7 +154,7 @@ export default function MatchPreviewCard() {
         </div>
 
         {/* Tabs below extra bets */}
-        <div style={{ height: 1, background: '#f1f5f9', margin: '14px 0 0' }} />
+        <div style={{ height: 1, background: 'rgba(255,255,255,0.04)', margin: '14px 0 0' }} />
         <div className="preview-tabs" style={{ display: 'flex', padding: '12px 20px 0', gap: 6 }}>
           {TABS.map((tab, i) => (
             <button key={i} onClick={() => setActiveTab(i)} style={{
@@ -188,10 +188,10 @@ export default function MatchPreviewCard() {
               ].map((reason, i) => (
                 <div key={i} style={{
                   display: 'flex', alignItems: 'flex-start', gap: 8,
-                  padding: '9px 12px', background: '#f8fafc', borderRadius: 10,
+                  padding: '9px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: 10,
                 }}>
                   <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#2563eb', marginTop: 4, flexShrink: 0 }} />
-                  <span style={{ fontSize: 12, color: '#374151', lineHeight: 1.5 }}>{reason}</span>
+                  <span style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.5 }}>{reason}</span>
                 </div>
               ))}
             </div>
@@ -205,8 +205,8 @@ export default function MatchPreviewCard() {
 function StatBox({ label, value, sub, color, isGauge, isRisk }) {
   return (
     <div style={{
-      background: '#f8fafc', borderRadius: 12, padding: '10px 8px',
-      textAlign: 'center', border: '1px solid #e2e8f0',
+      background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '10px 8px',
+      textAlign: 'center', border: '1px solid rgba(255,255,255,0.07)',
     }}>
       <div style={{ fontSize: 9, color: '#94a3b8', marginBottom: 6, fontWeight: 700, letterSpacing: 0.5 }}>{label.toUpperCase()}</div>
       {isGauge ? (

@@ -5,7 +5,7 @@ import Logo from '../components/Logo'
 export default function NotFound() {
   return (
     <div style={{
-      minHeight: '100vh', background: '#f0f2f5',
+      minHeight: '100vh', background: '#07090f',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       padding: '24px', textAlign: 'center',
     }}>
@@ -22,7 +22,7 @@ export default function NotFound() {
         404
       </div>
 
-      <h1 style={{ fontSize: 24, fontWeight: 700, color: '#1a1a2e', marginBottom: 10 }}>
+      <h1 style={{ fontSize: 24, fontWeight: 700, color: '#dde4ee', marginBottom: 10 }}>
         Страница не найдена
       </h1>
       <p style={{ color: '#64748b', fontSize: 15, marginBottom: 36, maxWidth: 360 }}>

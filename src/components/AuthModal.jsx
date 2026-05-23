@@ -133,7 +133,7 @@ export default function AuthModal({ onClose }) {
         <div className="card" style={{ padding: '36px 32px', position: 'relative' }}>
           <button onClick={onClose} style={{
             position: 'absolute', top: 16, right: 16,
-            background: '#f1f5f9', border: 'none', borderRadius: '50%',
+            background: 'rgba(255,255,255,0.04)', border: 'none', borderRadius: '50%',
             width: 32, height: 32, cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
@@ -153,10 +153,10 @@ export default function AuthModal({ onClose }) {
                     <Shield size={26} color="white" />
                   </div>
                 </div>
-                <div style={{ fontSize: 18, fontWeight: 800, color: '#1a1a2e', marginBottom: 6 }}>Подтвердите email</div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: '#dde4ee', marginBottom: 6 }}>Подтвердите email</div>
                 <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>
                   Мы отправили 6-значный код на<br />
-                  <strong style={{ color: '#1a1a2e' }}>{form.email}</strong>
+                  <strong style={{ color: '#dde4ee' }}>{form.email}</strong>
                 </div>
               </div>
 
@@ -178,7 +178,7 @@ export default function AuthModal({ onClose }) {
                       }}
                       style={{
                         width: 46, height: 54, textAlign: 'center',
-                        fontSize: 22, fontWeight: 800, color: '#1a1a2e',
+                        fontSize: 22, fontWeight: 800, color: '#dde4ee',
                         border: `2px solid ${digit ? '#2563eb' : '#e2e8f0'}`,
                         borderRadius: 10, outline: 'none',
                         background: digit ? '#eff6ff' : 'white',
@@ -192,7 +192,7 @@ export default function AuthModal({ onClose }) {
                 </div>
 
                 {error && (
-                  <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#dc2626', marginBottom: 14 }}>
+                  <div style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#dc2626', marginBottom: 14 }}>
                     {error}
                   </div>
                 )}
@@ -245,7 +245,7 @@ export default function AuthModal({ onClose }) {
 
               {/* Tabs */}
               {mode !== 'forgot' && (
-                <div style={{ display: 'flex', background: '#f1f5f9', borderRadius: 10, padding: 4, marginBottom: 24 }}>
+                <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: 4, marginBottom: 24 }}>
                   {['login', 'register'].map(m => (
                     <button key={m} onClick={() => { setMode(m); setError('') }} style={{
                       flex: 1, padding: '8px', border: 'none', cursor: 'pointer',
@@ -277,7 +277,7 @@ export default function AuthModal({ onClose }) {
               {mode === 'forgot' && forgotSent ? (
                 <div style={{ textAlign: 'center', padding: '12px 0' }}>
                   <div style={{ fontSize: 40, marginBottom: 12 }}>📬</div>
-                  <p style={{ color: '#1a1a2e', fontWeight: 600, marginBottom: 8 }}>Письмо отправлено!</p>
+                  <p style={{ color: '#dde4ee', fontWeight: 600, marginBottom: 8 }}>Письмо отправлено!</p>
                   <p style={{ color: '#64748b', fontSize: 13 }}>
                     Проверьте почту <strong>{form.email}</strong> и перейдите по ссылке. Ссылка действует 1 час.
                   </p>
@@ -314,7 +314,7 @@ export default function AuthModal({ onClose }) {
                   )}
 
                   {error && (
-                    <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#dc2626' }}>
+                    <div style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#dc2626' }}>
                       {error}
                     </div>
                   )}
@@ -332,7 +332,7 @@ export default function AuthModal({ onClose }) {
               )}
 
               {mode === 'register' && (
-                <div style={{ marginTop: 16, padding: '12px 16px', background: '#eff6ff', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#1e40af' }}>
+                <div style={{ marginTop: 16, padding: '12px 16px', background: 'rgba(163,255,78,0.08)', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#1e40af' }}>
                   <Zap size={14} fill="#2563eb" color="#2563eb" />
                   <span><strong>38 монет</strong> в подарок при регистрации</span>
                 </div>
@@ -357,8 +357,8 @@ function Field({ icon, suffix, ...props }) {
         style={{
           width: '100%', padding: `12px 14px 12px 40px`,
           paddingRight: suffix ? 44 : 14,
-          border: '1.5px solid #e2e8f0', borderRadius: 10,
-          fontSize: 14, outline: 'none', background: 'white',
+          border: '1.5px solid rgba(255,255,255,0.07)', borderRadius: 10,
+          fontSize: 14, outline: 'none', background: '#0c0f18',
           transition: 'border-color 0.2s', boxSizing: 'border-box',
         }}
         onFocus={e => e.target.style.borderColor = '#2563eb'}

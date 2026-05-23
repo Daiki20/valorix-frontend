@@ -20,7 +20,7 @@ export default function History() {
   }, [])
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
+    <div style={{ minHeight: '100vh', background: '#07090f' }}>
       <Navbar />
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '40px 24px' }}>
         <Link to="/" style={{
@@ -31,7 +31,7 @@ export default function History() {
         </Link>
 
         <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 900, color: '#1a1a2e', letterSpacing: -0.5, marginBottom: 6 }}>
+          <h1 style={{ fontSize: 28, fontWeight: 900, color: '#dde4ee', letterSpacing: -0.5, marginBottom: 6 }}>
             История анализов
           </h1>
           <p style={{ color: '#64748b', fontSize: 14 }}>
@@ -55,7 +55,7 @@ export default function History() {
         ) : history.length === 0 ? (
           <div className="card" style={{ padding: '64px 32px', textAlign: 'center' }}>
             <Search size={48} color="#cbd5e1" style={{ margin: '0 auto 16px', display: 'block' }} />
-            <div style={{ fontWeight: 700, fontSize: 18, color: '#1a1a2e', marginBottom: 8 }}>
+            <div style={{ fontWeight: 700, fontSize: 18, color: '#dde4ee', marginBottom: 8 }}>
               Анализов пока нет
             </div>
             <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
@@ -97,11 +97,11 @@ function AnalysisModal({ item, onClose }) {
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0,
         width: '100%', maxWidth: 640, zIndex: 201,
-        overflowY: 'auto', background: '#f0f2f5', padding: '24px 20px',
+        overflowY: 'auto', background: '#07090f', padding: '24px 20px',
         boxShadow: '-8px 0 32px rgba(0,0,0,0.15)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <div style={{ fontWeight: 800, fontSize: 18, color: '#1a1a2e' }}>
+          <div style={{ fontWeight: 800, fontSize: 18, color: '#dde4ee' }}>
             {item.match_home} — {item.match_away}
           </div>
           <button onClick={onClose} style={{
@@ -145,7 +145,7 @@ function HistoryRow({ item, onClick }) {
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: '#1a1a2e', marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div style={{ fontWeight: 700, fontSize: 15, color: '#dde4ee', marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {item.match_home} — {item.match_away}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: '#94a3b8' }}>

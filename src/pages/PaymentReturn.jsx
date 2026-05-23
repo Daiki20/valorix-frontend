@@ -37,7 +37,7 @@ export default function PaymentReturn() {
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: '#f0f2f5', padding: 24,
+      background: '#07090f', padding: 24,
     }}>
       <div className="card" style={{ padding: '48px 40px', maxWidth: 400, width: '100%', textAlign: 'center' }}>
         {status === 'checking' && (
@@ -45,7 +45,7 @@ export default function PaymentReturn() {
             <div style={{ marginBottom: 20 }}>
               <Loader size={48} color="#2563eb" style={{ animation: 'spin 1s linear infinite' }} />
             </div>
-            <div style={{ fontWeight: 700, fontSize: 18, color: '#1a1a2e', marginBottom: 8 }}>
+            <div style={{ fontWeight: 700, fontSize: 18, color: '#dde4ee', marginBottom: 8 }}>
               Проверяем оплату...
             </div>
             <div style={{ color: '#64748b', fontSize: 14 }}>Пожалуйста, подождите</div>
@@ -57,19 +57,19 @@ export default function PaymentReturn() {
             <div style={{ marginBottom: 20 }}>
               <CheckCircle size={56} color="#16a34a" />
             </div>
-            <div style={{ fontWeight: 800, fontSize: 22, color: '#1a1a2e', marginBottom: 8 }}>
+            <div style={{ fontWeight: 800, fontSize: 22, color: '#dde4ee', marginBottom: 8 }}>
               Оплата прошла!
             </div>
             <div style={{ color: '#64748b', fontSize: 15, marginBottom: 24 }}>
               Монеты зачислены на ваш счёт
             </div>
             <div style={{
-              background: '#eff6ff', borderRadius: 12, padding: '16px',
+              background: 'rgba(163,255,78,0.08)', borderRadius: 12, padding: '16px',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               marginBottom: 28,
             }}>
               <Zap size={20} color="#2563eb" fill="#2563eb" />
-              <span style={{ fontWeight: 800, fontSize: 22, color: '#1a1a2e' }}>
+              <span style={{ fontWeight: 800, fontSize: 22, color: '#dde4ee' }}>
                 {coins} монет
               </span>
             </div>
@@ -91,7 +91,7 @@ export default function PaymentReturn() {
             <div style={{ marginBottom: 20 }}>
               <XCircle size={56} color="#dc2626" />
             </div>
-            <div style={{ fontWeight: 800, fontSize: 22, color: '#1a1a2e', marginBottom: 8 }}>
+            <div style={{ fontWeight: 800, fontSize: 22, color: '#dde4ee', marginBottom: 8 }}>
               Не удалось подтвердить
             </div>
             <div style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>

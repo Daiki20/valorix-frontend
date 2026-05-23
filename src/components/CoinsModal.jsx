@@ -51,7 +51,7 @@ export default function CoinsModal({ onClose }) {
         <div className="card" style={{ padding: '36px 32px', position: 'relative' }}>
           <button onClick={onClose} style={{
             position: 'absolute', top: 16, right: 16,
-            background: '#f1f5f9', border: 'none', borderRadius: '50%',
+            background: 'rgba(255,255,255,0.04)', border: 'none', borderRadius: '50%',
             width: 32, height: 32, cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
@@ -59,7 +59,7 @@ export default function CoinsModal({ onClose }) {
           </button>
 
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <div style={{ fontWeight: 900, fontSize: 20, color: '#1a1a2e', marginBottom: 4 }}>
+            <div style={{ fontWeight: 900, fontSize: 20, color: '#dde4ee', marginBottom: 4 }}>
               Пополнить монеты
             </div>
             <div style={{ fontSize: 14, color: '#64748b' }}>
@@ -88,7 +88,7 @@ export default function CoinsModal({ onClose }) {
                     <Zap size={16} color={selectedId === pkg.id ? 'white' : '#94a3b8'} fill={selectedId === pkg.id ? 'white' : 'none'} />
                   </div>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: 15, color: '#1a1a2e' }}>{pkg.label}</div>
+                    <div style={{ fontWeight: 700, fontSize: 15, color: '#dde4ee' }}>{pkg.label}</div>
                     {pkg.bonus && (
                       <div style={{ fontSize: 12, color: '#16a34a', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
                         <Star size={10} fill="#16a34a" color="#16a34a" /> {pkg.bonus}

@@ -4,14 +4,14 @@ import Logo from '../components/Logo'
 
 export default function Privacy() {
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
+    <div style={{ minHeight: '100vh', background: '#07090f' }}>
       <Navbar />
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '48px 24px 80px' }}>
 
         <div className="card" style={{ padding: '48px 48px' }}>
           <div style={{ marginBottom: 36 }}>
             <div className="badge" style={{ marginBottom: 16 }}>Юридический документ</div>
-            <h1 style={{ fontSize: 28, fontWeight: 800, color: '#1a1a2e', marginBottom: 8 }}>
+            <h1 style={{ fontSize: 28, fontWeight: 800, color: '#dde4ee', marginBottom: 8 }}>
               Политика конфиденциальности
             </h1>
             <p style={{ color: '#94a3b8', fontSize: 13 }}>
@@ -19,7 +19,7 @@ export default function Privacy() {
             </p>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 32, color: '#374151', fontSize: 15, lineHeight: 1.8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 32, color: '#94a3b8', fontSize: 15, lineHeight: 1.8 }}>
 
             <section>
               <h2 style={h2}>1. Оператор персональных данных</h2>
@@ -173,12 +173,12 @@ export default function Privacy() {
   )
 }
 
-const h2 = { fontSize: 17, fontWeight: 700, color: '#1a1a2e', marginBottom: 10 }
-const divider = { height: 1, background: '#f1f5f9' }
+const h2 = { fontSize: 17, fontWeight: 700, color: '#dde4ee', marginBottom: 10 }
+const divider = { height: 1, background: 'rgba(255,255,255,0.04)' }
 const ul = { paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 6, margin: '10px 0' }
 const linkStyle = { color: '#2563eb', textDecoration: 'none', fontWeight: 600 }
 const infoBox = {
-  background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10,
+  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10,
   padding: '14px 18px', marginTop: 12, fontSize: 14,
   display: 'flex', flexDirection: 'column', gap: 6,
 }

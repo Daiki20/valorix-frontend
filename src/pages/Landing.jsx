@@ -9,6 +9,16 @@ import ExpressCard from '../components/ExpressCard'
 import AuthModal from '../components/AuthModal'
 import { useAuth } from '../context/AuthContext'
 
+const ACCENT = '#a3ff4e'
+const ACCENT_DIM = 'rgba(163,255,78,0.12)'
+const ACCENT_GLOW = 'rgba(163,255,78,0.22)'
+const BG = '#07090f'
+const BG2 = '#0c0f18'
+const CARD = 'rgba(255,255,255,0.03)'
+const CARD_BORDER = 'rgba(255,255,255,0.07)'
+const TEXT = '#dde4ee'
+const TEXT_MUTED = '#556070'
+
 export default function Landing() {
   const { user } = useAuth()
   const [showOnboarding, setShowOnboarding] = useState(false)
@@ -24,25 +34,30 @@ export default function Landing() {
   }, [user])
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f2f5', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: BG, position: 'relative', overflow: 'hidden' }}>
 
-      {/* Global ambient orbs */}
+      {/* Ambient orbs */}
       <div style={{
-        position: 'absolute', top: -200, right: -150, width: 700, height: 700,
-        background: 'radial-gradient(circle, rgba(37,99,235,0.10) 0%, transparent 65%)',
+        position: 'fixed', top: -200, right: -150, width: 700, height: 700,
+        background: 'radial-gradient(circle, rgba(163,255,78,0.06) 0%, transparent 65%)',
         borderRadius: '50%', pointerEvents: 'none', zIndex: 0,
         animation: 'floatOrb 9s ease-in-out infinite',
       }} />
       <div style={{
-        position: 'absolute', bottom: -150, left: -100, width: 600, height: 600,
-        background: 'radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 65%)',
+        position: 'fixed', bottom: -200, left: -150, width: 600, height: 600,
+        background: 'radial-gradient(circle, rgba(91,255,158,0.04) 0%, transparent 65%)',
         borderRadius: '50%', pointerEvents: 'none', zIndex: 0,
-        animation: 'floatOrb 12s ease-in-out infinite reverse',
+        animation: 'floatOrb 13s ease-in-out infinite reverse',
       }} />
+
       <style>{`
         @keyframes floatOrb {
           0%,100% { transform: translateY(0) scale(1); }
-          50% { transform: translateY(-28px) scale(1.05); }
+          50% { transform: translateY(-30px) scale(1.06); }
+        }
+        @keyframes scanline {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100vh); }
         }
       `}</style>
 
@@ -50,53 +65,87 @@ export default function Landing() {
         <Navbar />
 
         {/* ── Hero ── */}
-        <section className="grid-bg section-pad" style={{ padding: '88px 24px 72px', position: 'relative', overflow: 'hidden' }}>
-          <div className="container" style={{ maxWidth: 1200, margin: '0 auto' }}>
-            <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+        <section className="grid-bg section-pad" style={{ padding: '96px 24px 80px', position: 'relative', overflow: 'hidden' }}>
+          {/* Subtle noise/texture overlay */}
+          <div style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(163,255,78,0.05) 0%, transparent 70%)',
+          }} />
+
+          <div className="container" style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
+            <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center' }}>
               <div style={{ animation: 'fadeInUp 0.6s ease forwards' }}>
-                <div className="badge" style={{ marginBottom: 20 }}>
-                  ✦ AI АНАЛИТИКА СПОРТИВНЫХ МАТЧЕЙ
+
+                {/* New pill badge */}
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  background: ACCENT_DIM, border: `1px solid rgba(163,255,78,0.2)`,
+                  borderRadius: 50, padding: '6px 16px 6px 10px',
+                  marginBottom: 28,
+                }}>
+                  <span style={{
+                    background: ACCENT, color: BG, borderRadius: 50,
+                    padding: '2px 8px', fontSize: 11, fontWeight: 800, letterSpacing: 0.5,
+                  }}>NEW</span>
+                  <span style={{ color: ACCENT, fontSize: 13, fontWeight: 600, letterSpacing: 0.3 }}>
+                    AI-аналитика нового поколения
+                  </span>
                 </div>
-                <h1 className="hero-title" style={{ fontSize: 52, fontWeight: 900, lineHeight: 1.1, color: '#1a1a2e', marginBottom: 20, letterSpacing: -1.5 }}>
-                  Принимай умные<br />решения с{' '}
-                  <span className="gradient-text">AI‑АНАЛИТИКОЙ</span>
+
+                <h1 className="hero-title" style={{
+                  fontSize: 54, fontWeight: 800, lineHeight: 1.07,
+                  color: TEXT, marginBottom: 22, letterSpacing: -2,
+                }}>
+                  Принимай умные<br />
+                  решения с{' '}
+                  <span className="gradient-text" style={{ fontStyle: 'italic' }}>AI‑анализом</span>
                 </h1>
-                <p className="hero-subtitle" style={{ fontSize: 16, color: '#64748b', lineHeight: 1.75, marginBottom: 36, maxWidth: 460, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
+
+                <p className="hero-subtitle" style={{
+                  fontSize: 16, color: TEXT_MUTED, lineHeight: 1.8,
+                  marginBottom: 40, maxWidth: 460, overflowWrap: 'break-word',
+                }}>
                   Выбирай матч или загружай скрин линии — AI проанализирует форму команд,
-                  игроков, травмы, риски и покажет в какой{' '}
-                  <span style={{ color: '#2563eb', fontWeight: 600 }}>букмекерской конторе лучший коэффициент</span>
+                  игроков, травмы, риски и покажет где{' '}
+                  <span style={{ color: ACCENT, fontWeight: 600 }}>лучший коэффициент</span>
                 </p>
-                <div className="hero-buttons" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 40 }}>
+
+                <div className="hero-buttons" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 44 }}>
                   <Link to="/analyze" className="btn-primary">
                     <Search size={16} />
                     Анализ матча
-                    <span style={{ background: 'rgba(255,255,255,0.2)', borderRadius: 20, padding: '2px 8px', fontSize: 12, fontWeight: 700 }}>19</span>
-                    <Zap size={14} fill="white" />
+                    <span style={{
+                      background: 'rgba(7,9,15,0.25)', borderRadius: 20,
+                      padding: '2px 8px', fontSize: 12, fontWeight: 800,
+                    }}>19</span>
+                    <Zap size={14} fill={BG} color={BG} />
                   </Link>
                   <Link to="/upload" className="btn-outline">
                     <Upload size={16} />
                     Загрузить скрин
-                    <span style={{ background: '#1a1a2e', borderRadius: 20, padding: '2px 8px', fontSize: 12, fontWeight: 700, color: 'white' }}>19</span>
-                    <Zap size={14} />
+                    <span style={{
+                      background: ACCENT_DIM, borderRadius: 20,
+                      padding: '2px 8px', fontSize: 12, fontWeight: 800, color: ACCENT,
+                    }}>19</span>
                   </Link>
                 </div>
 
                 {/* Stats row */}
-                <div className="hero-stats" style={{ display: 'flex', gap: 32 }}>
+                <div className="hero-stats" style={{ display: 'flex', gap: 36 }}>
                   {[
                     { num: '10 000+', label: 'Анализов сделано' },
-                    { num: '73%', label: 'Точность прогнозов' },
-                    { num: '< 15с', label: 'Время анализа' },
+                    { num: '73%',     label: 'Точность прогнозов' },
+                    { num: '< 15с',   label: 'Время анализа' },
                   ].map((s, i) => (
                     <div key={i}>
-                      <div className="stat-number" style={{ fontSize: 22, fontWeight: 900, letterSpacing: -0.5 }}>{s.num}</div>
-                      <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500, marginTop: 2 }}>{s.label}</div>
+                      <div className="stat-number" style={{ fontSize: 22, fontWeight: 800, letterSpacing: -0.5 }}>{s.num}</div>
+                      <div style={{ fontSize: 12, color: TEXT_MUTED, fontWeight: 500, marginTop: 3 }}>{s.label}</div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="hero-card-wrap" style={{ display: 'flex', justifyContent: 'flex-end', animation: 'fadeInUp 0.7s ease 0.1s both' }}>
+              <div className="hero-card-wrap" style={{ display: 'flex', justifyContent: 'flex-end', animation: 'fadeInUp 0.7s ease 0.12s both' }}>
                 <MatchPreviewCard />
               </div>
             </div>
@@ -106,60 +155,79 @@ export default function Landing() {
         <div className="glow-divider" />
 
         {/* ── Express of the Day ── */}
-        <div id="express" className="express-section" style={{ maxWidth: 1440, margin: '0 auto', padding: '40px 32px 0' }}>
-          <div style={{ textAlign: 'center', marginBottom: 28 }}>
-            <div className="badge" style={{ marginBottom: 12 }}>ЕЖЕДНЕВНО</div>
-            <h2 style={{ fontSize: 36, fontWeight: 900, color: '#1a1a2e', letterSpacing: -1, margin: 0 }}>
-              Топовые AI экспрессы
+        <div id="express" className="express-section" style={{ maxWidth: 1440, margin: '0 auto', padding: '56px 32px 0' }}>
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            <div className="badge" style={{ marginBottom: 14 }}>ЕЖЕДНЕВНО</div>
+            <h2 style={{ fontSize: 38, fontWeight: 800, color: TEXT, letterSpacing: -1.2, margin: 0 }}>
+              Топовые <span className="gradient-text">AI‑экспрессы</span>
             </h2>
-            <p style={{ color: '#64748b', fontSize: 15, marginTop: 10, marginBottom: 0 }}>
-              Каждый день — два готовых экспресса на основе реальных коэффициентов
+            <p style={{ color: TEXT_MUTED, fontSize: 15, marginTop: 12 }}>
+              Каждый день — готовые экспрессы на основе реальных коэффициентов
             </p>
           </div>
           <ExpressCard onAuthRequired={() => setShowAuth(true)} />
         </div>
 
         {/* ── How it works ── */}
-        <section id="how" className="section-pad" style={{ background: 'white', padding: '88px 24px', position: 'relative', overflow: 'hidden' }}>
+        <section id="how" className="section-pad" style={{
+          background: BG2, padding: '96px 24px', position: 'relative', overflow: 'hidden',
+        }}>
           <div style={{
-            position: 'absolute', top: -100, left: '50%', transform: 'translateX(-50%)',
-            width: 800, height: 300,
-            background: 'radial-gradient(ellipse, rgba(37,99,235,0.05) 0%, transparent 70%)',
+            position: 'absolute', top: -80, left: '50%', transform: 'translateX(-50%)',
+            width: 900, height: 300,
+            background: 'radial-gradient(ellipse, rgba(163,255,78,0.04) 0%, transparent 70%)',
             pointerEvents: 'none',
           }} />
           <div className="container" style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
-            <div style={{ textAlign: 'center', marginBottom: 60 }}>
-              <div className="badge" style={{ marginBottom: 14 }}>КАК ЭТО РАБОТАЕТ</div>
-              <h2 className="section-title" style={{ fontSize: 38, fontWeight: 900, color: '#1a1a2e', letterSpacing: -1 }}>
+            <div style={{ textAlign: 'center', marginBottom: 64 }}>
+              <div className="badge" style={{ marginBottom: 16 }}>КАК ЭТО РАБОТАЕТ</div>
+              <h2 className="section-title" style={{ fontSize: 40, fontWeight: 800, color: TEXT, letterSpacing: -1.2 }}>
                 Три шага до умного прогноза
               </h2>
             </div>
-            <div className="steps-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+            <div className="steps-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
               {[
-                { icon: <Search size={26} color="#2563eb" />, step: '01', title: 'Выбери матч', desc: 'Найди предстоящий матч по названию команды или лиге. Или загрузи скрин линии букмекера.' },
-                { icon: <Zap size={26} color="#2563eb" />, step: '02', title: 'AI анализирует', desc: 'Система изучает форму команд, травмы, новости, статистику личных встреч и сотни других факторов.' },
-                { icon: <TrendingUp size={26} color="#2563eb" />, step: '03', title: 'Получи прогноз', desc: 'Чёткий вердикт с индексом доверия, оценкой рисков и лучшими коэффициентами у букмекеров.' },
+                {
+                  icon: <Search size={24} color={ACCENT} />,
+                  step: '01',
+                  title: 'Выбери матч',
+                  desc: 'Найди предстоящий матч по названию команды или лиге. Или загрузи скрин линии букмекера.',
+                },
+                {
+                  icon: <Zap size={24} color={ACCENT} />,
+                  step: '02',
+                  title: 'AI анализирует',
+                  desc: 'Система изучает форму команд, травмы, новости, статистику личных встреч и сотни других факторов.',
+                },
+                {
+                  icon: <TrendingUp size={24} color={ACCENT} />,
+                  step: '03',
+                  title: 'Получи прогноз',
+                  desc: 'Чёткий вердикт с индексом доверия, оценкой рисков и лучшими коэффициентами у букмекеров.',
+                },
               ].map((item, i) => (
                 <div key={i} className="card-glow" style={{ padding: 32 }}>
-                  <div style={{ marginBottom: 14 }}>
+                  <div style={{ marginBottom: 20 }}>
                     <span style={{
-                      fontSize: 11, fontWeight: 800, color: '#2563eb',
-                      letterSpacing: 2, background: '#eff6ff',
+                      fontSize: 11, fontWeight: 800, color: ACCENT,
+                      letterSpacing: 2, background: ACCENT_DIM,
                       padding: '3px 10px', borderRadius: 20,
                     }}>
                       ШАГ {item.step}
                     </span>
                   </div>
                   <div style={{
-                    width: 56, height: 56, borderRadius: 16,
-                    background: 'linear-gradient(135deg, #eff6ff, #e0e7ff)',
+                    width: 52, height: 52, borderRadius: 14,
+                    background: ACCENT_DIM,
+                    border: `1px solid rgba(163,255,78,0.15)`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    marginBottom: 18, boxShadow: '0 4px 12px rgba(37,99,235,0.15)',
+                    marginBottom: 20,
+                    boxShadow: `0 0 20px ${ACCENT_GLOW}`,
                   }}>
                     {item.icon}
                   </div>
-                  <h3 style={{ fontSize: 19, fontWeight: 800, color: '#1a1a2e', marginBottom: 10 }}>{item.title}</h3>
-                  <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.75 }}>{item.desc}</p>
+                  <h3 style={{ fontSize: 19, fontWeight: 700, color: TEXT, marginBottom: 12 }}>{item.title}</h3>
+                  <p style={{ fontSize: 14, color: TEXT_MUTED, lineHeight: 1.8 }}>{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -169,36 +237,57 @@ export default function Landing() {
         <div className="glow-divider" />
 
         {/* ── Features ── */}
-        <section className="section-pad" style={{ padding: '88px 24px' }}>
+        <section className="section-pad" style={{ padding: '96px 24px', background: BG }}>
           <div className="container" style={{ maxWidth: 1200, margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: 60 }}>
-              <div className="badge" style={{ marginBottom: 14 }}>ПРЕИМУЩЕСТВА</div>
-              <h2 className="section-title" style={{ fontSize: 38, fontWeight: 900, color: '#1a1a2e', letterSpacing: -1, marginBottom: 12 }}>
-                Почему Valorix AI?
+            <div style={{ textAlign: 'center', marginBottom: 64 }}>
+              <div className="badge" style={{ marginBottom: 16 }}>ПРЕИМУЩЕСТВА</div>
+              <h2 className="section-title" style={{ fontSize: 40, fontWeight: 800, color: TEXT, letterSpacing: -1.2, marginBottom: 14 }}>
+                Почему <span className="gradient-text">Valorix AI</span>?
               </h2>
-              <p style={{ fontSize: 16, color: '#64748b' }}>
+              <p style={{ fontSize: 16, color: TEXT_MUTED }}>
                 Мы не гарантируем победу — мы даём вам данные для умного решения
               </p>
             </div>
             <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
               {[
-                { icon: <BarChart2 size={24} color="#2563eb" />, title: 'Глубокий анализ', desc: 'Форма команд, травмы, погода, мотивация, коэффициенты — всё в одном анализе' },
-                { icon: <Clock size={24} color="#7c3aed" />, title: 'Мгновенный результат', desc: 'Анализ за 10–15 секунд. Никаких долгих ожиданий' },
-                { icon: <Star size={24} color="#f59e0b" />, title: 'Value-ставки', desc: 'Находим матчи где реальная вероятность выше, чем предлагает букмекер' },
-                { icon: <Shield size={24} color="#16a34a" />, title: 'Реальные коэффициенты', desc: 'Показываем актуальные коэффициенты Fonbet, Pari, 1xbet и других в реальном времени' },
+                {
+                  icon: <BarChart2 size={22} color={ACCENT} />,
+                  title: 'Глубокий анализ',
+                  desc: 'Форма команд, травмы, погода, мотивация, коэффициенты — всё в одном анализе',
+                  glow: ACCENT_GLOW,
+                },
+                {
+                  icon: <Clock size={22} color="#5bff9e" />,
+                  title: 'Мгновенный результат',
+                  desc: 'Анализ за 10–15 секунд. Никаких долгих ожиданий',
+                  glow: 'rgba(91,255,158,0.2)',
+                },
+                {
+                  icon: <Star size={22} color="#ffdd57" />,
+                  title: 'Value-ставки',
+                  desc: 'Находим матчи где реальная вероятность выше, чем предлагает букмекер',
+                  glow: 'rgba(255,221,87,0.18)',
+                },
+                {
+                  icon: <Shield size={22} color="#57c8ff" />,
+                  title: 'Реальные коэффициенты',
+                  desc: 'Показываем актуальные коэффициенты Fonbet, Pari, 1xbet и других в реальном времени',
+                  glow: 'rgba(87,200,255,0.18)',
+                },
               ].map((f, i) => (
-                <div key={i} className="card-glow" style={{ padding: '28px 32px', display: 'flex', gap: 18, alignItems: 'flex-start' }}>
+                <div key={i} className="card-glow" style={{ padding: '28px 32px', display: 'flex', gap: 20, alignItems: 'flex-start' }}>
                   <div style={{
-                    width: 52, height: 52, borderRadius: 14, flexShrink: 0,
-                    background: 'linear-gradient(135deg, #f8fafc, #f1f5f9)',
+                    width: 48, height: 48, borderRadius: 14, flexShrink: 0,
+                    background: 'rgba(255,255,255,0.04)',
+                    border: `1px solid rgba(255,255,255,0.08)`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                    boxShadow: `0 0 16px ${f.glow}`,
                   }}>
                     {f.icon}
                   </div>
                   <div>
-                    <h3 style={{ fontSize: 17, fontWeight: 800, color: '#1a1a2e', marginBottom: 8 }}>{f.title}</h3>
-                    <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.7 }}>{f.desc}</p>
+                    <h3 style={{ fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 8 }}>{f.title}</h3>
+                    <p style={{ fontSize: 14, color: TEXT_MUTED, lineHeight: 1.75 }}>{f.desc}</p>
                   </div>
                 </div>
               ))}
@@ -209,13 +298,13 @@ export default function Landing() {
         <div className="glow-divider" />
 
         {/* ── FAQ ── */}
-        <section id="faq" className="section-pad" style={{ background: 'white', padding: '88px 24px' }}>
+        <section id="faq" className="section-pad" style={{ background: BG2, padding: '96px 24px' }}>
           <div className="container" style={{ maxWidth: 720, margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: 52 }}>
-              <div className="badge" style={{ marginBottom: 14 }}>FAQ</div>
-              <h2 style={{ fontSize: 38, fontWeight: 900, color: '#1a1a2e', letterSpacing: -1 }}>Частые вопросы</h2>
+            <div style={{ textAlign: 'center', marginBottom: 56 }}>
+              <div className="badge" style={{ marginBottom: 16 }}>FAQ</div>
+              <h2 style={{ fontSize: 40, fontWeight: 800, color: TEXT, letterSpacing: -1.2 }}>Частые вопросы</h2>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
                 { q: 'Насколько точен AI-анализ?', a: 'AI анализирует сотни факторов и показывает индекс доверия. Мы не гарантируем результат — это аналитический инструмент для принятия решений.' },
                 { q: 'Что значит "загрузить скрин"?', a: 'Сделай скриншот линии у букмекера и загрузи его. AI прочитает коэффициенты и проанализирует где есть Value.' },
@@ -229,22 +318,36 @@ export default function Landing() {
         </section>
 
         {/* ── CTA ── */}
-        <section className="section-pad" style={{ padding: '100px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <section className="section-pad" style={{
+          padding: '110px 24px', textAlign: 'center',
+          position: 'relative', overflow: 'hidden', background: BG,
+        }}>
           <div style={{
             position: 'absolute', inset: 0,
-            background: 'radial-gradient(ellipse at center, rgba(37,99,235,0.07) 0%, transparent 70%)',
+            background: 'radial-gradient(ellipse at center, rgba(163,255,78,0.06) 0%, transparent 65%)',
             pointerEvents: 'none',
           }} />
+          {/* Grid overlay */}
+          <div style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            backgroundImage: 'linear-gradient(rgba(163,255,78,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(163,255,78,0.025) 1px, transparent 1px)',
+            backgroundSize: '48px 48px',
+          }} />
           <div style={{ maxWidth: 600, margin: '0 auto', position: 'relative' }}>
-            <div className="badge" style={{ marginBottom: 20 }}>НАЧНИ СЕЙЧАС</div>
-            <h2 style={{ fontSize: 44, fontWeight: 900, color: '#1a1a2e', letterSpacing: -1.5, marginBottom: 16 }}>
+            <div className="badge" style={{ marginBottom: 22 }}>НАЧНИ СЕЙЧАС</div>
+            <h2 style={{ fontSize: 48, fontWeight: 800, color: TEXT, letterSpacing: -2, marginBottom: 18 }}>
               Готов к умным ставкам?
             </h2>
-            <p style={{ fontSize: 16, color: '#64748b', marginBottom: 36, lineHeight: 1.7 }}>
-              Зарегистрируйся и получи <strong style={{ color: '#1a1a2e' }}>38 монет бесплатно</strong> для первого анализа
+            <p style={{ fontSize: 16, color: TEXT_MUTED, marginBottom: 40, lineHeight: 1.75 }}>
+              Зарегистрируйся и получи{' '}
+              <strong style={{ color: ACCENT }}>38 монет бесплатно</strong>{' '}
+              для первого анализа
             </p>
-            <Link to="/analyze" className="btn-primary" style={{ fontSize: 16, padding: '16px 40px', margin: '0 auto', boxShadow: '0 8px 32px rgba(37,99,235,0.3)' }}>
-              <Zap size={18} fill="white" />
+            <Link to="/analyze" className="btn-primary" style={{
+              fontSize: 16, padding: '16px 44px', margin: '0 auto',
+              boxShadow: `0 8px 40px ${ACCENT_GLOW}`,
+            }}>
+              <Zap size={18} fill={BG} color={BG} />
               Начать анализ
             </Link>
           </div>
@@ -254,30 +357,35 @@ export default function Landing() {
         {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
 
         {/* ── Footer ── */}
-        <footer style={{ background: '#1a1a2e', color: '#94a3b8', padding: '44px 24px 32px', textAlign: 'center', position: 'relative' }}>
+        <footer style={{
+          background: '#040609', color: TEXT_MUTED,
+          padding: '48px 24px 32px', textAlign: 'center', position: 'relative',
+        }}>
           <div style={{
             position: 'absolute', top: 0, left: 0, right: 0, height: 1,
-            background: 'linear-gradient(90deg, transparent, rgba(37,99,235,0.4), rgba(124,58,237,0.4), transparent)',
+            background: 'linear-gradient(90deg, transparent, rgba(163,255,78,0.25), rgba(91,255,158,0.2), transparent)',
           }} />
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
               <Logo size="md" dark />
             </div>
-            <p style={{ fontSize: 13, marginBottom: 20 }}>AI-аналитика для спортивных ставок. Играйте ответственно. 18+</p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 24, flexWrap: 'wrap', marginBottom: 20 }}>
-              <Link to="/support" style={{ color: '#64748b', fontSize: 13, textDecoration: 'none', fontWeight: 500 }}
-                onMouseEnter={e => e.target.style.color = '#94a3b8'}
-                onMouseLeave={e => e.target.style.color = '#64748b'}>
-                Поддержка
-              </Link>
-              <Link to="/privacy" style={{ color: '#64748b', fontSize: 13, textDecoration: 'none', fontWeight: 500 }}
-                onMouseEnter={e => e.target.style.color = '#94a3b8'}
-                onMouseLeave={e => e.target.style.color = '#64748b'}>
-                Политика конфиденциальности
-              </Link>
+            <p style={{ fontSize: 13, marginBottom: 22, color: TEXT_MUTED }}>
+              AI-аналитика для спортивных ставок. Играйте ответственно. 18+
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 28, flexWrap: 'wrap', marginBottom: 24 }}>
+              {[
+                { to: '/support', label: 'Поддержка' },
+                { to: '/privacy', label: 'Политика конфиденциальности' },
+              ].map(({ to, label }) => (
+                <Link key={to} to={to} style={{ color: TEXT_MUTED, fontSize: 13, textDecoration: 'none', fontWeight: 500, transition: 'color 0.18s' }}
+                  onMouseEnter={e => e.target.style.color = ACCENT}
+                  onMouseLeave={e => e.target.style.color = TEXT_MUTED}>
+                  {label}
+                </Link>
+              ))}
             </div>
-            <div style={{ height: 1, background: 'rgba(255,255,255,0.05)', marginBottom: 16 }} />
-            <p style={{ fontSize: 12, color: '#475569' }}>© 2026 Valorix AI · Пищев Андрей Сергеевич · ИНН 470805349664 · Самозанятый</p>
+            <div style={{ height: 1, background: 'rgba(255,255,255,0.04)', marginBottom: 18 }} />
+            <p style={{ fontSize: 12, color: '#2a3444' }}>© 2026 Valorix AI · Пищев Андрей Сергеевич · ИНН 470805349664 · Самозанятый</p>
           </div>
         </footer>
       </div>
@@ -292,19 +400,19 @@ function FaqItem({ q, a }) {
       className="card"
       style={{
         padding: '20px 24px', cursor: 'pointer', userSelect: 'none',
-        transition: 'box-shadow 0.2s',
-        boxShadow: open ? '0 8px 32px rgba(37,99,235,0.12)' : undefined,
-        border: open ? '1px solid rgba(37,99,235,0.15)' : undefined,
+        transition: 'border-color 0.2s, background 0.2s',
+        borderColor: open ? 'rgba(163,255,78,0.2)' : 'rgba(255,255,255,0.07)',
+        background: open ? 'rgba(163,255,78,0.04)' : 'rgba(255,255,255,0.03)',
       }}
       onClick={() => setOpen(!open)}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontWeight: 700, fontSize: 15, color: '#1a1a2e' }}>{q}</span>
-        <ChevronDown size={18} color="#64748b"
+        <span style={{ fontWeight: 700, fontSize: 15, color: '#dde4ee' }}>{q}</span>
+        <ChevronDown size={18} color="#556070"
           style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }} />
       </div>
       {open && (
-        <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.75, marginTop: 14 }}>{a}</p>
+        <p style={{ fontSize: 14, color: '#556070', lineHeight: 1.8, marginTop: 14 }}>{a}</p>
       )}
     </div>
   )

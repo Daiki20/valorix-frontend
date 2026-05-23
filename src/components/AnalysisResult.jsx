@@ -26,7 +26,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
           </div>
           <div className="analysis-header-vs" style={{ textAlign: 'center', flexShrink: 0, padding: '0 4px' }}>
             <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, whiteSpace: 'nowrap' }}>{match.league}</div>
-            <div style={{ fontSize: 20, fontWeight: 900, color: '#1a1a2e', margin: '2px 0' }}>VS</div>
+            <div style={{ fontSize: 20, fontWeight: 900, color: '#dde4ee', margin: '2px 0' }}>VS</div>
             <div style={{ fontSize: 10, color: '#94a3b8', whiteSpace: 'nowrap' }}>{match.date}</div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0, justifyContent: 'flex-end' }}>
@@ -58,7 +58,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
       {/* Extra bets */}
       {analysis.extraBets && analysis.extraBets.length > 0 && (
         <div className="card" style={{ padding: '24px 28px' }}>
-          <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1a1a2e', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: '#dde4ee', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
             <TrendingUp size={18} color="#7c3aed" />
             Дополнительные ставки
           </h3>
@@ -82,7 +82,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
                     <div style={{ fontSize: 9, color: '#94a3b8', fontWeight: 600 }}>уверен.</div>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#1a1a2e', marginBottom: 4 }}>{bet.type}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#dde4ee', marginBottom: 4 }}>{bet.type}</div>
                     <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5 }}>{bet.reason}</div>
                   </div>
                 </div>
@@ -125,14 +125,14 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
         {/* Odds */}
         <div className="card" style={{ padding: '20px 16px', textAlign: 'center' }}>
           <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600, marginBottom: 12 }}>FAIR ODDS</div>
-          <div style={{ fontSize: 28, fontWeight: 900, color: '#1a1a2e', marginBottom: 4 }}>
+          <div style={{ fontSize: 28, fontWeight: 900, color: '#dde4ee', marginBottom: 4 }}>
             {analysis.fairOdds || '—'}
           </div>
           <div style={{ fontSize: 11, color: '#94a3b8' }}>Реальная вероятность</div>
           {analysis.bookOdds && !isLive && (
             <div style={{ marginTop: 8, fontSize: 12 }}>
               <span style={{ color: '#64748b' }}>Букмекер: </span>
-              <span style={{ fontWeight: 700, color: '#1a1a2e' }}>{analysis.bookOdds}</span>
+              <span style={{ fontWeight: 700, color: '#dde4ee' }}>{analysis.bookOdds}</span>
             </div>
           )}
         </div>
@@ -160,7 +160,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
 
       {/* Reasons */}
       <div className="card" style={{ padding: '24px 28px' }}>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1a1a2e', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: '#dde4ee', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
           <Info size={18} color="#2563eb" />
           Причины прогноза
         </h3>
@@ -168,13 +168,13 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
           {(analysis.reasons || []).map((reason, i) => (
             <div key={i} style={{
               display: 'flex', alignItems: 'flex-start', gap: 10,
-              padding: '12px 16px', background: '#f8fafc', borderRadius: 10,
+              padding: '12px 16px', background: 'rgba(255,255,255,0.04)', borderRadius: 10,
             }}>
               <div style={{
                 width: 8, height: 8, borderRadius: '50%', background: '#2563eb',
                 marginTop: 5, flexShrink: 0,
               }} />
-              <span style={{ fontSize: 14, color: '#374151', lineHeight: 1.6 }}>{reason}</span>
+              <span style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6 }}>{reason}</span>
             </div>
           ))}
         </div>
@@ -184,13 +184,13 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
       {analysis.bestOdds && analysis.bestOdds.length > 0 && (
         <div className="card" style={{ padding: '24px 28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1a1a2e', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#dde4ee', display: 'flex', alignItems: 'center', gap: 8 }}>
               <TrendingUp size={18} color="#2563eb" />
               Коэффициенты букмекеров
             </h3>
             {analysis.bestOdds[0]?.real && (
               <span style={{
-                background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0',
+                background: 'rgba(34,197,94,0.08)', color: '#16a34a', border: '1px solid #bbf7d0',
                 borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700,
               }}>
                 ✓ Реальные данные
@@ -220,9 +220,9 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     {i === 0 && <span style={{ fontSize: 10, color: '#16a34a', fontWeight: 800 }}>★</span>}
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#1a1a2e' }}>{bk.name}</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: '#dde4ee' }}>{bk.name}</span>
                   </div>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: '#1a1a2e', textAlign: 'center' }}>{bk.odds}</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#dde4ee', textAlign: 'center' }}>{bk.odds}</span>
                   <span style={{ fontSize: 14, color: '#64748b', textAlign: 'center' }}>{bk.draw || '—'}</span>
                   <span style={{ fontSize: 14, color: '#64748b', textAlign: 'center' }}>{bk.away || '—'}</span>
                 </div>
@@ -289,7 +289,7 @@ function ShareButton({ token, match }) {
   }
 
   return (
-    <div style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '12px 16px', background: '#f8fafc', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+    <div style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '12px 16px', background: 'rgba(255,255,255,0.04)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.07)' }}>
       <span style={{ fontSize: 13, color: '#64748b', flex: 1 }}>Поделись анализом с другом</span>
       <button onClick={copy} style={{
         padding: '8px 16px', background: copied ? '#16a34a' : '#2563eb', color: 'white',
@@ -310,7 +310,7 @@ function TeamCircle({ name, img, size = 52 }) {
       <img
         src={img} alt={name}
         width={size} height={size}
-        style={{ borderRadius: '50%', objectFit: 'contain', flexShrink: 0, background: '#f8fafc' }}
+        style={{ borderRadius: '50%', objectFit: 'contain', flexShrink: 0, background: 'rgba(255,255,255,0.04)' }}
         onError={() => setImgError(true)}
       />
     )

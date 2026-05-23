@@ -23,19 +23,19 @@ export default function Admin() {
   if (!user.is_admin) return null
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
+    <div style={{ minHeight: '100vh', background: '#07090f' }}>
       <Navbar />
       <div className="admin-wrap" style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px' }}>
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
             <Shield size={22} color="#2563eb" />
-            <h1 style={{ fontSize: 26, fontWeight: 800, color: '#1a1a2e' }}>Панель администратора</h1>
+            <h1 style={{ fontSize: 26, fontWeight: 800, color: '#dde4ee' }}>Панель администратора</h1>
           </div>
           <p style={{ color: '#64748b', fontSize: 14 }}>{user.email}</p>
         </div>
 
         {/* Tabs */}
-        <div className="admin-tabs" style={{ display: 'flex', gap: 4, marginBottom: 28, background: 'white', borderRadius: 12, padding: 4, border: '1px solid #e2e8f0', width: 'fit-content' }}>
+        <div className="admin-tabs" style={{ display: 'flex', gap: 4, marginBottom: 28, background: '#0c0f18', borderRadius: 12, padding: 4, border: '1px solid rgba(255,255,255,0.07)', width: 'fit-content' }}>
           {TABS.map((t, i) => (
             <button key={i} onClick={() => setTab(i)} style={{
               padding: '8px 20px', borderRadius: 8, border: 'none', fontSize: 14, fontWeight: 600, cursor: 'pointer',
@@ -129,20 +129,20 @@ function DashboardTab({ toast }) {
             </div>
             {loading
               ? <div className="skeleton" style={{ height: 28, width: 60 }} />
-              : <div style={{ fontSize: 28, fontWeight: 800, color: '#1a1a2e' }}>{s.value ?? '—'}</div>}
+              : <div style={{ fontSize: 28, fontWeight: 800, color: '#dde4ee' }}>{s.value ?? '—'}</div>}
           </div>
         ))}
       </div>
 
       {/* Add coins form */}
       <div className="card" style={{ padding: 24 }}>
-        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#1a1a2e', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#dde4ee', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
           <Zap size={16} color="#2563eb" fill="#2563eb" />
           Управление монетами
         </h3>
 
         {/* Mode toggle */}
-        <div style={{ display: 'flex', gap: 4, marginBottom: 16, background: '#f1f5f9', borderRadius: 10, padding: 4, width: 'fit-content' }}>
+        <div style={{ display: 'flex', gap: 4, marginBottom: 16, background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: 4, width: 'fit-content' }}>
           <button type="button" onClick={() => setCoinMode('add')} style={{
             padding: '7px 18px', borderRadius: 7, border: 'none', fontSize: 13, fontWeight: 700, cursor: 'pointer',
             background: coinMode === 'add' ? '#10b981' : 'transparent',
@@ -190,7 +190,7 @@ function DashboardTab({ toast }) {
 
       {/* Express generator */}
       <div className="card" style={{ padding: 24 }}>
-        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#1a1a2e', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#dde4ee', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
           <Star size={16} color="#7c3aed" fill="#7c3aed" />
           Экспресс дня
         </h3>
@@ -225,14 +225,14 @@ function DashboardTab({ toast }) {
                 </button>
               </div>
               {(resL || resH) && (
-                <div style={{ marginTop: 10, background: '#f0fdf4', borderRadius: 10, padding: '12px 16px', border: '1px solid #bbf7d0' }}>
+                <div style={{ marginTop: 10, background: 'rgba(34,197,94,0.08)', borderRadius: 10, padding: '12px 16px', border: '1px solid #bbf7d0' }}>
                   {[resL, resH].filter(Boolean).map((r, i) => (
                     <div key={i} style={{ marginBottom: i === 0 && resH ? 8 : 0 }}>
                       <div style={{ fontWeight: 700, fontSize: 13, color: '#16a34a', marginBottom: 4 }}>
                         {i === 0 ? 'Lite' : 'Hard'} — {r.date} | Итоговый коэф: × {r.total_odds?.toFixed(2)}
                       </div>
                       {r.picks?.map((p, j) => (
-                        <div key={j} style={{ fontSize: 12, color: '#374151', marginBottom: 2 }}>
+                        <div key={j} style={{ fontSize: 12, color: '#94a3b8', marginBottom: 2 }}>
                           {j + 1}. {p.home} — {p.away} · <b>{p.prediction}</b> × {p.odds}
                         </div>
                       ))}
@@ -251,7 +251,7 @@ function DashboardTab({ toast }) {
       {/* Recent users */}
       {stats?.recentUsers?.length > 0 && (
         <div className="card" style={{ padding: 24 }}>
-          <h3 style={{ fontWeight: 700, fontSize: 16, color: '#1a1a2e', marginBottom: 16 }}>Последние регистрации</h3>
+          <h3 style={{ fontWeight: 700, fontSize: 16, color: '#dde4ee', marginBottom: 16 }}>Последние регистрации</h3>
           <div style={{ overflowX: 'auto' }}><table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
               <tr style={{ borderBottom: '2px solid #f1f5f9' }}>
@@ -308,7 +308,7 @@ function ApiStatusPanel() {
   return (
     <div className="card" style={{ padding: 24 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#1a1a2e', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#dde4ee', display: 'flex', alignItems: 'center', gap: 8 }}>
           🔌 Подключённые API
         </h3>
         <button onClick={check} disabled={loading} style={{
@@ -335,16 +335,16 @@ function ApiStatusPanel() {
                 <div style={{ fontSize: 22, lineHeight: 1, marginTop: 1 }}>{api.icon}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                    <div style={{ fontWeight: 700, fontSize: 13, color: '#1a1a2e' }}>{api.name}</div>
+                    <div style={{ fontWeight: 700, fontSize: 13, color: '#dde4ee' }}>{api.name}</div>
                     <span style={{
                       fontSize: 11, fontWeight: 700, color: s.color,
-                      background: 'white', border: `1px solid ${s.border}`,
+                      background: '#0c0f18', border: `1px solid ${s.border}`,
                       borderRadius: 20, padding: '2px 8px', whiteSpace: 'nowrap',
                     }}>
                       {api.status === 'ok' ? '✓ ' : api.status === 'no_key' ? '⚠ ' : '✗ '}{s.label}
                     </span>
                   </div>
-                  <div style={{ fontSize: 11, color: '#6b7280', marginTop: 4, wordBreak: 'break-word' }}>
+                  <div style={{ fontSize: 11, color: '#556070', marginTop: 4, wordBreak: 'break-word' }}>
                     {api.detail}
                     {api.ms > 0 && <span style={{ color: '#94a3b8', marginLeft: 6 }}>{api.ms}ms</span>}
                   </div>
@@ -412,7 +412,7 @@ function UsersTab({ toast }) {
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
-                <tr style={{ borderBottom: '2px solid #f1f5f9', background: '#fafafa' }}>
+                <tr style={{ borderBottom: '2px solid #f1f5f9', background: '#0a0d14' }}>
                   {['Email', 'Username', 'Монеты', 'Анализов', 'Статус', 'Действия'].map(h => (
                     <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#64748b', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
@@ -494,7 +494,7 @@ function TransactionsTab() {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr style={{ borderBottom: '2px solid #f1f5f9', background: '#fafafa' }}>
+              <tr style={{ borderBottom: '2px solid #f1f5f9', background: '#0a0d14' }}>
                 {['Пользователь', 'Тип', 'Монеты', 'Описание', 'Дата'].map(h => (
                   <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#64748b', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
@@ -543,7 +543,7 @@ function TransactionsTab() {
 /* ─── Helpers ─── */
 function CoinPill({ n }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: '#eff6ff', borderRadius: 20, padding: '2px 8px', fontSize: 12, fontWeight: 700, color: '#2563eb' }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(163,255,78,0.08)', borderRadius: 20, padding: '2px 8px', fontSize: 12, fontWeight: 700, color: '#2563eb' }}>
       <Zap size={10} color="#2563eb" fill="#2563eb" />{n}
     </span>
   )
@@ -563,15 +563,15 @@ function ActionBtn({ icon, label, color, loading, onClick }) {
 }
 
 const inputStyle = {
-  border: '1.5px solid #e2e8f0', borderRadius: 10, padding: '10px 14px',
-  fontSize: 14, outline: 'none', background: 'white', color: '#1a1a2e',
+  border: '1.5px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '10px 14px',
+  fontSize: 14, outline: 'none', background: '#0c0f18', color: '#dde4ee',
   fontFamily: 'Montserrat, sans-serif', width: 240,
 }
 
 const tdStyle = { padding: '10px 12px', verticalAlign: 'middle' }
 
 const pageBtn = {
-  background: 'white', border: '1.5px solid #e2e8f0', borderRadius: 8, padding: '6px 10px',
+  background: '#0c0f18', border: '1.5px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '6px 10px',
   cursor: 'pointer', display: 'flex', alignItems: 'center',
 }
 

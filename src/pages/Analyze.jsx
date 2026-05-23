@@ -147,7 +147,7 @@ export default function Analyze() {
 
   if (selectedMatch) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
+      <div style={{ minHeight: '100vh', background: '#07090f' }}>
         <Navbar />
         <div className="analyze-page-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 24px' }}>
           <button
@@ -165,7 +165,7 @@ export default function Analyze() {
 
           {error && (
             <div style={{
-              background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 12,
+              background: 'rgba(220,38,38,0.08)', border: '1px solid #fecaca', borderRadius: 12,
               padding: '16px 20px', display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: 16,
             }}>
               <AlertCircle size={20} color="#ef4444" />
@@ -196,7 +196,7 @@ export default function Analyze() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
+    <div style={{ minHeight: '100vh', background: '#07090f' }}>
       <Navbar />
       <div className="analyze-page-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 24px' }}>
         <Link to="/" style={{
@@ -208,7 +208,7 @@ export default function Analyze() {
         </Link>
 
         <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 32, fontWeight: 900, color: '#1a1a2e', letterSpacing: -0.5, marginBottom: 8 }}>
+          <h1 style={{ fontSize: 32, fontWeight: 900, color: '#dde4ee', letterSpacing: -0.5, marginBottom: 8 }}>
             Выбери матч
           </h1>
           <p style={{ color: '#64748b', fontSize: 15 }}>
@@ -243,8 +243,8 @@ export default function Analyze() {
               placeholder="Поиск по команде или лиге..."
               style={{
                 width: '100%', padding: '14px 20px 14px 48px',
-                borderRadius: 12, border: '1.5px solid #e2e8f0',
-                fontSize: 15, background: 'white', outline: 'none',
+                borderRadius: 12, border: '1.5px solid rgba(255,255,255,0.07)',
+                fontSize: 15, background: '#0c0f18', outline: 'none',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
               }}
             />
@@ -413,18 +413,18 @@ function LockedResult({ match, cost, userCoins, loading, onConfirm }) {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
             <div>
               <div style={{ height: 20, width: 160, background: '#e2e8f0', borderRadius: 6, marginBottom: 8 }} />
-              <div style={{ height: 14, width: 100, background: '#f1f5f9', borderRadius: 6 }} />
+              <div style={{ height: 14, width: 100, background: 'rgba(255,255,255,0.04)', borderRadius: 6 }} />
             </div>
             <div style={{ width: 120, height: 120, borderRadius: '50%', background: 'conic-gradient(#2563eb 0% 72%, #e2e8f0 72%)' }} />
           </div>
           {[1,2,3].map(i => (
-            <div key={i} style={{ height: 16, background: '#f1f5f9', borderRadius: 6, marginBottom: 10, width: `${70 + i * 8}%` }} />
+            <div key={i} style={{ height: 16, background: 'rgba(255,255,255,0.04)', borderRadius: 6, marginBottom: 10, width: `${70 + i * 8}%` }} />
           ))}
         </div>
         <div className="card" style={{ padding: 24 }}>
           {[1,2,3,4].map(i => (
             <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
-              <div style={{ height: 14, flex: 1, background: '#f1f5f9', borderRadius: 6 }} />
+              <div style={{ height: 14, flex: 1, background: 'rgba(255,255,255,0.04)', borderRadius: 6 }} />
               <div style={{ height: 14, width: 60, background: '#e2e8f0', borderRadius: 6 }} />
             </div>
           ))}
@@ -441,20 +441,20 @@ function LockedResult({ match, cost, userCoins, loading, onConfirm }) {
         padding: 24,
       }}>
         <div className="locked-card" style={{
-          background: 'white', borderRadius: 20,
+          background: '#0c0f18', borderRadius: 20,
           padding: '36px 40px', maxWidth: 380, width: '100%',
           textAlign: 'center', boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
         }}>
           <div style={{
             width: 64, height: 64, borderRadius: '50%',
-            background: '#eff6ff', display: 'flex',
+            background: 'rgba(163,255,78,0.08)', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 20px',
           }}>
             <Lock size={28} color="#2563eb" />
           </div>
 
-          <div style={{ fontWeight: 800, fontSize: 18, color: '#1a1a2e', marginBottom: 6 }}>
+          <div style={{ fontWeight: 800, fontSize: 18, color: '#dde4ee', marginBottom: 6 }}>
             Анализ готов
           </div>
           <div style={{ fontSize: 14, color: '#64748b', marginBottom: 24 }}>
@@ -462,11 +462,11 @@ function LockedResult({ match, cost, userCoins, loading, onConfirm }) {
           </div>
 
           <div style={{
-            background: '#f8fafc', borderRadius: 12, padding: '12px 16px',
+            background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 16px',
             marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
             <span style={{ fontSize: 14, color: '#64748b', fontWeight: 500 }}>Стоимость</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 800, fontSize: 16, color: '#1a1a2e' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 800, fontSize: 16, color: '#dde4ee' }}>
               <Zap size={16} color="#2563eb" fill="#2563eb" />
               {cost} монет
             </div>
@@ -474,7 +474,7 @@ function LockedResult({ match, cost, userCoins, loading, onConfirm }) {
 
           {notEnough && (
             <div style={{
-              background: '#fef2f2', border: '1px solid #fecaca',
+              background: 'rgba(220,38,38,0.08)', border: '1px solid #fecaca',
               borderRadius: 10, padding: '10px 14px',
               fontSize: 13, color: '#dc2626', marginBottom: 16,
             }}>
@@ -543,7 +543,7 @@ function MatchRow({ match, onClick, isLiveTab }) {
         <TeamLogo name={match.home} img={match.homeImg} size={32} />
         <div style={{ minWidth: 0, overflow: 'hidden' }}>
           <div style={{
-            fontWeight: 700, fontSize: 13, color: '#1a1a2e',
+            fontWeight: 700, fontSize: 13, color: '#dde4ee',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {match.home}
@@ -578,7 +578,7 @@ function MatchRow({ match, onClick, isLiveTab }) {
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', animation: 'pulse-ring 1.2s ease-out infinite' }} />
               <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444' }}>LIVE</span>
             </div>
-            {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#1a1a2e', marginTop: 2 }}>{match.score}</div>}
+            {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#dde4ee', marginTop: 2 }}>{match.score}</div>}
           </div>
         )}
 
@@ -586,11 +586,11 @@ function MatchRow({ match, onClick, isLiveTab }) {
           <div className="match-row-odds" style={{ display: 'flex', gap: 4 }}>
             {[{ label: '1', val: odds.home }, { label: 'X', val: odds.draw }, { label: '2', val: odds.away }].map(o => (
               <div key={o.label} style={{
-                textAlign: 'center', background: '#f8fafc',
-                border: '1px solid #e2e8f0', borderRadius: 8, padding: '4px 7px', minWidth: 40,
+                textAlign: 'center', background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '4px 7px', minWidth: 40,
               }}>
                 <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600 }}>{o.label}</div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e' }}>{o.val}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#dde4ee' }}>{o.val}</div>
               </div>
             ))}
           </div>
@@ -618,7 +618,7 @@ function TeamLogo({ name, img, size = 44 }) {
   if (img && !imgError) {
     return (
       <img src={img} alt={name} onError={() => setImgError(true)}
-        style={{ width: size, height: size, borderRadius: '50%', objectFit: 'contain', background: '#f8fafc' }} />
+        style={{ width: size, height: size, borderRadius: '50%', objectFit: 'contain', background: 'rgba(255,255,255,0.04)' }} />
     )
   }
   return (
@@ -657,7 +657,7 @@ function HockeyMatchRow({ match, onClick }) {
         <TeamLogo name={match.home} img={match.homeImg} size={32} />
         <div style={{ minWidth: 0, overflow: 'hidden' }}>
           <div style={{
-            fontWeight: 700, fontSize: 13, color: '#1a1a2e',
+            fontWeight: 700, fontSize: 13, color: '#dde4ee',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {match.home}
@@ -681,7 +681,7 @@ function HockeyMatchRow({ match, onClick }) {
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', animation: 'pulse-ring 1.2s ease-out infinite' }} />
               <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444' }}>LIVE</span>
             </div>
-            {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#1a1a2e', marginTop: 2 }}>{match.score}</div>}
+            {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#dde4ee', marginTop: 2 }}>{match.score}</div>}
           </div>
         )}
 
@@ -707,7 +707,7 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
 
   return (
     <div style={{
-      background: 'white', borderRadius: 16, padding: '28px 28px 24px',
+      background: '#0c0f18', borderRadius: 16, padding: '28px 28px 24px',
       border: '1.5px solid #bfdbfe', marginBottom: 24,
       boxShadow: '0 4px 16px rgba(37,99,235,0.08)',
     }}>
@@ -721,7 +721,7 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
           <span style={{ fontSize: 18 }}>🏒</span>
         </div>
         <div>
-          <div style={{ fontWeight: 800, fontSize: 16, color: '#1a1a2e' }}>Анализ хоккейного матча</div>
+          <div style={{ fontWeight: 800, fontSize: 16, color: '#dde4ee' }}>Анализ хоккейного матча</div>
           <div style={{ fontSize: 12, color: '#94a3b8' }}>Введите команды — AI проанализирует на основе своих знаний</div>
         </div>
       </div>
@@ -753,7 +753,7 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
             placeholder="Например: ЦСКА"
             style={{
               width: '100%', padding: '11px 14px', borderRadius: 10,
-              border: '1.5px solid #e2e8f0', fontSize: 14, outline: 'none',
+              border: '1.5px solid rgba(255,255,255,0.07)', fontSize: 14, outline: 'none',
               boxSizing: 'border-box',
               transition: 'border-color 0.15s',
             }}
@@ -773,7 +773,7 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
             placeholder="Например: Ак Барс"
             style={{
               width: '100%', padding: '11px 14px', borderRadius: 10,
-              border: '1.5px solid #e2e8f0', fontSize: 14, outline: 'none',
+              border: '1.5px solid rgba(255,255,255,0.07)', fontSize: 14, outline: 'none',
               boxSizing: 'border-box',
               transition: 'border-color 0.15s',
             }}
@@ -801,7 +801,7 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
       </button>
 
       <div style={{
-        marginTop: 14, padding: '10px 14px', background: '#f0f9ff',
+        marginTop: 14, padding: '10px 14px', background: 'rgba(87,200,255,0.07)',
         borderRadius: 10, border: '1px solid #bae6fd',
         fontSize: 12, color: '#0369a1', lineHeight: 1.5,
       }}>
@@ -817,18 +817,18 @@ function LoadingAnalysis({ match }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginBottom: 24 }}>
         {match.sport === 'hockey'
           ? <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ fontWeight: 800, fontSize: 18, color: '#1a1a2e' }}>{match.home}</div>
-              <span style={{ fontSize: 20, fontWeight: 800, color: '#1a1a2e' }}>🏒 VS</span>
-              <div style={{ fontWeight: 800, fontSize: 18, color: '#1a1a2e' }}>{match.away}</div>
+              <div style={{ fontWeight: 800, fontSize: 18, color: '#dde4ee' }}>{match.home}</div>
+              <span style={{ fontSize: 20, fontWeight: 800, color: '#dde4ee' }}>🏒 VS</span>
+              <div style={{ fontWeight: 800, fontSize: 18, color: '#dde4ee' }}>{match.away}</div>
             </div>
           : <>
               <TeamLogo name={match.home} img={match.homeImg} />
-              <span style={{ fontSize: 20, fontWeight: 800, color: '#1a1a2e' }}>VS</span>
+              <span style={{ fontSize: 20, fontWeight: 800, color: '#dde4ee' }}>VS</span>
               <TeamLogo name={match.away} img={match.awayImg} />
             </>
         }
       </div>
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1a1a2e', marginBottom: 8 }}>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#dde4ee', marginBottom: 8 }}>
         {match.sport === 'hockey' ? '🏒 AI анализирует матч...' : 'AI анализирует матч...'}
       </h2>
       <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
@@ -846,7 +846,7 @@ function LoadingAnalysis({ match }) {
         ).map((step, i) => (
           <div key={i} style={{
             display: 'flex', alignItems: 'flex-start', gap: 8,
-            padding: '8px 14px', background: '#f8fafc', borderRadius: 8,
+            padding: '8px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: 8,
             fontSize: 13, color: '#64748b',
           }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2563eb', flexShrink: 0, marginTop: 4, animation: `blink 1.4s infinite ${i * 0.3}s` }} />

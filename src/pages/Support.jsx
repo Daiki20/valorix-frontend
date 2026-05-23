@@ -4,14 +4,14 @@ import { MessageCircle, Clock, Shield, HelpCircle, Zap, AlertCircle } from 'luci
 
 export default function Support() {
   return (
-    <div style={{ minHeight: '100vh', background: '#f0f2f5' }}>
+    <div style={{ minHeight: '100vh', background: '#07090f' }}>
       <Navbar />
       <div style={{ maxWidth: 700, margin: '0 auto', padding: '48px 24px 80px' }}>
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <div className="badge" style={{ marginBottom: 16 }}>Поддержка</div>
-          <h1 style={{ fontSize: 32, fontWeight: 800, color: '#1a1a2e', marginBottom: 10 }}>Служба поддержки</h1>
+          <h1 style={{ fontSize: 32, fontWeight: 800, color: '#dde4ee', marginBottom: 10 }}>Служба поддержки</h1>
           <p style={{ color: '#64748b', fontSize: 16 }}>
             Помогаем решить любой вопрос
           </p>
@@ -57,17 +57,17 @@ export default function Support() {
 
         {/* Response time */}
         <div className="card" style={{ padding: '18px 24px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(34,197,94,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Clock size={18} color="#10b981" />
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 14, color: '#1a1a2e' }}>Время ответа</div>
+            <div style={{ fontWeight: 700, fontSize: 14, color: '#dde4ee' }}>Время ответа</div>
             <div style={{ color: '#64748b', fontSize: 13 }}>Обычно отвечаем в течение нескольких часов в рабочие дни</div>
           </div>
         </div>
 
         {/* FAQ */}
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: '#1a1a2e', marginBottom: 14 }}>Частые вопросы</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: '#dde4ee', marginBottom: 14 }}>Частые вопросы</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 32 }}>
           {faqs.map((f, i) => (
             <FaqCard key={i} icon={f.icon} q={f.q} a={f.a} />
@@ -92,11 +92,11 @@ function FaqCard({ icon, q, a }) {
   return (
     <div className="card" style={{ padding: '18px 22px' }}>
       <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-        <div style={{ width: 36, height: 36, borderRadius: 9, background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 9, background: 'rgba(163,255,78,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
           {icon}
         </div>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 14, color: '#1a1a2e', marginBottom: 5 }}>{q}</div>
+          <div style={{ fontWeight: 700, fontSize: 14, color: '#dde4ee', marginBottom: 5 }}>{q}</div>
           <div style={{ color: '#64748b', fontSize: 13, lineHeight: 1.6 }}>{a}</div>
         </div>
       </div>

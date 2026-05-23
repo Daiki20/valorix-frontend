@@ -19,15 +19,15 @@ export default class ErrorBoundary extends Component {
       return (
         <div style={{
           minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: '#f0f2f5', padding: 24,
+          background: '#07090f', padding: 24,
         }}>
           <div style={{
-            background: 'white', borderRadius: 16, padding: '40px 32px',
+            background: '#0c0f18', borderRadius: 16, padding: '40px 32px',
             maxWidth: 420, width: '100%', textAlign: 'center',
             boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
           }}>
             <div style={{ fontSize: 40, marginBottom: 16 }}>⚠️</div>
-            <div style={{ fontWeight: 800, fontSize: 18, color: '#1a1a2e', marginBottom: 8 }}>
+            <div style={{ fontWeight: 800, fontSize: 18, color: '#dde4ee', marginBottom: 8 }}>
               Что-то пошло не так
             </div>
             <div style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
