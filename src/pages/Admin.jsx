@@ -245,6 +245,9 @@ function DashboardTab({ toast }) {
         })}
       </div>
 
+      {/* Stats API debug */}
+      <StatsDebugPanel />
+
       {/* Recent users */}
       {stats?.recentUsers?.length > 0 && (
         <div className="card" style={{ padding: 24 }}>
@@ -269,6 +272,95 @@ function DashboardTab({ toast }) {
               ))}
             </tbody>
           </table></div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ─── Stats API Debug Panel ─── */
+function StatsDebugPanel() {
+  const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState(null)
+
+  const check = async () => {
+    setLoading(true)
+    setResult(null)
+    try {
+      const token = localStorage.getItem('valorix_token')
+      const res = await fetch(`${API_BASE}/express/debug-stats`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await res.json()
+      setResult(data)
+    } catch (err) {
+      setResult({ error: err.message })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const ok = (v) => v && typeof v === 'string' && !v.startsWith('ERROR') && v.length > 10
+
+  return (
+    <div className="card" style={{ padding: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#1a1a2e', display: 'flex', alignItems: 'center', gap: 8 }}>
+          🔍 Диагностика API статистики
+        </h3>
+        <button onClick={check} disabled={loading} style={{
+          padding: '8px 18px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13,
+          background: loading ? '#94a3b8' : '#2563eb', color: 'white', cursor: loading ? 'not-allowed' : 'pointer',
+        }}>
+          {loading ? 'Проверяем...' : 'Проверить'}
+        </button>
+      </div>
+      <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: result ? 16 : 0 }}>
+        Проверяет работу ИИХФ ЧМ + НХЛ standings API — нужны для реальной статистики в экспрессе
+      </p>
+
+      {result && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {/* IIHF */}
+          <div style={{
+            borderRadius: 10, padding: '12px 16px',
+            background: ok(result.iihf) ? '#f0fdf4' : '#fef2f2',
+            border: `1px solid ${ok(result.iihf) ? '#bbf7d0' : '#fecaca'}`,
+          }}>
+            <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6, color: ok(result.iihf) ? '#16a34a' : '#dc2626' }}>
+              {ok(result.iihf) ? '✅' : '❌'} ИИХФ ЧМ Standings (Sofascore)
+            </div>
+            {ok(result.iihf) ? (
+              <pre style={{ fontSize: 11, color: '#374151', whiteSpace: 'pre-wrap', margin: 0 }}>{result.iihf}</pre>
+            ) : (
+              <div style={{ fontSize: 12, color: '#dc2626' }}>
+                {result.iihf || 'Нет данных'}<br />
+                <span style={{ color: '#6b7280', marginTop: 4, display: 'block' }}>Raw: {result.iihfRaw}</span>
+              </div>
+            )}
+          </div>
+
+          {/* NHL */}
+          <div style={{
+            borderRadius: 10, padding: '12px 16px',
+            background: result.nhl && typeof result.nhl === 'object' ? '#f0fdf4' : '#fef2f2',
+            border: `1px solid ${result.nhl && typeof result.nhl === 'object' ? '#bbf7d0' : '#fecaca'}`,
+          }}>
+            <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6, color: result.nhl && typeof result.nhl === 'object' ? '#16a34a' : '#dc2626' }}>
+              {result.nhl && typeof result.nhl === 'object' ? '✅' : '❌'} НХЛ Standings (NHL free API)
+            </div>
+            {result.nhlSample ? (
+              <pre style={{ fontSize: 11, color: '#374151', whiteSpace: 'pre-wrap', margin: 0 }}>
+                {result.nhlSample.map(([abbr, rec]) => `${abbr}: ${rec}`).join('\n')}
+                {'\n... и ещё ' + (Object.keys(result.nhl || {}).length - result.nhlSample.length) + ' команд'}
+              </pre>
+            ) : (
+              <div style={{ fontSize: 12, color: '#dc2626' }}>
+                {typeof result.nhl === 'string' ? result.nhl : 'Нет данных'}<br />
+                <span style={{ color: '#6b7280', marginTop: 4, display: 'block' }}>Raw: {result.nhlRaw}</span>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
