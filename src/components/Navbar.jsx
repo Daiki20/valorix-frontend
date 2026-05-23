@@ -7,12 +7,12 @@ import AuthModal from './AuthModal'
 import CoinsModal from './CoinsModal'
 import Logo from './Logo'
 
-const ACCENT = '#a3ff4e'
-const ACCENT_DIM = 'rgba(163,255,78,0.1)'
-const BG = '#07090f'
+const ACCENT = '#00cfff'
+const ACCENT_DIM = 'rgba(0,207,255,0.1)'
+const BG = '#030b18'
 const TEXT = '#dde4ee'
 const TEXT_MUTED = '#556070'
-const BORDER = 'rgba(255,255,255,0.07)'
+const BORDER = 'rgba(0,180,255,0.1)'
 
 export default function Navbar() {
   const { user, logout } = useAuth()
@@ -25,7 +25,7 @@ export default function Navbar() {
   return (
     <>
       <nav style={{
-        background: 'rgba(7,9,15,0.88)',
+        background: 'rgba(3,11,24,0.88)',
         backdropFilter: 'blur(16px)',
         borderBottom: `1px solid ${BORDER}`,
         position: 'sticky', top: 0, zIndex: 100,
@@ -89,7 +89,7 @@ export default function Navbar() {
         {mobileOpen && (
           <div style={{
             borderTop: `1px solid ${BORDER}`,
-            background: 'rgba(7,9,15,0.97)',
+            background: 'rgba(3,11,24,0.97)',
             padding: '16px 24px 20px',
             display: 'flex', flexDirection: 'column', gap: 12,
           }}>
@@ -142,15 +142,15 @@ function ExpressPill({ onClick }) {
     <a href="/#express" onClick={onClick} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6,
       padding: '7px 14px', borderRadius: 20,
-      background: 'linear-gradient(90deg, #a3ff4e, #5bff9e, #a3ff4e)',
+      background: 'linear-gradient(90deg, #00cfff, #5bff9e, #00cfff)',
       backgroundSize: '200% 100%',
       animation: 'shimmer 2.5s linear infinite',
       textDecoration: 'none', fontSize: 13, fontWeight: 700,
-      color: '#07090f', whiteSpace: 'nowrap',
-      boxShadow: '0 2px 16px rgba(163,255,78,0.35)',
+      color: '#030b18', whiteSpace: 'nowrap',
+      boxShadow: '0 2px 16px rgba(0,207,255,0.35)',
       border: 'none',
     }}>
-      <Zap size={14} color="#07090f" fill="#07090f" />
+      <Zap size={14} color="#030b18" fill="#030b18" />
       AI Экспресс
     </a>
   )
@@ -190,14 +190,14 @@ function CoinBadge({ coins, onClick }) {
 
   return (
     <button onClick={onClick} style={{
-      background: 'rgba(255,255,255,0.04)',
+      background: 'rgba(0,25,60,0.4)',
       border: `1.5px solid ${BORDER}`,
       borderRadius: 50, padding: '8px 16px', fontSize: 14, fontWeight: 700,
       color: TEXT, cursor: 'pointer',
       display: 'flex', alignItems: 'center', gap: 6,
       transition: 'border-color 0.18s, box-shadow 0.18s',
     }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(163,255,78,0.3)'; e.currentTarget.style.boxShadow = '0 2px 16px rgba(163,255,78,0.12)' }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(0,207,255,0.3)'; e.currentTarget.style.boxShadow = '0 2px 16px rgba(0,207,255,0.12)' }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = BORDER; e.currentTarget.style.boxShadow = 'none' }}
     >
       <Zap size={14} color={ACCENT} fill={ACCENT} />
@@ -214,20 +214,20 @@ function UserMenu({ user, show, onToggle, onClose, onLogout }) {
     <div style={{ position: 'relative' }}>
       <button onClick={onToggle} style={{
         background: ACCENT_DIM,
-        border: `1.5px solid rgba(163,255,78,0.2)`,
+        border: `1.5px solid rgba(0,207,255,0.2)`,
         borderRadius: 50, padding: '8px 16px',
         fontSize: 14, fontWeight: 600, color: ACCENT, cursor: 'pointer',
         display: 'flex', alignItems: 'center', gap: 8,
         transition: 'box-shadow 0.18s',
       }}
-        onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 16px rgba(163,255,78,0.2)'}
+        onMouseEnter={e => e.currentTarget.style.boxShadow = '0 2px 16px rgba(0,207,255,0.2)'}
         onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
       >
         <div style={{
           width: 22, height: 22, borderRadius: '50%',
-          background: 'linear-gradient(135deg, #a3ff4e, #5bff9e)',
+          background: 'linear-gradient(135deg, #00cfff, #5bff9e)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 11, fontWeight: 800, color: '#07090f',
+          fontSize: 11, fontWeight: 800, color: '#030b18',
         }}>
           {(user.username || user.email || '?')[0].toUpperCase()}
         </div>
@@ -239,7 +239,7 @@ function UserMenu({ user, show, onToggle, onClose, onLogout }) {
           <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 150 }} />
           <div style={{
             position: 'absolute', top: 'calc(100% + 8px)', right: 0,
-            background: '#0c0f18',
+            background: '#050f22',
             border: `1px solid ${BORDER}`,
             borderRadius: 14, padding: 8, minWidth: 200,
             boxShadow: '0 12px 40px rgba(0,0,0,0.5)', zIndex: 151,
@@ -253,7 +253,7 @@ function UserMenu({ user, show, onToggle, onClose, onLogout }) {
             <Link
               to="/history" onClick={onClose}
               style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 12px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: TEXT, textDecoration: 'none', transition: 'background 0.15s' }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,25,60,0.4)'}
               onMouseLeave={e => e.currentTarget.style.background = 'none'}
             >
               <History size={14} color={TEXT_MUTED} />
