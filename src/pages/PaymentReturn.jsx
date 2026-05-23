@@ -43,7 +43,7 @@ export default function PaymentReturn() {
         {status === 'checking' && (
           <>
             <div style={{ marginBottom: 20 }}>
-              <Loader size={48} color="#2563eb" style={{ animation: 'spin 1s linear infinite' }} />
+              <Loader size={48} color="#00cfff" style={{ animation: 'spin 1s linear infinite' }} />
             </div>
             <div style={{ fontWeight: 700, fontSize: 18, color: '#dde4ee', marginBottom: 8 }}>
               Проверяем оплату...
@@ -64,11 +64,11 @@ export default function PaymentReturn() {
               Монеты зачислены на ваш счёт
             </div>
             <div style={{
-              background: 'rgba(163,255,78,0.08)', borderRadius: 12, padding: '16px',
+              background: 'rgba(0,207,255,0.08)', borderRadius: 12, padding: '16px',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               marginBottom: 28,
             }}>
-              <Zap size={20} color="#2563eb" fill="#2563eb" />
+              <Zap size={20} color="#00cfff" fill="#00cfff" />
               <span style={{ fontWeight: 800, fontSize: 22, color: '#dde4ee' }}>
                 {coins} монет
               </span>

@@ -165,13 +165,13 @@ export default function Analyze() {
 
           {error && (
             <div style={{
-              background: 'rgba(220,38,38,0.08)', border: '1px solid #fecaca', borderRadius: 12,
+              background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)', borderRadius: 12,
               padding: '16px 20px', display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: 16,
             }}>
               <AlertCircle size={20} color="#ef4444" />
               <div>
-                <div style={{ fontWeight: 600, color: '#dc2626', marginBottom: 4 }}>Ошибка</div>
-                <div style={{ fontSize: 13, color: '#64748b' }}>{error}</div>
+                <div style={{ fontWeight: 600, color: '#ff7070', marginBottom: 4 }}>Ошибка</div>
+                <div style={{ fontSize: 13, color: '#4a6a8a' }}>{error}</div>
               </div>
             </div>
           )}
@@ -226,10 +226,11 @@ export default function Analyze() {
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
               padding: '8px 20px', borderRadius: 10, fontWeight: 700, fontSize: 14,
-              border: 'none', cursor: 'pointer',
-              background: activeTab === tab.id ? '#2563eb' : 'white',
-              color: activeTab === tab.id ? 'white' : '#64748b',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+              border: `1.5px solid ${activeTab === tab.id ? 'transparent' : 'rgba(0,180,255,0.15)'}`,
+              cursor: 'pointer',
+              background: activeTab === tab.id ? 'linear-gradient(135deg, #00cfff, #7b5ea7)' : 'rgba(0,25,60,0.4)',
+              color: activeTab === tab.id ? '#030b18' : '#4a6a8a',
+              boxShadow: activeTab === tab.id ? '0 4px 16px rgba(0,207,255,0.25)' : 'none',
               transition: 'all 0.15s',
             }}>{tab.label}</button>
           ))}
@@ -243,9 +244,9 @@ export default function Analyze() {
               placeholder="Поиск по команде или лиге..."
               style={{
                 width: '100%', padding: '14px 20px 14px 48px',
-                borderRadius: 12, border: '1.5px solid rgba(255,255,255,0.07)',
-                fontSize: 15, background: '#0c0f18', outline: 'none',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                borderRadius: 12, border: '1.5px solid rgba(0,180,255,0.15)',
+                fontSize: 15, background: 'rgba(0,15,40,0.6)',
+                color: '#d8eeff', outline: 'none',
               }}
             />
             <Search size={18} color="#94a3b8"
@@ -278,14 +279,14 @@ export default function Analyze() {
                   onClick={() => setShowHockeyForm(f => !f)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8,
-                    background: 'none', border: '1.5px dashed #cbd5e1',
+                    background: 'none', border: '1.5px dashed rgba(0,180,255,0.2)',
                     borderRadius: 10, padding: '10px 16px', cursor: 'pointer',
-                    fontSize: 13, fontWeight: 600, color: '#64748b',
+                    fontSize: 13, fontWeight: 600, color: '#4a6a8a',
                     marginBottom: 16, width: '100%',
                     transition: 'all 0.15s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.color = '#2563eb' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.color = '#64748b' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#00cfff'; e.currentTarget.style.color = '#00cfff' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,180,255,0.2)'; e.currentTarget.style.color = '#4a6a8a' }}
                 >
                   {showHockeyForm ? '✕ Скрыть форму' : '+ Другой матч (ввести вручную)'}
                 </button>
@@ -359,17 +360,17 @@ export default function Analyze() {
                   return (
                     <button key={t.id} onClick={() => setLiveFilter(t.id)} style={{
                       padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
-                      border: `1.5px solid ${isActive ? accentColor : '#e2e8f0'}`,
-                      background: isActive ? (t.id === 'hockey' ? '#f0f9ff' : '#fff1f2') : 'white',
-                      color: isActive ? accentColor : '#64748b',
+                      border: `1.5px solid ${isActive ? accentColor : 'rgba(0,180,255,0.15)'}`,
+                      background: isActive ? `${accentColor}1a` : 'rgba(0,25,60,0.4)',
+                      color: isActive ? accentColor : '#4a6a8a',
                       cursor: 'pointer', transition: 'all 0.15s',
                       display: 'flex', alignItems: 'center', gap: 5,
                     }}>
                       {t.label}
                       {cnt > 0 && (
                         <span style={{
-                          background: isActive ? accentColor : '#e2e8f0',
-                          color: isActive ? 'white' : '#64748b',
+                          background: isActive ? accentColor : 'rgba(0,180,255,0.15)',
+                          color: isActive ? '#030b18' : '#4a6a8a',
                           borderRadius: 10, padding: '1px 6px', fontSize: 10, fontWeight: 800,
                         }}>{cnt}</span>
                       )}
@@ -412,10 +413,10 @@ function LockedResult({ match, cost, userCoins, loading, onConfirm }) {
         <div className="card" style={{ padding: 32, marginBottom: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
             <div>
-              <div style={{ height: 20, width: 160, background: '#e2e8f0', borderRadius: 6, marginBottom: 8 }} />
+              <div style={{ height: 20, width: 160, background: 'rgba(0,207,255,0.1)', borderRadius: 6, marginBottom: 8 }} />
               <div style={{ height: 14, width: 100, background: 'rgba(255,255,255,0.04)', borderRadius: 6 }} />
             </div>
-            <div style={{ width: 120, height: 120, borderRadius: '50%', background: 'conic-gradient(#2563eb 0% 72%, #e2e8f0 72%)' }} />
+            <div style={{ width: 120, height: 120, borderRadius: '50%', background: 'conic-gradient(#00cfff 0% 72%, rgba(0,180,255,0.08) 72%)' }} />
           </div>
           {[1,2,3].map(i => (
             <div key={i} style={{ height: 16, background: 'rgba(255,255,255,0.04)', borderRadius: 6, marginBottom: 10, width: `${70 + i * 8}%` }} />
@@ -425,7 +426,7 @@ function LockedResult({ match, cost, userCoins, loading, onConfirm }) {
           {[1,2,3,4].map(i => (
             <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
               <div style={{ height: 14, flex: 1, background: 'rgba(255,255,255,0.04)', borderRadius: 6 }} />
-              <div style={{ height: 14, width: 60, background: '#e2e8f0', borderRadius: 6 }} />
+              <div style={{ height: 14, width: 60, background: 'rgba(0,207,255,0.1)', borderRadius: 6 }} />
             </div>
           ))}
         </div>
@@ -447,11 +448,12 @@ function LockedResult({ match, cost, userCoins, loading, onConfirm }) {
         }}>
           <div style={{
             width: 64, height: 64, borderRadius: '50%',
-            background: 'rgba(163,255,78,0.08)', display: 'flex',
+            background: 'rgba(0,207,255,0.1)', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 20px',
+            border: '1px solid rgba(0,207,255,0.2)',
           }}>
-            <Lock size={28} color="#2563eb" />
+            <Lock size={28} color="#00cfff" />
           </div>
 
           <div style={{ fontWeight: 800, fontSize: 18, color: '#dde4ee', marginBottom: 6 }}>
@@ -465,18 +467,18 @@ function LockedResult({ match, cost, userCoins, loading, onConfirm }) {
             background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 16px',
             marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            <span style={{ fontSize: 14, color: '#64748b', fontWeight: 500 }}>Стоимость</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 800, fontSize: 16, color: '#dde4ee' }}>
-              <Zap size={16} color="#2563eb" fill="#2563eb" />
+            <span style={{ fontSize: 14, color: '#4a6a8a', fontWeight: 500 }}>Стоимость</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 800, fontSize: 16, color: '#d8eeff' }}>
+              <Zap size={16} color="#00cfff" fill="#00cfff" />
               {cost} монет
             </div>
           </div>
 
           {notEnough && (
             <div style={{
-              background: 'rgba(220,38,38,0.08)', border: '1px solid #fecaca',
+              background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)',
               borderRadius: 10, padding: '10px 14px',
-              fontSize: 13, color: '#dc2626', marginBottom: 16,
+              fontSize: 13, color: '#ff7070', marginBottom: 16,
             }}>
               Недостаточно монет. У вас {userCoins}, нужно {cost}.
             </div>
@@ -487,8 +489,10 @@ function LockedResult({ match, cost, userCoins, loading, onConfirm }) {
             disabled={loading || notEnough}
             style={{
               width: '100%', padding: '14px',
-              background: loading || notEnough ? '#94a3b8' : '#2563eb',
-              color: 'white', border: 'none', borderRadius: 12,
+              background: loading || notEnough ? 'rgba(0,207,255,0.2)' : 'linear-gradient(90deg, #00cfff, #7b5ea7)',
+              color: loading || notEnough ? 'rgba(255,255,255,0.4)' : '#030b18',
+              border: 'none', borderRadius: 12,
+              boxShadow: loading || notEnough ? 'none' : '0 4px 20px rgba(0,207,255,0.3)',
               fontWeight: 800, fontSize: 15,
               cursor: loading || notEnough ? 'not-allowed' : 'pointer',
               transition: 'background 0.2s',
@@ -511,9 +515,9 @@ function getConfidence(odds) {
   if (!odds) return null
   const favOdds = Math.min(Number(odds.home), Number(odds.away))
   const homeDiff = Math.abs(Number(odds.home) - Number(odds.away))
-  if (favOdds <= 1.45) return { label: '🔥 Явный фаворит', bg: '#fff7ed', color: '#c2410c', border: '#fed7aa' }
-  if (favOdds <= 1.75) return { label: '⚡ Есть перевес', bg: '#fefce8', color: '#a16207', border: '#fde68a' }
-  if (homeDiff < 0.3) return { label: '⚖️ Равная игра', bg: '#f8fafc', color: '#64748b', border: '#e2e8f0' }
+  if (favOdds <= 1.45) return { label: '🔥 Явный фаворит', bg: 'rgba(249,115,22,0.1)', color: '#fb923c', border: 'rgba(249,115,22,0.3)' }
+  if (favOdds <= 1.75) return { label: '⚡ Есть перевес', bg: 'rgba(245,158,11,0.1)', color: '#fbbf24', border: 'rgba(245,158,11,0.3)' }
+  if (homeDiff < 0.3) return { label: '⚖️ Равная игра', bg: 'rgba(0,207,255,0.07)', color: '#4a6a8a', border: 'rgba(0,180,255,0.2)' }
   return null
 }
 
@@ -534,8 +538,8 @@ function MatchRow({ match, onClick, isLiveTab }) {
         display: 'flex', alignItems: 'center', gap: 12,
         transition: 'all 0.15s',
         transform: hovered ? 'translateX(4px)' : 'none',
-        border: isLive ? '1.5px solid rgba(239,68,68,0.3)' : hovered ? '1.5px solid #2563eb' : '1.5px solid transparent',
-        background: isLive ? 'rgba(254,242,242,0.5)' : undefined,
+        border: isLive ? '1.5px solid rgba(239,68,68,0.3)' : hovered ? '1.5px solid rgba(0,207,255,0.35)' : '1.5px solid transparent',
+        background: isLive ? 'rgba(239,68,68,0.05)' : undefined,
       }}
     >
       {/* ЛЕВАЯ ГРУППА: логотипы + имена — компактная, не растягивается */}
@@ -597,8 +601,9 @@ function MatchRow({ match, onClick, isLiveTab }) {
         )}
 
         <div className="match-row-btn" style={{
-          background: hovered ? '#1a1a2e' : '#f1f5f9',
-          color: hovered ? 'white' : '#64748b',
+          background: hovered ? 'rgba(0,207,255,0.15)' : 'rgba(0,25,60,0.5)',
+          color: hovered ? '#00cfff' : '#4a6a8a',
+          border: `1px solid ${hovered ? 'rgba(0,207,255,0.3)' : 'rgba(0,180,255,0.1)'}`,
           borderRadius: 20, padding: '6px 12px',
           fontSize: 13, fontWeight: 600,
           display: 'flex', alignItems: 'center', gap: 5,
@@ -648,8 +653,8 @@ function HockeyMatchRow({ match, onClick }) {
         display: 'flex', alignItems: 'center', gap: 12,
         transition: 'all 0.15s',
         transform: hovered ? 'translateX(4px)' : 'none',
-        border: isLive ? '1.5px solid rgba(239,68,68,0.3)' : hovered ? '1.5px solid #0ea5e9' : '1.5px solid transparent',
-        background: isLive ? 'rgba(254,242,242,0.5)' : undefined,
+        border: isLive ? '1.5px solid rgba(239,68,68,0.3)' : hovered ? '1.5px solid rgba(14,165,233,0.4)' : '1.5px solid transparent',
+        background: isLive ? 'rgba(239,68,68,0.05)' : undefined,
       }}
     >
       {/* Левая группа: логотипы + имена */}
@@ -687,8 +692,9 @@ function HockeyMatchRow({ match, onClick }) {
 
 
         <div className="match-row-btn" style={{
-          background: hovered ? '#0ea5e9' : '#f0f9ff',
-          color: hovered ? 'white' : '#0369a1',
+          background: hovered ? 'rgba(14,165,233,0.15)' : 'rgba(0,25,60,0.5)',
+          color: hovered ? '#0ea5e9' : '#4a6a8a',
+          border: `1px solid ${hovered ? 'rgba(14,165,233,0.3)' : 'rgba(0,180,255,0.1)'}`,
           borderRadius: 20, padding: '6px 12px',
           fontSize: 13, fontWeight: 600,
           display: 'flex', alignItems: 'center', gap: 5,
@@ -707,15 +713,15 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
 
   return (
     <div style={{
-      background: '#0c0f18', borderRadius: 16, padding: '28px 28px 24px',
-      border: '1.5px solid #bfdbfe', marginBottom: 24,
-      boxShadow: '0 4px 16px rgba(37,99,235,0.08)',
+      background: 'rgba(0,25,60,0.4)', borderRadius: 16, padding: '28px 28px 24px',
+      border: '1.5px solid rgba(0,207,255,0.15)', marginBottom: 24,
+      boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
     }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
         <div style={{
           width: 36, height: 36, borderRadius: 10,
-          background: 'linear-gradient(135deg, #0ea5e9, #2563eb)',
+          background: 'linear-gradient(135deg, #0ea5e9, #00cfff)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <span style={{ fontSize: 18 }}>🏒</span>
@@ -733,9 +739,9 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
           {leagues.map(l => (
             <button key={l} onClick={() => onLeague(l)} style={{
               padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 600,
-              border: `1.5px solid ${league === l ? '#2563eb' : '#e2e8f0'}`,
-              background: league === l ? '#eff6ff' : 'white',
-              color: league === l ? '#2563eb' : '#64748b',
+              border: `1.5px solid ${league === l ? '#00cfff' : 'rgba(0,180,255,0.15)'}`,
+              background: league === l ? 'rgba(0,207,255,0.12)' : 'rgba(0,25,60,0.4)',
+              color: league === l ? '#00cfff' : '#4a6a8a',
               cursor: 'pointer', transition: 'all 0.15s',
             }}>{l}</button>
           ))}
@@ -757,8 +763,8 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
               boxSizing: 'border-box',
               transition: 'border-color 0.15s',
             }}
-            onFocus={e => e.target.style.borderColor = '#2563eb'}
-            onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+            onFocus={e => e.target.style.borderColor = '#00cfff'}
+            onBlur={e => e.target.style.borderColor = 'rgba(0,180,255,0.15)'}
           />
         </div>
 
@@ -777,8 +783,8 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
               boxSizing: 'border-box',
               transition: 'border-color 0.15s',
             }}
-            onFocus={e => e.target.style.borderColor = '#2563eb'}
-            onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+            onFocus={e => e.target.style.borderColor = '#00cfff'}
+            onBlur={e => e.target.style.borderColor = 'rgba(0,180,255,0.15)'}
           />
         </div>
       </div>
@@ -788,8 +794,8 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
         disabled={!canAnalyze}
         style={{
           marginTop: 16, width: '100%', padding: '12px',
-          background: canAnalyze ? 'linear-gradient(135deg, #0ea5e9, #2563eb)' : '#e2e8f0',
-          color: canAnalyze ? 'white' : '#94a3b8',
+          background: canAnalyze ? 'linear-gradient(135deg, #0ea5e9, #00cfff)' : 'rgba(0,25,60,0.4)',
+          color: canAnalyze ? '#030b18' : '#4a6a8a',
           border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 14,
           cursor: canAnalyze ? 'pointer' : 'not-allowed',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -801,9 +807,9 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
       </button>
 
       <div style={{
-        marginTop: 14, padding: '10px 14px', background: 'rgba(87,200,255,0.07)',
-        borderRadius: 10, border: '1px solid #bae6fd',
-        fontSize: 12, color: '#0369a1', lineHeight: 1.5,
+        marginTop: 14, padding: '10px 14px', background: 'rgba(0,207,255,0.06)',
+        borderRadius: 10, border: '1px solid rgba(0,207,255,0.18)',
+        fontSize: 12, color: '#57c8ff', lineHeight: 1.5,
       }}>
         💡 AI использует свои знания о командах: форма, статистика голов, вратари, игра в большинстве — без автоматической загрузки данных.
       </div>
@@ -849,7 +855,7 @@ function LoadingAnalysis({ match }) {
             padding: '8px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: 8,
             fontSize: 13, color: '#64748b',
           }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#2563eb', flexShrink: 0, marginTop: 4, animation: `blink 1.4s infinite ${i * 0.3}s` }} />
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#00cfff', flexShrink: 0, marginTop: 4, animation: `blink 1.4s infinite ${i * 0.3}s` }} />
             <span style={{ textAlign: 'left' }}>{step}</span>
           </div>
         ))}

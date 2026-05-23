@@ -28,7 +28,7 @@ export default function Admin() {
       <div className="admin-wrap" style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px' }}>
         <div style={{ marginBottom: 28 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-            <Shield size={22} color="#2563eb" />
+            <Shield size={22} color="#00cfff" />
             <h1 style={{ fontSize: 26, fontWeight: 800, color: '#dde4ee' }}>Панель администратора</h1>
           </div>
           <p style={{ color: '#64748b', fontSize: 14 }}>{user.email}</p>
@@ -115,7 +115,7 @@ function DashboardTab({ toast }) {
       {/* Stats cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16 }}>
         {[
-          { label: 'Всего пользователей', value: stats?.totalUsers, icon: <Users size={18} color="#2563eb" /> },
+          { label: 'Всего пользователей', value: stats?.totalUsers, icon: <Users size={18} color="#00cfff" /> },
           { label: 'Всего анализов', value: stats?.totalAnalyses, icon: <BarChart3 size={18} color="#7c3aed" /> },
           { label: 'Монет потрачено', value: stats?.totalCoinsSpent, icon: <Zap size={18} color="#f59e0b" fill="#f59e0b" /> },
           { label: 'Новых сегодня', value: stats?.todayUsers, icon: <Users size={18} color="#10b981" /> },
@@ -137,7 +137,7 @@ function DashboardTab({ toast }) {
       {/* Add coins form */}
       <div className="card" style={{ padding: 24 }}>
         <h3 style={{ fontWeight: 700, fontSize: 16, color: '#dde4ee', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Zap size={16} color="#2563eb" fill="#2563eb" />
+          <Zap size={16} color="#00cfff" fill="#00cfff" />
           Управление монетами
         </h3>
 
@@ -200,8 +200,8 @@ function DashboardTab({ toast }) {
 
         {/* Football */}
         {[
-          { sport: 'football', label: '⚽ Футбол', gradL: 'linear-gradient(135deg,#2563eb,#7c3aed)', gradH: 'linear-gradient(135deg,#d97706,#dc2626)' },
-          { sport: 'hockey',   label: '🏒 Хоккей', gradL: 'linear-gradient(135deg,#0ea5e9,#2563eb)', gradH: 'linear-gradient(135deg,#ea580c,#dc2626)' },
+          { sport: 'football', label: '⚽ Футбол', gradL: 'linear-gradient(135deg,#00cfff,#7b5ea7)', gradH: 'linear-gradient(135deg,#f97316,#dc2626)' },
+          { sport: 'hockey',   label: '🏒 Хоккей', gradL: 'linear-gradient(135deg,#0ea5e9,#00cfff)', gradH: 'linear-gradient(135deg,#ea580c,#dc2626)' },
         ].map(({ sport, label, gradL, gradH }) => {
           const kL = `${sport}_standard`, kH = `${sport}_high`
           const resL = expressResults[kL], resH = expressResults[kH]
@@ -254,7 +254,7 @@ function DashboardTab({ toast }) {
           <h3 style={{ fontWeight: 700, fontSize: 16, color: '#dde4ee', marginBottom: 16 }}>Последние регистрации</h3>
           <div style={{ overflowX: 'auto' }}><table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr style={{ borderBottom: '2px solid #f1f5f9' }}>
+              <tr style={{ borderBottom: '2px solid rgba(0,180,255,0.08)' }}>
                 {['Email', 'Username', 'Монеты', 'Роль', 'Дата'].map(h => (
                   <th key={h} style={{ textAlign: 'left', padding: '6px 10px', color: '#64748b', fontWeight: 700, fontSize: 11, textTransform: 'uppercase' }}>{h}</th>
                 ))}
@@ -266,7 +266,7 @@ function DashboardTab({ toast }) {
                   <td style={tdStyle}>{u.email}</td>
                   <td style={tdStyle}>{u.username}</td>
                   <td style={tdStyle}><CoinPill n={u.coins} /></td>
-                  <td style={tdStyle}>{u.is_admin ? <span style={pillStyle('#2563eb')}>Admin</span> : <span style={pillStyle('#94a3b8')}>User</span>}</td>
+                  <td style={tdStyle}>{u.is_admin ? <span style={pillStyle('#00cfff')}>Admin</span> : <span style={pillStyle('#94a3b8')}>User</span>}</td>
                   <td style={tdStyle}>{new Date(u.created_at).toLocaleDateString('ru-RU')}</td>
                 </tr>
               ))}
@@ -313,7 +313,7 @@ function ApiStatusPanel() {
         </h3>
         <button onClick={check} disabled={loading} style={{
           padding: '8px 18px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13,
-          background: loading ? '#94a3b8' : '#2563eb', color: 'white', cursor: loading ? 'not-allowed' : 'pointer',
+          background: loading ? 'rgba(0,207,255,0.2)' : 'linear-gradient(90deg,#00cfff,#7b5ea7)', color: loading ? 'rgba(255,255,255,0.4)' : '#030b18', cursor: loading ? 'not-allowed' : 'pointer',
         }}>
           {loading ? 'Проверяем...' : 'Проверить всё'}
         </button>
@@ -412,7 +412,7 @@ function UsersTab({ toast }) {
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
-                <tr style={{ borderBottom: '2px solid #f1f5f9', background: '#0a0d14' }}>
+                <tr style={{ borderBottom: '2px solid rgba(0,180,255,0.08)', background: '#0a0d14' }}>
                   {['Email', 'Username', 'Монеты', 'Анализов', 'Статус', 'Действия'].map(h => (
                     <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#64748b', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
@@ -420,14 +420,14 @@ function UsersTab({ toast }) {
               </thead>
               <tbody>
                 {data?.users?.map(u => (
-                  <tr key={u.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <tr key={u.id} style={{ borderBottom: '1px solid rgba(0,180,255,0.06)' }}>
                     <td style={tdStyle}>{u.email}</td>
                     <td style={tdStyle}>{u.username}</td>
                     <td style={tdStyle}><CoinPill n={u.coins} /></td>
                     <td style={tdStyle}>{u.analyses_count}</td>
                     <td style={tdStyle}>
                       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                        {u.is_admin ? <span style={pillStyle('#2563eb')}>Admin</span> : null}
+                        {u.is_admin ? <span style={pillStyle('#00cfff')}>Admin</span> : null}
                         {u.is_blocked ? <span style={pillStyle('#dc2626')}>Заблокирован</span> : <span style={pillStyle('#10b981')}>Активен</span>}
                       </div>
                     </td>
@@ -436,7 +436,7 @@ function UsersTab({ toast }) {
                         <ActionBtn
                           icon={u.is_admin ? <Minus size={12} /> : <Shield size={12} />}
                           label={u.is_admin ? 'Снять Admin' : 'Сделать Admin'}
-                          color={u.is_admin ? '#64748b' : '#2563eb'}
+                          color={u.is_admin ? '#4a6a8a' : '#00cfff'}
                           loading={actionLoading[`admin_${u.id}`]}
                           onClick={() => action(`admin_${u.id}`, () => setAdmin(u.email, !u.is_admin))}
                         />
@@ -484,7 +484,7 @@ function TransactionsTab() {
   useEffect(() => { load() }, [page])
 
   const typeLabel = (t) => {
-    const map = { purchase: ['Покупка', '#10b981'], admin_add: ['Начислено', '#2563eb'], admin_remove: ['Снято', '#f97316'], spend: ['Трата', '#7c3aed'] }
+    const map = { purchase: ['Покупка', '#10b981'], admin_add: ['Начислено', '#00cfff'], admin_remove: ['Снято', '#f97316'], spend: ['Трата', '#7b5ea7'] }
     return map[t] || [t, '#94a3b8']
   }
 
@@ -494,7 +494,7 @@ function TransactionsTab() {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr style={{ borderBottom: '2px solid #f1f5f9', background: '#0a0d14' }}>
+              <tr style={{ borderBottom: '2px solid rgba(0,180,255,0.08)', background: '#0a0d14' }}>
                 {['Пользователь', 'Тип', 'Монеты', 'Описание', 'Дата'].map(h => (
                   <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#64748b', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
@@ -504,7 +504,7 @@ function TransactionsTab() {
               {data?.transactions?.map(tx => {
                 const [label, color] = typeLabel(tx.type)
                 return (
-                  <tr key={tx.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <tr key={tx.id} style={{ borderBottom: '1px solid rgba(0,180,255,0.06)' }}>
                     <td style={tdStyle}>
                       <div style={{ fontSize: 13, fontWeight: 600 }}>{tx.username}</div>
                       <div style={{ fontSize: 11, color: '#94a3b8' }}>{tx.email}</div>
@@ -543,8 +543,8 @@ function TransactionsTab() {
 /* ─── Helpers ─── */
 function CoinPill({ n }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(163,255,78,0.08)', borderRadius: 20, padding: '2px 8px', fontSize: 12, fontWeight: 700, color: '#2563eb' }}>
-      <Zap size={10} color="#2563eb" fill="#2563eb" />{n}
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(0,207,255,0.08)', borderRadius: 20, padding: '2px 8px', fontSize: 12, fontWeight: 700, color: '#00cfff' }}>
+      <Zap size={10} color="#00cfff" fill="#00cfff" />{n}
     </span>
   )
 }

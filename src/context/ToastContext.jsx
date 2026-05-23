@@ -41,9 +41,9 @@ function ToastContainer({ toasts, onRemove }) {
 }
 
 const STYLES = {
-  success: { bg: '#f0fdf4', border: '#86efac', icon: '✓', iconBg: '#16a34a', text: '#15803d' },
-  error:   { bg: '#fef2f2', border: '#fca5a5', icon: '✕', iconBg: '#dc2626', text: '#b91c1c' },
-  info:    { bg: '#eff6ff', border: '#93c5fd', icon: '⚡', iconBg: '#2563eb', text: '#1d4ed8' },
+  success: { bg: 'rgba(34,197,94,0.1)',  border: 'rgba(34,197,94,0.3)',  icon: '✓', iconBg: '#16a34a', text: '#5eff9e' },
+  error:   { bg: 'rgba(220,38,38,0.1)',  border: 'rgba(220,38,38,0.3)',  icon: '✕', iconBg: '#dc2626', text: '#ff7070' },
+  info:    { bg: 'rgba(0,207,255,0.1)',  border: 'rgba(0,207,255,0.25)', icon: '⚡', iconBg: '#00cfff', text: '#00cfff' },
 }
 
 function Toast({ toast, onRemove }) {

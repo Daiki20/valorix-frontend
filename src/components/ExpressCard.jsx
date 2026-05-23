@@ -1,35 +1,43 @@
-// v2
+// v3 — dark space theme
 import { useState, useEffect } from 'react'
-import { Zap, Lock, Star, TrendingUp, ChevronRight, Flame, Sparkles, X, Brain } from 'lucide-react'
+import { Zap, Lock, Star, TrendingUp, ChevronRight, Flame, Sparkles, Brain } from 'lucide-react'
 import { expressApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
+
+const ACCENT  = '#00cfff'
+const A2      = '#7b5ea7'
+const BORDER  = 'rgba(0,180,255,0.14)'
+const TEXT    = '#d8eeff'
+const MUTED   = '#4a6a8a'
+const BG_CARD = 'rgba(0,25,60,0.5)'
+const BG_PICK = 'rgba(0,15,35,0.7)'
 
 const CONFIG = {
   standard: {
     cost: 39,
     label: 'Экспресс дня',
     sublabel: 'Надёжный',
-    icon: <Star size={14} color="white" fill="white" />,
-    gradient: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-    accentLine: 'linear-gradient(90deg, #2563eb, #7c3aed)',
-    border: '#e0e7ff',
-    bg: 'linear-gradient(135deg, #fafbff 0%, #f0f4ff 100%)',
-    numberBg: 'linear-gradient(135deg, #eff6ff, #e0e7ff)',
-    numberColor: '#2563eb',
-    oddsColor: '#2563eb',
+    icon: <Star size={14} color="#030b18" fill="#030b18" />,
+    gradient: 'linear-gradient(135deg, #00cfff, #7b5ea7)',
+    accentLine: 'linear-gradient(90deg, #00cfff, #7b5ea7)',
+    border: 'rgba(0,207,255,0.2)',
+    bg: 'rgba(0,25,60,0.5)',
+    numberBg: 'rgba(0,207,255,0.12)',
+    numberColor: ACCENT,
+    oddsColor: ACCENT,
   },
   high: {
     cost: 49,
     label: 'Экспресс дня',
     sublabel: 'Высокодоходный',
-    icon: <Flame size={14} color="white" fill="white" />,
-    gradient: 'linear-gradient(135deg, #ea580c, #dc2626)',
-    accentLine: 'linear-gradient(90deg, #f97316, #dc2626)',
-    border: '#fed7aa',
-    bg: 'linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%)',
-    numberBg: 'linear-gradient(135deg, #ffedd5, #fed7aa)',
-    numberColor: '#ea580c',
-    oddsColor: '#ea580c',
+    icon: <Flame size={14} color="#030b18" fill="#030b18" />,
+    gradient: 'linear-gradient(135deg, #f97316, #ef4444)',
+    accentLine: 'linear-gradient(90deg, #f97316, #ef4444)',
+    border: 'rgba(249,115,22,0.25)',
+    bg: 'rgba(30,10,5,0.5)',
+    numberBg: 'rgba(249,115,22,0.12)',
+    numberColor: '#fb923c',
+    oddsColor: '#fb923c',
   },
 }
 
@@ -62,13 +70,13 @@ const RESPONSIVE_STYLES = `
   .express-team-name {
     font-weight: 700;
     font-size: 13px;
-    color: #1a1a2e;
+    color: #d8eeff;
     line-height: 1.3;
     word-break: break-word;
   }
   .express-league {
     font-size: 11px;
-    color: #94a3b8;
+    color: #4a6a8a;
     margin-top: 2px;
     word-break: break-word;
   }
@@ -81,7 +89,7 @@ const RESPONSIVE_STYLES = `
   }
   .express-summary {
     font-size: 12px;
-    color: #64748b;
+    color: #4a6a8a;
     max-width: 180px;
     text-align: right;
     word-break: break-word;
@@ -118,7 +126,8 @@ function ExpressLabel({ text, color1, color2, border, bg }) {
       <div style={{ flex: 1, height: 1, background: `linear-gradient(90deg, transparent, ${border})` }} />
       <div style={{
         display: 'flex', alignItems: 'center', gap: 6,
-        background: bg, border: `1.5px dashed ${border}`,
+        background: bg,
+        border: `1.5px dashed ${border}`,
         borderRadius: 20, padding: '5px 14px',
         fontSize: 11, fontWeight: 700, letterSpacing: 0.8,
         animation: `labelPulse_${id} 2s ease-in-out infinite`,
@@ -148,7 +157,7 @@ function ReasoningPanel({ picks, cfg }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
         <Brain size={14} color={cfg.oddsColor} />
         <span style={{ fontSize: 12, fontWeight: 700, color: cfg.oddsColor }}>Логика AI</span>
-        <span style={{ fontSize: 11, color: '#94a3b8' }}>— почему выбраны эти ставки</span>
+        <span style={{ fontSize: 11, color: MUTED }}>— почему выбраны эти ставки</span>
       </div>
       {picks.map((pick, i) => (
         <div key={i} style={{
@@ -163,12 +172,12 @@ function ReasoningPanel({ picks, cfg }) {
               width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
               background: cfg.gradient,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 10, fontWeight: 800, color: 'white',
+              fontSize: 10, fontWeight: 800, color: '#030b18',
             }}>
               {i + 1}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 800, fontSize: 12, color: '#dde4ee' }}>
+              <div style={{ fontWeight: 800, fontSize: 12, color: TEXT }}>
                 {pick.home} — {pick.away}
               </div>
               <div style={{ fontSize: 11, color: cfg.oddsColor, fontWeight: 700 }}>
@@ -176,15 +185,15 @@ function ReasoningPanel({ picks, cfg }) {
               </div>
             </div>
           </div>
-          <div style={{ padding: '10px 14px', background: '#0c0f18' }}>
-            <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.65 }}>
+          <div style={{ padding: '10px 14px', background: BG_PICK }}>
+            <div style={{ fontSize: 12, color: MUTED, lineHeight: 1.65 }}>
               {pick.reasoning || 'Обоснование недоступно'}
             </div>
           </div>
         </div>
       ))}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
-        <Sparkles size={11} color="#94a3b8" />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: MUTED, marginTop: 2 }}>
+        <Sparkles size={11} color={MUTED} />
         Анализ сгенерирован AI на основе статистики
       </div>
     </div>
@@ -232,7 +241,7 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
       display: 'flex', flexDirection: 'column',
       boxSizing: 'border-box',
     }}>
-      {/* accent line */}
+      {/* Accent line */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: cfg.accentLine }} />
 
       {/* Header */}
@@ -246,13 +255,13 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
             {cfg.icon}
           </div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 900, fontSize: 14, color: '#dde4ee', letterSpacing: -0.3 }}>
+            <div style={{ fontWeight: 900, fontSize: 14, color: TEXT, letterSpacing: -0.3 }}>
               {cfg.label}
             </div>
             <div style={{ fontSize: 11, color: cfg.numberColor, fontWeight: 700 }}>
               {cfg.sublabel}
               {data.generated_at && (
-                <span style={{ color: '#94a3b8', fontWeight: 500, marginLeft: 6 }}>
+                <span style={{ color: MUTED, fontWeight: 500, marginLeft: 6 }}>
                   · {new Date(data.generated_at + 'Z').toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Moscow' })} мск
                 </span>
               )}
@@ -261,8 +270,9 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
         </div>
         {isPurchased ? (
           <div style={{
-            background: 'rgba(34,197,94,0.08)', color: '#16a34a', fontSize: 12,
-            fontWeight: 700, padding: '3px 10px', borderRadius: 20, border: '1px solid #bbf7d0',
+            background: 'rgba(34,197,94,0.1)', color: '#22c55e', fontSize: 12,
+            fontWeight: 700, padding: '3px 10px', borderRadius: 20,
+            border: '1px solid rgba(34,197,94,0.25)',
             display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0,
           }}>
             <TrendingUp size={11} /> Открыт
@@ -278,8 +288,8 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
         {data.picks?.map((pick, i) => (
           <div key={i} style={{
-            background: '#0c0f18', borderRadius: 10, padding: '10px 12px',
-            border: '1px solid rgba(255,255,255,0.07)',
+            background: BG_PICK, borderRadius: 10, padding: '10px 12px',
+            border: `1px solid ${BORDER}`,
             boxSizing: 'border-box',
           }}>
             <div className="express-pick-row">
@@ -304,14 +314,14 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
                   <>
                     <div style={{ fontWeight: 800, fontSize: 12, color: cfg.oddsColor, wordBreak: 'break-word' }}>{pick.prediction}</div>
                     {sport !== 'hockey' && (
-                      <div style={{ fontSize: 12, color: '#16a34a', fontWeight: 700 }}>× {pick.odds}</div>
+                      <div style={{ fontSize: 12, color: '#22c55e', fontWeight: 700 }}>× {pick.odds}</div>
                     )}
                   </>
                 ) : (
                   <div style={{
                     filter: 'blur(5px)', userSelect: 'none',
                     fontWeight: 800, fontSize: 12, color: cfg.oddsColor,
-                    background: type === 'high' ? '#fde68a' : '#e0e7ff',
+                    background: cfg.numberBg,
                     borderRadius: 6, padding: '2px 6px',
                   }}>
                     {sport === 'hockey' ? 'П1' : 'П1 × 1.55'}
@@ -327,24 +337,25 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
       <div style={{ marginTop: 'auto' }}>
         {isPurchased ? (
           <div style={{
-            background: type === 'high' ? 'linear-gradient(135deg, #fef3c7, #fde68a)' : 'linear-gradient(135deg, #eff6ff, #e0e7ff)',
+            background: cfg.numberBg,
+            border: `1px solid ${cfg.border}`,
             borderRadius: 10, padding: '10px 14px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <div>
-                <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>Итоговый коэф.</div>
+                <div style={{ fontSize: 11, color: MUTED, fontWeight: 600 }}>Итоговый коэф.</div>
                 <div style={{ fontSize: 20, fontWeight: 900, color: cfg.oddsColor }}>
                   {sport === 'hockey' ? '>×2.33' : `×${data.total_odds?.toFixed(2)}`}
                 </div>
               </div>
               <button onClick={() => setShowSummary(s => !s)} style={{
                 display: 'flex', alignItems: 'center', gap: 6,
-                background: showSummary ? cfg.oddsColor : 'white',
-                border: `1.5px solid ${type === 'high' ? '#fcd34d' : '#c7d2fe'}`,
+                background: showSummary ? cfg.gradient : 'rgba(255,255,255,0.04)',
+                border: `1.5px solid ${cfg.border}`,
                 borderRadius: 20, padding: '7px 14px',
                 fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                color: showSummary ? 'white' : cfg.oddsColor, whiteSpace: 'nowrap',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                color: showSummary ? '#030b18' : cfg.oddsColor,
+                whiteSpace: 'nowrap',
                 transition: 'all 0.18s',
               }}>
                 <Brain size={13} />
@@ -358,12 +369,15 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
             disabled={buying}
             style={{
               width: '100%', padding: '11px',
-              background: buying ? '#94a3b8' : cfg.gradient,
-              color: 'white', border: 'none', borderRadius: 10,
-              fontWeight: 700, fontSize: 14, cursor: buying ? 'not-allowed' : 'pointer',
+              background: buying ? 'rgba(0,207,255,0.3)' : cfg.gradient,
+              color: buying ? 'rgba(255,255,255,0.4)' : '#030b18',
+              border: 'none', borderRadius: 10,
+              fontWeight: 700, fontSize: 14,
+              cursor: buying ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              flexWrap: 'wrap',
-              boxSizing: 'border-box',
+              flexWrap: 'wrap', boxSizing: 'border-box',
+              boxShadow: buying ? 'none' : `0 4px 20px ${cfg.border}`,
+              transition: 'opacity 0.2s',
             }}
           >
             {buying ? 'Открываем...' : (
@@ -371,7 +385,7 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
                 <Lock size={14} />
                 Открыть экспресс
                 <span style={{ opacity: 0.85, display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
-                  — <Zap size={13} fill="white" /> {cfg.cost} монет
+                  — <Zap size={13} fill="#030b18" color="#030b18" /> {cfg.cost} монет
                 </span>
                 <ChevronRight size={14} />
               </>
@@ -386,13 +400,13 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
 }
 
 const SPORT_OPTIONS = [
-  { id: 'football', label: 'Футбол', emoji: '⚽', grad: 'linear-gradient(135deg, #2563eb, #7c3aed)', glow: 'rgba(37,99,235,0.35)' },
-  { id: 'hockey',   label: 'Хоккей', emoji: '🏒', grad: 'linear-gradient(135deg, #0ea5e9, #2563eb)', glow: 'rgba(14,165,233,0.35)' },
+  { id: 'football', label: 'Футбол', emoji: '⚽', grad: 'linear-gradient(135deg, #00cfff, #7b5ea7)', glow: 'rgba(0,207,255,0.3)' },
+  { id: 'hockey',   label: 'Хоккей', emoji: '🏒', grad: 'linear-gradient(135deg, #0ea5e9, #00cfff)', glow: 'rgba(14,165,233,0.3)' },
 ]
 
 const SPORT_LABEL_COLORS = {
-  football: { color1: '#2563eb', color2: '#7c3aed', border: '#93c5fd', bg: '#eff6ff' },
-  hockey:   { color1: '#0ea5e9', color2: '#2563eb', border: '#7dd3fc', bg: '#f0f9ff' },
+  football: { color1: ACCENT, color2: A2, border: 'rgba(0,207,255,0.3)', bg: 'rgba(0,207,255,0.06)' },
+  hockey:   { color1: '#0ea5e9', color2: ACCENT, border: 'rgba(14,165,233,0.3)', bg: 'rgba(14,165,233,0.06)' },
 }
 
 export default function ExpressCard({ onAuthRequired }) {
@@ -419,7 +433,6 @@ export default function ExpressCard({ onAuthRequired }) {
       .finally(() => setLoading(false))
   }
 
-  // auto-load football on mount
   useEffect(() => { loadSport('football') }, [])
 
   function handleUpdate(type, newData) {
@@ -430,11 +443,8 @@ export default function ExpressCard({ onAuthRequired }) {
   const sportInfo = SPORT_OPTIONS.find(s => s.id === selectedSport)
   const lc = SPORT_LABEL_COLORS[selectedSport] || SPORT_LABEL_COLORS.football
 
-  // ── Sport tabs ──────────────────────────────────────────────────────────────
   const SportTabs = () => (
-    <div style={{
-      display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 20,
-    }}>
+    <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 20 }}>
       {SPORT_OPTIONS.map(s => {
         const isActive = selectedSport === s.id
         return (
@@ -445,14 +455,12 @@ export default function ExpressCard({ onAuthRequired }) {
               display: 'flex', alignItems: 'center', gap: 7,
               padding: '9px 22px', borderRadius: 50, border: 'none',
               cursor: 'pointer', fontWeight: 700, fontSize: 14,
-              background: isActive ? s.grad : 'rgba(255,255,255,0.85)',
-              color: isActive ? 'white' : '#64748b',
-              boxShadow: isActive
-                ? `0 4px 16px ${s.glow}`
-                : '0 1px 4px rgba(0,0,0,0.07)',
+              background: isActive ? s.grad : 'rgba(0,25,60,0.5)',
+              color: isActive ? '#030b18' : MUTED,
+              boxShadow: isActive ? `0 4px 16px ${s.glow}` : 'none',
               transform: isActive ? 'translateY(-1px)' : 'none',
               transition: 'all 0.2s ease',
-              border: isActive ? 'none' : '1.5px solid #e2e8f0',
+              border: isActive ? 'none' : `1.5px solid ${BORDER}`,
             }}
           >
             <span style={{ fontSize: 16 }}>{s.emoji}</span>
@@ -463,7 +471,6 @@ export default function ExpressCard({ onAuthRequired }) {
     </div>
   )
 
-  // ── Loading skeleton ────────────────────────────────────────────────────────
   if (loading) return (
     <div style={{ marginBottom: 24 }}>
       <style>{RESPONSIVE_STYLES}</style>
@@ -484,32 +491,31 @@ export default function ExpressCard({ onAuthRequired }) {
     </div>
   )
 
-  // ── Error / empty ───────────────────────────────────────────────────────────
   if (error || (!standard && !high)) return (
     <div style={{ marginBottom: 24 }}>
       <style>{RESPONSIVE_STYLES}</style>
       <SportTabs />
       <div style={{
         textAlign: 'center', padding: '40px 24px',
-        background: '#0c0f18', borderRadius: 16, border: '1.5px dashed #e2e8f0',
+        background: BG_PICK, borderRadius: 16,
+        border: `1.5px dashed ${BORDER}`,
       }}>
         <div style={{ fontSize: 40, marginBottom: 14 }}>{sportInfo?.emoji || '📅'}</div>
-        <div style={{ fontWeight: 800, fontSize: 16, color: '#dde4ee', marginBottom: 8 }}>
+        <div style={{ fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 8 }}>
           Экспресс ещё не готов
         </div>
-        <div style={{ fontSize: 13, color: '#94a3b8', maxWidth: 320, margin: '0 auto' }}>
+        <div style={{ fontSize: 13, color: MUTED, maxWidth: 320, margin: '0 auto' }}>
           {error || 'Генерация запланирована. Попробуйте позже.'}
         </div>
         <button onClick={() => loadSport(selectedSport)} style={{
           marginTop: 16, padding: '8px 20px', borderRadius: 10,
-          background: sportInfo?.grad || '#2563eb', color: 'white',
-          border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+          background: sportInfo?.grad || 'linear-gradient(135deg, #00cfff, #7b5ea7)',
+          color: '#030b18', border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer',
         }}>Обновить</button>
       </div>
     </div>
   )
 
-  // ── Express cards ───────────────────────────────────────────────────────────
   const isHockey = selectedSport === 'hockey'
 
   return (
@@ -518,7 +524,6 @@ export default function ExpressCard({ onAuthRequired }) {
       <SportTabs />
 
       {isHockey ? (
-        /* Хоккей — только LITE во всю ширину */
         <div style={{ maxWidth: 760, margin: '0 auto' }}>
           <ExpressLabel
             text={`AI ЭКСПРЕСС ${sportInfo?.emoji || ''} · LITE`}
@@ -530,7 +535,6 @@ export default function ExpressCard({ onAuthRequired }) {
           />
         </div>
       ) : (
-        /* Футбол — два экспресса рядом */
         <div className="express-grid">
           <div className="express-col">
             <ExpressLabel
@@ -545,7 +549,8 @@ export default function ExpressCard({ onAuthRequired }) {
           <div className="express-col">
             <ExpressLabel
               text={`AI ЭКСПРЕСС ${sportInfo?.emoji || ''} · HARD`}
-              color1="#ea580c" color2="#dc2626" border="#fed7aa" bg="#fff7ed"
+              color1="#f97316" color2="#ef4444"
+              border="rgba(249,115,22,0.3)" bg="rgba(249,115,22,0.06)"
             />
             <SingleExpressCard
               data={high} type="high" sport={selectedSport}

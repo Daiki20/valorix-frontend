@@ -15,7 +15,7 @@ export default function NotFound() {
 
       <div style={{
         fontSize: 96, fontWeight: 900, lineHeight: 1,
-        background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
+        background: 'linear-gradient(135deg, #00cfff, #7b5ea7)',
         WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
         marginBottom: 16,
       }}>

@@ -82,8 +82,8 @@ export default function ResetPassword() {
                     value={password}
                     onChange={e => { setPassword(e.target.value); setError('') }}
                     style={inputStyle}
-                    onFocus={e => e.target.style.borderColor = '#2563eb'}
-                    onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+                    onFocus={e => e.target.style.borderColor = '#00cfff'}
+                    onBlur={e => e.target.style.borderColor = 'rgba(0,180,255,0.15)'}
                   />
                   <button type="button" onClick={() => setShowPass(s => !s)}
                     style={{ position: 'absolute', right: 14, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer' }}>
@@ -101,22 +101,24 @@ export default function ResetPassword() {
                     value={confirm}
                     onChange={e => { setConfirm(e.target.value); setError('') }}
                     style={inputStyle}
-                    onFocus={e => e.target.style.borderColor = '#2563eb'}
-                    onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+                    onFocus={e => e.target.style.borderColor = '#00cfff'}
+                    onBlur={e => e.target.style.borderColor = 'rgba(0,180,255,0.15)'}
                   />
                 </div>
 
                 {error && (
-                  <div style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#dc2626', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#ff7070', display: 'flex', alignItems: 'center', gap: 8 }}>
                     <XCircle size={14} />
                     {error}
                   </div>
                 )}
 
                 <button type="submit" disabled={loading} style={{
-                  background: loading ? '#94a3b8' : '#1a1a2e', color: 'white',
+                  background: loading ? 'rgba(0,207,255,0.25)' : 'linear-gradient(90deg, #00cfff, #7b5ea7)',
+                  color: loading ? 'rgba(255,255,255,0.4)' : '#030b18',
                   border: 'none', borderRadius: 10, padding: 13,
                   fontWeight: 700, fontSize: 15, cursor: loading ? 'not-allowed' : 'pointer',
+                  boxShadow: loading ? 'none' : '0 4px 20px rgba(0,207,255,0.3)',
                   marginTop: 4, fontFamily: 'Montserrat, sans-serif',
                 }}>
                   {loading ? 'Сохранение...' : 'Сохранить пароль'}

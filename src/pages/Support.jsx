@@ -25,10 +25,10 @@ export default function Support() {
           style={{ textDecoration: 'none' }}
         >
           <div style={{
-            background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+            background: 'linear-gradient(135deg, #00cfff 0%, #7b5ea7 100%)',
             borderRadius: 20, padding: '32px 36px',
             display: 'flex', alignItems: 'center', gap: 24,
-            boxShadow: '0 12px 40px rgba(37,99,235,0.3)',
+            boxShadow: '0 12px 40px rgba(0,207,255,0.25)',
             cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s',
             marginBottom: 24,
           }}
@@ -75,7 +75,7 @@ export default function Support() {
         </div>
 
         <div style={{ textAlign: 'center' }}>
-          <Link to="/" style={{ color: '#2563eb', fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
+          <Link to="/" style={{ color: '#00cfff', fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
             ← Вернуться на главную
           </Link>
         </div>
@@ -92,7 +92,7 @@ function FaqCard({ icon, q, a }) {
   return (
     <div className="card" style={{ padding: '18px 22px' }}>
       <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-        <div style={{ width: 36, height: 36, borderRadius: 9, background: 'rgba(163,255,78,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 9, background: 'rgba(0,207,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
           {icon}
         </div>
         <div>
@@ -106,22 +106,22 @@ function FaqCard({ icon, q, a }) {
 
 const faqs = [
   {
-    icon: <Zap size={16} color="#2563eb" fill="#2563eb" />,
+    icon: <Zap size={16} color="#00cfff" fill="#00cfff" />,
     q: 'Я оплатил монеты, но они не зачислились',
     a: 'Вернитесь на главную страницу — система автоматически проверяет статус платежа. Если монеты не появились в течение 5 минут, напишите нам в Telegram с указанием email аккаунта.',
   },
   {
-    icon: <Shield size={16} color="#2563eb" />,
+    icon: <Shield size={16} color="#00cfff" />,
     q: 'Можно ли вернуть монеты обратно деньгами?',
     a: 'Монеты являются внутренней валютой сервиса и обратному обмену на деньги не подлежат. Пожалуйста, ознакомьтесь с этим условием перед покупкой.',
   },
   {
-    icon: <HelpCircle size={16} color="#2563eb" />,
+    icon: <HelpCircle size={16} color="#00cfff" />,
     q: 'Насколько точны прогнозы?',
     a: 'Valorix AI использует нейросеть для анализа статистики, форм команд и других факторов. Прогнозы носят аналитический характер и не гарантируют результат. Играйте ответственно.',
   },
   {
-    icon: <AlertCircle size={16} color="#2563eb" />,
+    icon: <AlertCircle size={16} color="#00cfff" />,
     q: 'Как удалить аккаунт и данные?',
     a: 'Напишите нам в Telegram @andrusha_pv с просьбой об удалении аккаунта. Мы удалим все ваши данные в течение 30 дней в соответствии с Политикой конфиденциальности.',
   },

@@ -41,7 +41,7 @@ export default function SharePage() {
         <div style={{ fontSize: 40, marginBottom: 16 }}>🔗</div>
         <div style={{ color: '#ef4444', fontWeight: 700, fontSize: 18, marginBottom: 8 }}>Ссылка недействительна</div>
         <div style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>{error}</div>
-        <Link to="/analyze" style={{ display: 'inline-block', background: '#2563eb', color: 'white', borderRadius: 10, padding: '10px 24px', fontWeight: 700, textDecoration: 'none', fontSize: 14 }}>
+        <Link to="/analyze" style={{ display: 'inline-block', background: 'linear-gradient(90deg, #00cfff, #7b5ea7)', color: '#030b18', borderRadius: 10, padding: '10px 24px', fontWeight: 700, textDecoration: 'none', fontSize: 14 }}>
           Создать свой анализ
         </Link>
       </div>
@@ -73,14 +73,14 @@ export default function SharePage() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 28, height: 28, background: 'linear-gradient(135deg, #7c3aed, #2563eb)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 28, height: 28, background: 'linear-gradient(135deg, #7b5ea7, #00cfff)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Zap size={14} color="white" fill="white" />
           </div>
           <span style={{ color: 'white', fontWeight: 800, fontSize: 16, letterSpacing: '-0.3px' }}>Valorix AI</span>
         </div>
         <Link to="/analyze" style={{
-          background: 'linear-gradient(135deg, #7c3aed, #2563eb)',
-          color: 'white', borderRadius: 20, padding: '7px 18px',
+          background: 'linear-gradient(135deg, #00cfff, #7b5ea7)',
+          color: '#030b18', borderRadius: 20, padding: '7px 18px',
           fontWeight: 700, textDecoration: 'none', fontSize: 13,
         }}>
           Попробовать →
@@ -343,10 +343,10 @@ export default function SharePage() {
           </div>
           <Link to="/analyze" style={{
             display: 'inline-block',
-            background: 'linear-gradient(135deg, #7c3aed, #2563eb)',
-            color: 'white', borderRadius: 12,
+            background: 'linear-gradient(135deg, #00cfff, #7b5ea7)',
+            color: '#030b18', borderRadius: 12,
             padding: '12px 32px', fontWeight: 800, textDecoration: 'none',
-            fontSize: 15, boxShadow: '0 4px 20px rgba(124,58,237,0.4)',
+            fontSize: 15, boxShadow: '0 4px 20px rgba(0,207,255,0.4)',
           }}>
             Попробовать бесплатно
           </Link>

@@ -105,11 +105,11 @@ function AnalysisModal({ item, onClose }) {
             {item.match_home} — {item.match_away}
           </div>
           <button onClick={onClose} style={{
-            background: '#e2e8f0', border: 'none', borderRadius: '50%',
+            background: 'rgba(0,207,255,0.08)', border: '1px solid rgba(0,180,255,0.15)', borderRadius: '50%',
             width: 36, height: 36, cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
           }}>
-            <X size={18} color="#64748b" />
+            <X size={18} color="#4a6a8a" />
           </button>
         </div>
         <AnalysisResult match={match} analysis={analysis} shareToken={item.share_token} />
@@ -129,19 +129,19 @@ function HistoryRow({ item, onClick }) {
   const date = new Date(item.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
 
   const v = verdict.toLowerCase()
-  const verdictColor = v.includes('ничья') ? '#f59e0b' : (v.includes('победа') || verdict) ? '#2563eb' : '#64748b'
+  const verdictColor = v.includes('ничья') ? '#f59e0b' : (v.includes('победа') || verdict) ? '#00cfff' : '#4a6a8a'
 
   return (
     <div className="card" onClick={onClick} style={{ padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16, cursor: 'pointer', transition: 'box-shadow 0.15s' }}
-      onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(37,99,235,0.12)'}
+      onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,207,255,0.12)'}
       onMouseLeave={e => e.currentTarget.style.boxShadow = ''}
     >
       <div style={{
         width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
-        background: 'linear-gradient(135deg, #eff6ff, #e0e7ff)',
+        background: 'rgba(0,207,255,0.1)', border: '1px solid rgba(0,207,255,0.2)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <TrendingUp size={20} color="#2563eb" />
+        <TrendingUp size={20} color="#00cfff" />
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -153,7 +153,7 @@ function HistoryRow({ item, onClick }) {
             <Clock size={11} /> {date}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Zap size={11} color="#2563eb" fill="#2563eb" /> {item.coins_spent} монет
+            <Zap size={11} color="#00cfff" fill="#00cfff" /> {item.coins_spent} монет
           </span>
           {item.league && <span>{item.league}</span>}
         </div>

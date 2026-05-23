@@ -6,7 +6,7 @@ export function fireConfetti() {
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
 
-  const COLORS = ['#2563eb', '#7c3aed', '#16a34a', '#f59e0b', '#ec4899', '#06b6d4']
+  const COLORS = ['#00cfff', '#7b5ea7', '#22c55e', '#f59e0b', '#ec4899', '#57c8ff']
   const pieces = Array.from({ length: 120 }, () => ({
     x: Math.random() * canvas.width,
     y: -10 - Math.random() * 100,

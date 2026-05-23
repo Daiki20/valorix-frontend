@@ -120,10 +120,10 @@ export default function UploadScreen() {
             onDrop={handleDrop}
             onClick={() => inputRef.current.click()}
             style={{
-              border: `2px dashed ${dragging ? '#2563eb' : '#cbd5e1'}`,
+              border: `2px dashed ${dragging ? '#00cfff' : 'rgba(0,180,255,0.2)'}`,
               borderRadius: 16, padding: '64px 32px',
               textAlign: 'center', cursor: 'pointer',
-              background: dragging ? '#eff6ff' : 'white',
+              background: dragging ? 'rgba(0,207,255,0.07)' : 'rgba(0,15,40,0.4)',
               transition: 'all 0.2s',
             }}
           >
@@ -131,10 +131,10 @@ export default function UploadScreen() {
               style={{ display: 'none' }} onChange={e => handleFile(e.target.files[0])} />
             <div style={{
               width: 72, height: 72, borderRadius: '50%',
-              background: 'rgba(163,255,78,0.08)', margin: '0 auto 16px',
+              background: 'rgba(0,207,255,0.08)', margin: '0 auto 16px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Upload size={32} color="#2563eb" />
+              <Upload size={32} color="#00cfff" />
             </div>
             <h3 style={{ fontSize: 18, fontWeight: 700, color: '#dde4ee', marginBottom: 8 }}>
               Перетащи скриншот сюда
@@ -224,7 +224,7 @@ export default function UploadScreen() {
             'Поддерживаются: BetBoom, Fonbet, Winline, 1xbet, Betcity и другие',
           ].map((tip, i) => (
             <div key={i} style={{ display: 'flex', gap: 8, fontSize: 13, color: '#64748b' }}>
-              <span style={{ color: '#2563eb', fontWeight: 700 }}>→</span>
+              <span style={{ color: '#00cfff', fontWeight: 700 }}>→</span>
               {tip}
             </div>
           ))}
@@ -244,10 +244,10 @@ function LockedResult({ cost, userCoins, loading, onConfirm }) {
       <div style={{ filter: 'blur(7px)', pointerEvents: 'none', userSelect: 'none' }}>
         <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: 20, marginBottom: 10 }}>
           {[80, 60, 90, 50, 70].map((w, i) => (
-            <div key={i} style={{ height: 14, background: '#e2e8f0', borderRadius: 6, marginBottom: 10, width: `${w}%` }} />
+            <div key={i} style={{ height: 14, background: 'rgba(0,207,255,0.1)', borderRadius: 6, marginBottom: 10, width: `${w}%` }} />
           ))}
         </div>
-        <div style={{ background: 'rgba(163,255,78,0.08)', borderRadius: 12, padding: 20 }}>
+        <div style={{ background: 'rgba(0,207,255,0.08)', borderRadius: 12, padding: 20 }}>
           {[100, 75, 85].map((w, i) => (
             <div key={i} style={{ height: 16, background: '#bfdbfe', borderRadius: 6, marginBottom: 10, width: `${w}%` }} />
           ))}
@@ -269,11 +269,11 @@ function LockedResult({ cost, userCoins, loading, onConfirm }) {
         }}>
           <div style={{
             width: 60, height: 60, borderRadius: '50%',
-            background: 'rgba(163,255,78,0.08)', display: 'flex',
+            background: 'rgba(0,207,255,0.08)', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 16px',
           }}>
-            <Lock size={26} color="#2563eb" />
+            <Lock size={26} color="#00cfff" />
           </div>
 
           <div style={{ fontWeight: 800, fontSize: 18, color: '#dde4ee', marginBottom: 6 }}>
@@ -289,7 +289,7 @@ function LockedResult({ cost, userCoins, loading, onConfirm }) {
           }}>
             <span style={{ fontSize: 14, color: '#64748b' }}>Стоимость</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 800, fontSize: 16, color: '#dde4ee' }}>
-              <Zap size={15} color="#2563eb" fill="#2563eb" />
+              <Zap size={15} color="#00cfff" fill="#00cfff" />
               {cost} монет
             </div>
           </div>
@@ -309,11 +309,13 @@ function LockedResult({ cost, userCoins, loading, onConfirm }) {
             disabled={loading || notEnough}
             style={{
               width: '100%', padding: '13px',
-              background: loading || notEnough ? '#94a3b8' : '#2563eb',
-              color: 'white', border: 'none', borderRadius: 10,
+              background: loading || notEnough ? 'rgba(0,207,255,0.2)' : 'linear-gradient(90deg, #00cfff, #7b5ea7)',
+              color: loading || notEnough ? 'rgba(255,255,255,0.4)' : '#030b18',
+              border: 'none', borderRadius: 10,
               fontWeight: 800, fontSize: 14,
               cursor: loading || notEnough ? 'not-allowed' : 'pointer',
               letterSpacing: 0.3,
+              boxShadow: loading || notEnough ? 'none' : '0 4px 20px rgba(0,207,255,0.3)',
             }}
           >
             {loading ? 'Обработка...' : `ПОДТВЕРДИТЬ ОПЛАТУ ${cost} МОНЕТ`}
@@ -354,13 +356,13 @@ function AnalysisSteps() {
           <div key={i} style={{
             display: 'flex', alignItems: 'center', gap: 10,
             padding: '10px 14px', borderRadius: 8,
-            background: i <= step ? '#eff6ff' : '#f8fafc',
-            border: `1px solid ${i <= step ? '#bfdbfe' : '#e2e8f0'}`,
+            background: i <= step ? 'rgba(0,207,255,0.07)' : 'rgba(0,15,40,0.4)',
+            border: `1px solid ${i <= step ? 'rgba(0,207,255,0.3)' : 'rgba(0,180,255,0.1)'}`,
             transition: 'all 0.3s',
           }}>
             <div style={{
               width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
-              background: i < step ? '#2563eb' : i === step ? '#93c5fd' : '#e2e8f0',
+              background: i < step ? '#00cfff' : i === step ? 'rgba(0,207,255,0.4)' : 'rgba(0,180,255,0.1)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 10, color: 'white', fontWeight: 700,
             }}>

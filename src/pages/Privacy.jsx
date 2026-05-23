@@ -158,7 +158,7 @@ export default function Privacy() {
         </div>
 
         <div style={{ textAlign: 'center', marginTop: 32 }}>
-          <Link to="/" style={{ color: '#2563eb', fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
+          <Link to="/" style={{ color: '#00cfff', fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
             ← Вернуться на главную
           </Link>
         </div>
@@ -176,7 +176,7 @@ export default function Privacy() {
 const h2 = { fontSize: 17, fontWeight: 700, color: '#dde4ee', marginBottom: 10 }
 const divider = { height: 1, background: 'rgba(255,255,255,0.04)' }
 const ul = { paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 6, margin: '10px 0' }
-const linkStyle = { color: '#2563eb', textDecoration: 'none', fontWeight: 600 }
+const linkStyle = { color: '#00cfff', textDecoration: 'none', fontWeight: 600 }
 const infoBox = {
   background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10,
   padding: '14px 18px', marginTop: 12, fontSize: 14,
