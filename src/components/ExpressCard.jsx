@@ -395,17 +395,8 @@ export default function ExpressCard({ onAuthRequired }) {
   const [high, setHigh] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  // cache so switching tabs doesn't re-fetch every time
-  const [cache, setCache] = useState({})
 
   function loadSport(sport) {
-    if (cache[sport]) {
-      setSelectedSport(sport)
-      setStandard(cache[sport].standard || null)
-      setHigh(cache[sport].high || null)
-      setError(null)
-      return
-    }
     setSelectedSport(sport)
     setLoading(true)
     setError(null)
@@ -414,11 +405,8 @@ export default function ExpressCard({ onAuthRequired }) {
     expressApi.today(sport)
       .then(data => {
         if (data.error) { setError(data.error); return }
-        const s = data.standard || null
-        const h = data.high || null
-        setStandard(s)
-        setHigh(h)
-        setCache(c => ({ ...c, [sport]: { standard: s, high: h } }))
+        setStandard(data.standard || null)
+        setHigh(data.high || null)
       })
       .catch(() => setError('Не удалось загрузить экспресс'))
       .finally(() => setLoading(false))
@@ -430,14 +418,6 @@ export default function ExpressCard({ onAuthRequired }) {
   function handleUpdate(type, newData) {
     if (type === 'standard') setStandard(newData)
     else setHigh(newData)
-    // update cache too
-    setCache(c => ({
-      ...c,
-      [selectedSport]: {
-        ...(c[selectedSport] || {}),
-        [type === 'standard' ? 'standard' : 'high']: newData,
-      }
-    }))
   }
 
   const sportInfo = SPORT_OPTIONS.find(s => s.id === selectedSport)
