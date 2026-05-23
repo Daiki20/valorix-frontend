@@ -245,8 +245,8 @@ function DashboardTab({ toast }) {
         })}
       </div>
 
-      {/* Stats API debug */}
-      <StatsDebugPanel />
+      {/* API Status */}
+      <ApiStatusPanel />
 
       {/* Recent users */}
       {stats?.recentUsers?.length > 0 && (
@@ -278,89 +278,80 @@ function DashboardTab({ toast }) {
   )
 }
 
-/* ─── Stats API Debug Panel ─── */
-function StatsDebugPanel() {
+/* ─── API Status Panel ─── */
+function ApiStatusPanel() {
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState(null)
+  const [apis, setApis] = useState(null)
 
   const check = async () => {
     setLoading(true)
-    setResult(null)
+    setApis(null)
     try {
       const token = localStorage.getItem('valorix_token')
-      const res = await fetch(`${API_BASE}/express/debug-stats`, {
+      const res = await fetch(`${API_BASE}/admin/api-status`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      const data = await res.json()
-      setResult(data)
+      setApis(await res.json())
     } catch (err) {
-      setResult({ error: err.message })
+      setApis([{ name: 'Ошибка', icon: '❌', status: 'error', detail: err.message, ms: 0 }])
     } finally {
       setLoading(false)
     }
   }
 
-  const ok = (v) => v && typeof v === 'string' && !v.startsWith('ERROR') && v.length > 10
+  const STATUS = {
+    ok:     { color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0', label: 'Работает' },
+    error:  { color: '#dc2626', bg: '#fef2f2', border: '#fecaca', label: 'Ошибка'   },
+    no_key: { color: '#d97706', bg: '#fffbeb', border: '#fde68a', label: 'Нет ключа' },
+  }
 
   return (
     <div className="card" style={{ padding: 24 }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
         <h3 style={{ fontWeight: 700, fontSize: 16, color: '#1a1a2e', display: 'flex', alignItems: 'center', gap: 8 }}>
-          🔍 Диагностика API статистики
+          🔌 Подключённые API
         </h3>
         <button onClick={check} disabled={loading} style={{
           padding: '8px 18px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13,
           background: loading ? '#94a3b8' : '#2563eb', color: 'white', cursor: loading ? 'not-allowed' : 'pointer',
         }}>
-          {loading ? 'Проверяем...' : 'Проверить'}
+          {loading ? 'Проверяем...' : 'Проверить всё'}
         </button>
       </div>
-      <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: result ? 16 : 0 }}>
-        Проверяет работу ИИХФ ЧМ + НХЛ standings API — нужны для реальной статистики в экспрессе
+      <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: apis ? 16 : 0 }}>
+        Проверяет доступность всех API — ключи остаются на сервере, в браузер не передаются
       </p>
 
-      {result && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {/* IIHF */}
-          <div style={{
-            borderRadius: 10, padding: '12px 16px',
-            background: ok(result.iihf) ? '#f0fdf4' : '#fef2f2',
-            border: `1px solid ${ok(result.iihf) ? '#bbf7d0' : '#fecaca'}`,
-          }}>
-            <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6, color: ok(result.iihf) ? '#16a34a' : '#dc2626' }}>
-              {ok(result.iihf) ? '✅' : '❌'} ИИХФ ЧМ Standings (Sofascore)
-            </div>
-            {ok(result.iihf) ? (
-              <pre style={{ fontSize: 11, color: '#374151', whiteSpace: 'pre-wrap', margin: 0 }}>{result.iihf}</pre>
-            ) : (
-              <div style={{ fontSize: 12, color: '#dc2626' }}>
-                {result.iihf || 'Нет данных'}<br />
-                <span style={{ color: '#6b7280', marginTop: 4, display: 'block' }}>Raw: {result.iihfRaw}</span>
+      {apis && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10 }}>
+          {apis.map((api, i) => {
+            const s = STATUS[api.status] || STATUS.error
+            return (
+              <div key={i} style={{
+                borderRadius: 10, padding: '12px 16px',
+                background: s.bg, border: `1.5px solid ${s.border}`,
+                display: 'flex', alignItems: 'flex-start', gap: 12,
+              }}>
+                <div style={{ fontSize: 22, lineHeight: 1, marginTop: 1 }}>{api.icon}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                    <div style={{ fontWeight: 700, fontSize: 13, color: '#1a1a2e' }}>{api.name}</div>
+                    <span style={{
+                      fontSize: 11, fontWeight: 700, color: s.color,
+                      background: 'white', border: `1px solid ${s.border}`,
+                      borderRadius: 20, padding: '2px 8px', whiteSpace: 'nowrap',
+                    }}>
+                      {api.status === 'ok' ? '✓ ' : api.status === 'no_key' ? '⚠ ' : '✗ '}{s.label}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 11, color: '#6b7280', marginTop: 4, wordBreak: 'break-word' }}>
+                    {api.detail}
+                    {api.ms > 0 && <span style={{ color: '#94a3b8', marginLeft: 6 }}>{api.ms}ms</span>}
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
-
-          {/* NHL */}
-          <div style={{
-            borderRadius: 10, padding: '12px 16px',
-            background: result.nhl && typeof result.nhl === 'object' ? '#f0fdf4' : '#fef2f2',
-            border: `1px solid ${result.nhl && typeof result.nhl === 'object' ? '#bbf7d0' : '#fecaca'}`,
-          }}>
-            <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6, color: result.nhl && typeof result.nhl === 'object' ? '#16a34a' : '#dc2626' }}>
-              {result.nhl && typeof result.nhl === 'object' ? '✅' : '❌'} НХЛ Standings (NHL free API)
-            </div>
-            {result.nhlSample ? (
-              <pre style={{ fontSize: 11, color: '#374151', whiteSpace: 'pre-wrap', margin: 0 }}>
-                {result.nhlSample.map(([abbr, rec]) => `${abbr}: ${rec}`).join('\n')}
-                {'\n... и ещё ' + (Object.keys(result.nhl || {}).length - result.nhlSample.length) + ' команд'}
-              </pre>
-            ) : (
-              <div style={{ fontSize: 12, color: '#dc2626' }}>
-                {typeof result.nhl === 'string' ? result.nhl : 'Нет данных'}<br />
-                <span style={{ color: '#6b7280', marginTop: 4, display: 'block' }}>Raw: {result.nhlRaw}</span>
-              </div>
-            )}
-          </div>
+            )
+          })}
         </div>
       )}
     </div>
