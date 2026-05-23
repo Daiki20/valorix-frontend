@@ -260,8 +260,8 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
             <TrendingUp size={11} /> Открыт
           </div>
         ) : (
-          <div style={{ fontWeight: 900, fontSize: 26, color: cfg.oddsColor, letterSpacing: -1, flexShrink: 0 }}>
-            ×{data.total_odds?.toFixed(2) || '—'}
+          <div style={{ fontWeight: 900, fontSize: 24, color: cfg.oddsColor, letterSpacing: -1, flexShrink: 0 }}>
+            {sport === 'hockey' ? '>' : ''}×{data.total_odds?.toFixed(2) || '—'}
           </div>
         )}
       </div>
@@ -295,7 +295,9 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
                 {isPurchased ? (
                   <>
                     <div style={{ fontWeight: 800, fontSize: 12, color: cfg.oddsColor, wordBreak: 'break-word' }}>{pick.prediction}</div>
-                    <div style={{ fontSize: 12, color: '#16a34a', fontWeight: 700 }}>× {pick.odds}</div>
+                    {sport !== 'hockey' && (
+                      <div style={{ fontSize: 12, color: '#16a34a', fontWeight: 700 }}>× {pick.odds}</div>
+                    )}
                   </>
                 ) : (
                   <div style={{
@@ -304,7 +306,7 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
                     background: type === 'high' ? '#fde68a' : '#e0e7ff',
                     borderRadius: 6, padding: '2px 6px',
                   }}>
-                    П1 × 1.55
+                    {sport === 'hockey' ? 'П1' : 'П1 × 1.55'}
                   </div>
                 )}
               </div>
@@ -323,7 +325,9 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <div>
                 <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>Итоговый коэф.</div>
-                <div style={{ fontSize: 20, fontWeight: 900, color: cfg.oddsColor }}>× {data.total_odds?.toFixed(2)}</div>
+                <div style={{ fontSize: 20, fontWeight: 900, color: cfg.oddsColor }}>
+                  {sport === 'hockey' ? '>' : ''}× {data.total_odds?.toFixed(2)}
+                </div>
               </div>
               <button onClick={() => setShowSummary(s => !s)} style={{
                 display: 'flex', alignItems: 'center', gap: 6,
@@ -518,12 +522,16 @@ export default function ExpressCard({ onAuthRequired }) {
   )
 
   // ── Express cards ───────────────────────────────────────────────────────────
+  const isHockey = selectedSport === 'hockey'
+
   return (
     <div style={{ marginBottom: 24 }}>
       <style>{RESPONSIVE_STYLES}</style>
       <SportTabs />
-      <div className="express-grid">
-        <div className="express-col">
+
+      {isHockey ? (
+        /* Хоккей — только LITE во всю ширину */
+        <div style={{ maxWidth: 760, margin: '0 auto' }}>
           <ExpressLabel
             text={`AI ЭКСПРЕСС ${sportInfo?.emoji || ''} · LITE`}
             color1={lc.color1} color2={lc.color2} border={lc.border} bg={lc.bg}
@@ -533,17 +541,31 @@ export default function ExpressCard({ onAuthRequired }) {
             onAuthRequired={onAuthRequired} onUpdate={handleUpdate}
           />
         </div>
-        <div className="express-col">
-          <ExpressLabel
-            text={`AI ЭКСПРЕСС ${sportInfo?.emoji || ''} · HARD`}
-            color1="#ea580c" color2="#dc2626" border="#fed7aa" bg="#fff7ed"
-          />
-          <SingleExpressCard
-            data={high} type="high" sport={selectedSport}
-            onAuthRequired={onAuthRequired} onUpdate={handleUpdate}
-          />
+      ) : (
+        /* Футбол — два экспресса рядом */
+        <div className="express-grid">
+          <div className="express-col">
+            <ExpressLabel
+              text={`AI ЭКСПРЕСС ${sportInfo?.emoji || ''} · LITE`}
+              color1={lc.color1} color2={lc.color2} border={lc.border} bg={lc.bg}
+            />
+            <SingleExpressCard
+              data={standard} type="standard" sport={selectedSport}
+              onAuthRequired={onAuthRequired} onUpdate={handleUpdate}
+            />
+          </div>
+          <div className="express-col">
+            <ExpressLabel
+              text={`AI ЭКСПРЕСС ${sportInfo?.emoji || ''} · HARD`}
+              color1="#ea580c" color2="#dc2626" border="#fed7aa" bg="#fff7ed"
+            />
+            <SingleExpressCard
+              data={high} type="high" sport={selectedSport}
+              onAuthRequired={onAuthRequired} onUpdate={handleUpdate}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
