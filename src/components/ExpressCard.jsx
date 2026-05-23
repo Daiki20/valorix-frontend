@@ -385,14 +385,22 @@ const SPORT_LABEL_COLORS = {
 
 export default function ExpressCard({ onAuthRequired }) {
   const { user } = useAuth()
-  const [selectedSport, setSelectedSport] = useState(null)
+  const [selectedSport, setSelectedSport] = useState('football')
   const [standard, setStandard] = useState(null)
   const [high, setHigh] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [hoveredSport, setHoveredSport] = useState(null)
+  // cache so switching tabs doesn't re-fetch every time
+  const [cache, setCache] = useState({})
 
   function loadSport(sport) {
+    if (cache[sport]) {
+      setSelectedSport(sport)
+      setStandard(cache[sport].standard || null)
+      setHigh(cache[sport].high || null)
+      setError(null)
+      return
+    }
     setSelectedSport(sport)
     setLoading(true)
     setError(null)
@@ -401,142 +409,119 @@ export default function ExpressCard({ onAuthRequired }) {
     expressApi.today(sport)
       .then(data => {
         if (data.error) { setError(data.error); return }
-        setStandard(data.standard || null)
-        setHigh(data.high || null)
+        const s = data.standard || null
+        const h = data.high || null
+        setStandard(s)
+        setHigh(h)
+        setCache(c => ({ ...c, [sport]: { standard: s, high: h } }))
       })
       .catch(() => setError('Не удалось загрузить экспресс'))
       .finally(() => setLoading(false))
   }
 
+  // auto-load football on mount
+  useEffect(() => { loadSport('football') }, [])
+
   function handleUpdate(type, newData) {
     if (type === 'standard') setStandard(newData)
     else setHigh(newData)
+    // update cache too
+    setCache(c => ({
+      ...c,
+      [selectedSport]: {
+        ...(c[selectedSport] || {}),
+        [type === 'standard' ? 'standard' : 'high']: newData,
+      }
+    }))
   }
 
-  // ── Sport selector ──────────────────────────────────────────────────────────
-  if (!selectedSport) {
-    return (
-      <div style={{ marginBottom: 24 }}>
-        <style>{RESPONSIVE_STYLES}</style>
-        <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: '#1a1a2e', letterSpacing: 0.3, marginBottom: 4 }}>
-            ⚡ AI ЭКСПРЕСС
-          </div>
-          <div style={{ fontSize: 12, color: '#94a3b8' }}>Выберите вид спорта — AI составит два экспресса</div>
-        </div>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: 12,
-        }}>
-          {SPORT_OPTIONS.map(s => (
-            <button
-              key={s.id}
-              onClick={() => loadSport(s.id)}
-              onMouseEnter={() => setHoveredSport(s.id)}
-              onMouseLeave={() => setHoveredSport(null)}
-              style={{
-                background: s.grad,
-                color: 'white',
-                border: 'none',
-                borderRadius: 14,
-                padding: '14px 10px',
-                cursor: 'pointer',
-                fontWeight: 700,
-                fontSize: 12,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 7,
-                boxShadow: hoveredSport === s.id
-                  ? `0 6px 20px ${s.glow}`
-                  : `0 2px 8px ${s.glow}`,
-                transform: hoveredSport === s.id ? 'translateY(-2px)' : 'none',
-                transition: 'all 0.18s ease',
-                lineHeight: 1.3,
-              }}
-            >
-              <span style={{ fontSize: 22 }}>{s.emoji}</span>
-              <span>AI Экспресс</span>
-              <span style={{ fontWeight: 900, fontSize: 13 }}>{s.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    )
-  }
-
-  // ── Loading ─────────────────────────────────────────────────────────────────
   const sportInfo = SPORT_OPTIONS.find(s => s.id === selectedSport)
+  const lc = SPORT_LABEL_COLORS[selectedSport] || SPORT_LABEL_COLORS.football
 
+  // ── Sport tabs ──────────────────────────────────────────────────────────────
+  const SportTabs = () => (
+    <div style={{
+      display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 20,
+    }}>
+      {SPORT_OPTIONS.map(s => {
+        const isActive = selectedSport === s.id
+        return (
+          <button
+            key={s.id}
+            onClick={() => loadSport(s.id)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 7,
+              padding: '9px 22px', borderRadius: 50, border: 'none',
+              cursor: 'pointer', fontWeight: 700, fontSize: 14,
+              background: isActive ? s.grad : 'rgba(255,255,255,0.85)',
+              color: isActive ? 'white' : '#64748b',
+              boxShadow: isActive
+                ? `0 4px 16px ${s.glow}`
+                : '0 1px 4px rgba(0,0,0,0.07)',
+              transform: isActive ? 'translateY(-1px)' : 'none',
+              transition: 'all 0.2s ease',
+              border: isActive ? 'none' : '1.5px solid #e2e8f0',
+            }}
+          >
+            <span style={{ fontSize: 16 }}>{s.emoji}</span>
+            {s.label}
+          </button>
+        )
+      })}
+    </div>
+  )
+
+  // ── Loading skeleton ────────────────────────────────────────────────────────
   if (loading) return (
-    <>
+    <div style={{ marginBottom: 24 }}>
       <style>{RESPONSIVE_STYLES}</style>
-      <div style={{ marginBottom: 8 }}>
-        <button onClick={() => setSelectedSport(null)} style={{
-          background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: 13, color: '#64748b', fontWeight: 600,
-          display: 'flex', alignItems: 'center', gap: 4, padding: '4px 0',
-        }}>← Назад к выбору</button>
-      </div>
+      <SportTabs />
       <div className="express-grid">
         {[1, 2].map(i => (
           <div key={i} className="express-col">
             <div className="card" style={{ padding: '20px 24px' }}>
               <div className="skeleton" style={{ height: 18, width: 160, marginBottom: 16 }} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {[1, 2].map(j => <div key={j} className="skeleton" style={{ height: 52, borderRadius: 10 }} />)}
+                {[1, 2, 3].map(j => <div key={j} className="skeleton" style={{ height: 52, borderRadius: 10 }} />)}
               </div>
+              <div className="skeleton" style={{ height: 44, borderRadius: 10, marginTop: 16 }} />
             </div>
           </div>
         ))}
       </div>
-    </>
+    </div>
   )
 
   // ── Error / empty ───────────────────────────────────────────────────────────
   if (error || (!standard && !high)) return (
-    <>
+    <div style={{ marginBottom: 24 }}>
       <style>{RESPONSIVE_STYLES}</style>
-      <div style={{ marginBottom: 8 }}>
-        <button onClick={() => setSelectedSport(null)} style={{
-          background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: 13, color: '#64748b', fontWeight: 600,
-          display: 'flex', alignItems: 'center', gap: 4, padding: '4px 0',
-        }}>← Назад к выбору</button>
-      </div>
+      <SportTabs />
       <div style={{
         textAlign: 'center', padding: '40px 24px',
         background: 'white', borderRadius: 16, border: '1.5px dashed #e2e8f0',
       }}>
         <div style={{ fontSize: 40, marginBottom: 14 }}>{sportInfo?.emoji || '📅'}</div>
         <div style={{ fontWeight: 800, fontSize: 16, color: '#1a1a2e', marginBottom: 8 }}>
-          Экспресс генерируется...
+          Экспресс ещё не готов
         </div>
         <div style={{ fontSize: 13, color: '#94a3b8', maxWidth: 320, margin: '0 auto' }}>
-          {error || 'Нет доступных матчей. Попробуйте позже.'}
+          {error || 'Генерация запланирована. Попробуйте позже.'}
         </div>
-        <button onClick={() => loadSport(selectedSport)} style={{
+        <button onClick={() => { setCache(c => { const n = {...c}; delete n[selectedSport]; return n }); loadSport(selectedSport) }} style={{
           marginTop: 16, padding: '8px 20px', borderRadius: 10,
           background: sportInfo?.grad || '#2563eb', color: 'white',
           border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer',
-        }}>Попробовать снова</button>
+        }}>Обновить</button>
       </div>
-    </>
+    </div>
   )
 
   // ── Express cards ───────────────────────────────────────────────────────────
-  const lc = SPORT_LABEL_COLORS[selectedSport] || SPORT_LABEL_COLORS.football
   return (
-    <>
+    <div style={{ marginBottom: 24 }}>
       <style>{RESPONSIVE_STYLES}</style>
-      <div style={{ marginBottom: 8 }}>
-        <button onClick={() => setSelectedSport(null)} style={{
-          background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: 13, color: '#64748b', fontWeight: 600,
-          display: 'flex', alignItems: 'center', gap: 4, padding: '4px 0',
-        }}>← Назад к выбору</button>
-      </div>
+      <SportTabs />
       <div className="express-grid">
         <div className="express-col">
           <ExpressLabel
@@ -559,6 +544,6 @@ export default function ExpressCard({ onAuthRequired }) {
           />
         </div>
       </div>
-    </>
+    </div>
   )
 }
