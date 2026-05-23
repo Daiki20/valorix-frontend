@@ -62,27 +62,27 @@ function DashboardTab({ toast }) {
   const [coinForm, setCoinForm] = useState({ email: '', amount: '', reason: '' })
   const [coinLoading, setCoinLoading] = useState(false)
   const [coinMode, setCoinMode] = useState('add') // 'add' | 'remove'
-  const [expressLoading, setExpressLoading] = useState({ standard: false, high: false })
-  const [expressResult, setExpressResult] = useState(null)
+  const [expressLoading, setExpressLoading] = useState({})
+  const [expressResults, setExpressResults] = useState({})
 
-  const handleGenerateExpress = async (type) => {
-    setExpressLoading(p => ({ ...p, [type]: true }))
-    setExpressResult(null)
+  const handleGenerateExpress = async (type, sport = 'football') => {
+    const key = `${sport}_${type}`
+    setExpressLoading(p => ({ ...p, [key]: true }))
     try {
       const token = localStorage.getItem('valorix_token')
       const res = await fetch(`${API_BASE}/express/generate`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type }),
+        body: JSON.stringify({ type, sport }),
       })
       const data = await res.json()
       if (data.error) { toast.error(data.error); return }
-      setExpressResult({ type, ...data })
-      toast.success(`Экспресс ${type === 'standard' ? 'Lite' : 'Hard'} сгенерирован!`)
+      setExpressResults(p => ({ ...p, [key]: data }))
+      toast.success(`${sport === 'hockey' ? '🏒 Хоккей' : '⚽ Футбол'} · ${type === 'standard' ? 'Lite' : 'Hard'} сгенерирован!`)
     } catch {
       toast.error('Ошибка генерации')
     } finally {
-      setExpressLoading(p => ({ ...p, [type]: false }))
+      setExpressLoading(p => ({ ...p, [key]: false }))
     }
   }
 
@@ -190,41 +190,59 @@ function DashboardTab({ toast }) {
 
       {/* Express generator */}
       <div className="card" style={{ padding: 24 }}>
-        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#1a1a2e', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#1a1a2e', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
           <Star size={16} color="#7c3aed" fill="#7c3aed" />
           Экспресс дня
         </h3>
-        <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>
+        <p style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>
           Перегенерировать экспресс на завтра (перезапишет текущий)
         </p>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={() => handleGenerateExpress('standard')} disabled={expressLoading.standard} style={{
-            padding: '10px 22px', fontSize: 14, fontWeight: 700, border: 'none', borderRadius: 10,
-            background: expressLoading.standard ? '#94a3b8' : 'linear-gradient(135deg,#2563eb,#7c3aed)',
-            color: 'white', cursor: expressLoading.standard ? 'not-allowed' : 'pointer',
-          }}>
-            {expressLoading.standard ? 'Генерируем...' : '⚡ Lite (надёжный)'}
-          </button>
-          <button onClick={() => handleGenerateExpress('high')} disabled={expressLoading.high} style={{
-            padding: '10px 22px', fontSize: 14, fontWeight: 700, border: 'none', borderRadius: 10,
-            background: expressLoading.high ? '#94a3b8' : 'linear-gradient(135deg,#d97706,#dc2626)',
-            color: 'white', cursor: expressLoading.high ? 'not-allowed' : 'pointer',
-          }}>
-            {expressLoading.high ? 'Генерируем...' : '🔥 Hard (высокодоходный)'}
-          </button>
-        </div>
-        {expressResult && (
-          <div style={{ marginTop: 14, background: '#f0fdf4', borderRadius: 10, padding: '12px 16px', border: '1px solid #bbf7d0' }}>
-            <div style={{ fontWeight: 700, fontSize: 13, color: '#16a34a', marginBottom: 6 }}>
-              Готово — {expressResult.date} | Итоговый коэф: × {expressResult.total_odds?.toFixed(2)}
-            </div>
-            {expressResult.picks?.map((p, i) => (
-              <div key={i} style={{ fontSize: 12, color: '#374151', marginBottom: 2 }}>
-                {i + 1}. {p.home} — {p.away} · <b>{p.prediction}</b> × {p.odds}
+
+        {/* Football */}
+        {[
+          { sport: 'football', label: '⚽ Футбол', gradL: 'linear-gradient(135deg,#2563eb,#7c3aed)', gradH: 'linear-gradient(135deg,#d97706,#dc2626)' },
+          { sport: 'hockey',   label: '🏒 Хоккей', gradL: 'linear-gradient(135deg,#0ea5e9,#2563eb)', gradH: 'linear-gradient(135deg,#ea580c,#dc2626)' },
+        ].map(({ sport, label, gradL, gradH }) => {
+          const kL = `${sport}_standard`, kH = `${sport}_high`
+          const resL = expressResults[kL], resH = expressResults[kH]
+          return (
+            <div key={sport} style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#475569', marginBottom: 10 }}>{label}</div>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <button onClick={() => handleGenerateExpress('standard', sport)} disabled={expressLoading[kL]} style={{
+                  padding: '10px 22px', fontSize: 14, fontWeight: 700, border: 'none', borderRadius: 10,
+                  background: expressLoading[kL] ? '#94a3b8' : gradL,
+                  color: 'white', cursor: expressLoading[kL] ? 'not-allowed' : 'pointer',
+                }}>
+                  {expressLoading[kL] ? 'Генерируем...' : '⚡ Lite (надёжный)'}
+                </button>
+                <button onClick={() => handleGenerateExpress('high', sport)} disabled={expressLoading[kH]} style={{
+                  padding: '10px 22px', fontSize: 14, fontWeight: 700, border: 'none', borderRadius: 10,
+                  background: expressLoading[kH] ? '#94a3b8' : gradH,
+                  color: 'white', cursor: expressLoading[kH] ? 'not-allowed' : 'pointer',
+                }}>
+                  {expressLoading[kH] ? 'Генерируем...' : '🔥 Hard (высокодоходный)'}
+                </button>
               </div>
-            ))}
-          </div>
-        )}
+              {(resL || resH) && (
+                <div style={{ marginTop: 10, background: '#f0fdf4', borderRadius: 10, padding: '12px 16px', border: '1px solid #bbf7d0' }}>
+                  {[resL, resH].filter(Boolean).map((r, i) => (
+                    <div key={i} style={{ marginBottom: i === 0 && resH ? 8 : 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: 13, color: '#16a34a', marginBottom: 4 }}>
+                        {i === 0 ? 'Lite' : 'Hard'} — {r.date} | Итоговый коэф: × {r.total_odds?.toFixed(2)}
+                      </div>
+                      {r.picks?.map((p, j) => (
+                        <div key={j} style={{ fontSize: 12, color: '#374151', marginBottom: 2 }}>
+                          {j + 1}. {p.home} — {p.away} · <b>{p.prediction}</b> × {p.odds}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
 
       {/* Recent users */}
