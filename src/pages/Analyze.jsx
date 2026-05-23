@@ -635,7 +635,6 @@ function TeamLogo({ name, img, size = 44 }) {
 
 function HockeyMatchRow({ match, onClick }) {
   const [hovered, setHovered] = useState(false)
-  const odds = match.odds1x2
   const isLive = match.isLive
 
   return (
@@ -686,19 +685,6 @@ function HockeyMatchRow({ match, onClick }) {
           </div>
         )}
 
-        {odds && !isLive && (
-          <div className="match-row-odds" style={{ display: 'flex', gap: 4 }}>
-            {[{ label: '1', val: odds.home }, { label: '2', val: odds.away }].map(o => (
-              <div key={o.label} style={{
-                textAlign: 'center', background: '#f0f9ff',
-                border: '1px solid #bae6fd', borderRadius: 8, padding: '4px 7px', minWidth: 40,
-              }}>
-                <div style={{ fontSize: 10, color: '#0369a1', fontWeight: 600 }}>{o.label}</div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#1a1a2e' }}>{o.val ?? '—'}</div>
-              </div>
-            ))}
-          </div>
-        )}
 
         <div className="match-row-btn" style={{
           background: hovered ? '#0ea5e9' : '#f0f9ff',
