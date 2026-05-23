@@ -1,3 +1,4 @@
+// v2
 import { useState, useEffect } from 'react'
 import { Zap, Lock, Star, TrendingUp, ChevronRight, Flame, Sparkles, X, Brain } from 'lucide-react'
 import { expressApi } from '../api/authApi'
