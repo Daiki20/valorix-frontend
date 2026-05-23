@@ -18,7 +18,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
       <div className="card analysis-header" style={{ padding: '20px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
-            <TeamCircle name={match.home} size={44} />
+            <TeamCircle name={match.home} img={match.homeImg} size={44} />
             <div style={{ minWidth: 0 }}>
               <div className="analysis-header-team" style={{ fontWeight: 700, fontSize: 16, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{match.home}</div>
               <div style={{ fontSize: 11, color: '#94a3b8' }}>Хозяева</div>
@@ -34,7 +34,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
               <div className="analysis-header-team" style={{ fontWeight: 700, fontSize: 16, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{match.away}</div>
               <div style={{ fontSize: 11, color: '#94a3b8' }}>Гости</div>
             </div>
-            <TeamCircle name={match.away} size={44} />
+            <TeamCircle name={match.away} img={match.awayImg} size={44} />
           </div>
         </div>
       </div>
@@ -301,16 +301,27 @@ function ShareButton({ token, match }) {
   )
 }
 
-function TeamCircle({ name, size = 52 }) {
+function TeamCircle({ name, img, size = 52 }) {
+  const [imgError, setImgError] = useState(false)
   const colors = ['#ef4444', '#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#ec4899']
-  const color = colors[name.charCodeAt(0) % colors.length]
+  const color = colors[(name || ' ').charCodeAt(0) % colors.length]
+  if (img && !imgError) {
+    return (
+      <img
+        src={img} alt={name}
+        width={size} height={size}
+        style={{ borderRadius: '50%', objectFit: 'contain', flexShrink: 0, background: '#f8fafc' }}
+        onError={() => setImgError(true)}
+      />
+    )
+  }
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%', background: color, flexShrink: 0,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontSize: size * 0.38, fontWeight: 800, color: 'white',
     }}>
-      {name[0]}
+      {(name || '?')[0]}
     </div>
   )
 }
