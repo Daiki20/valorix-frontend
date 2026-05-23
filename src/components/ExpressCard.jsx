@@ -269,7 +269,7 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
           </div>
         ) : (
           <div style={{ fontWeight: 900, fontSize: 24, color: cfg.oddsColor, letterSpacing: -1, flexShrink: 0 }}>
-            {sport === 'hockey' ? '>' : ''}×{data.total_odds?.toFixed(2) || '—'}
+            {sport === 'hockey' ? '>×2.33' : `×${data.total_odds?.toFixed(2) || '—'}`}
           </div>
         )}
       </div>
@@ -334,7 +334,7 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
               <div>
                 <div style={{ fontSize: 11, color: '#64748b', fontWeight: 600 }}>Итоговый коэф.</div>
                 <div style={{ fontSize: 20, fontWeight: 900, color: cfg.oddsColor }}>
-                  {sport === 'hockey' ? '>' : ''}× {data.total_odds?.toFixed(2)}
+                  {sport === 'hockey' ? '>×2.33' : `×${data.total_odds?.toFixed(2)}`}
                 </div>
               </div>
               <button onClick={() => setShowSummary(s => !s)} style={{
