@@ -200,7 +200,7 @@ export default function AuthModal({ onClose }) {
                         borderRadius: 10, outline: 'none',
                         background: digit ? 'rgba(0,207,255,0.1)' : 'rgba(0,15,40,0.6)',
                         transition: 'all 0.15s',
-                        fontFamily: 'Inter, sans-serif',
+                        fontFamily: 'Outfit, sans-serif',
                       }}
                       onFocus={e => e.target.style.borderColor = ACCENT}
                       onBlur={e => e.target.style.borderColor = code[i] ? ACCENT : BORDER}
@@ -371,7 +371,7 @@ function SubmitBtn({ loading, label }) {
       padding: '13px', fontWeight: 700, fontSize: 15,
       cursor: loading ? 'not-allowed' : 'pointer',
       marginTop: 4, transition: 'opacity 0.2s',
-      fontFamily: 'Inter, sans-serif',
+      fontFamily: 'Outfit, sans-serif',
       boxShadow: loading ? 'none' : '0 4px 20px rgba(0,207,255,0.3)',
     }}>
       {label}

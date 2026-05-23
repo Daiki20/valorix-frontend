@@ -63,7 +63,7 @@ export default function SharePage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0f0f1a', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: '#0f0f1a', fontFamily: 'Outfit, sans-serif' }}>
 
       {/* ── HEADER ────────────────────────────────────────────── */}
       <div style={{

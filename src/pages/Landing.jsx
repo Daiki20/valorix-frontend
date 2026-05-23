@@ -78,7 +78,7 @@ function CosmicOrb() {
           flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
         }}>
           <div style={{ fontSize: 11, color: 'rgba(0,207,255,0.7)', fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' }}>Точность</div>
-          <div style={{ fontSize: 38, fontWeight: 800, fontFamily: 'Playfair Display, serif', color: TEXT, letterSpacing: -1 }}>73%</div>
+          <div style={{ fontSize: 38, fontWeight: 800, fontFamily: 'Space Grotesk, sans-serif', color: TEXT, letterSpacing: -1 }}>73%</div>
           <div style={{ fontSize: 11, color: MUTED, fontWeight: 500 }}>прогнозов</div>
         </div>
       </div>
@@ -196,7 +196,7 @@ export default function Landing() {
               {/* ── Left: text ── */}
               <div style={{ animation: 'fadeInUp 0.7s ease forwards' }}>
                 <h1 className="hero-title" style={{
-                  fontFamily: 'Playfair Display, serif',
+                  fontFamily: 'Space Grotesk, sans-serif',
                   fontSize: 62, fontWeight: 800, lineHeight: 1.08,
                   color: TEXT, marginBottom: 28, letterSpacing: -1.5,
                 }}>
@@ -208,7 +208,7 @@ export default function Landing() {
 
                 <p className="hero-subtitle" style={{
                   fontSize: 15, color: MUTED, lineHeight: 1.85, marginBottom: 36,
-                  maxWidth: 480, fontFamily: 'Inter, sans-serif',
+                  maxWidth: 480, fontFamily: 'Outfit, sans-serif',
                 }}>
                   Выбирай матч или загружай скрин линии букмекера — AI за{' '}
                   <span style={{ color: A, fontWeight: 600 }}>15 секунд</span>{' '}
@@ -270,7 +270,7 @@ export default function Landing() {
             ].map((s, i) => (
               <div key={i} style={{ textAlign: 'center' }}>
                 <div className="stat-number" style={{ fontSize: 26, fontWeight: 800, letterSpacing: -0.5 }}>{s.num}</div>
-                <div style={{ fontSize: 12, color: MUTED, fontWeight: 500, marginTop: 3, fontFamily: 'Inter, sans-serif' }}>{s.label}</div>
+                <div style={{ fontSize: 12, color: MUTED, fontWeight: 500, marginTop: 3, fontFamily: 'Outfit, sans-serif' }}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -283,13 +283,13 @@ export default function Landing() {
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
             <div className="badge" style={{ marginBottom: 16 }}>ЕЖЕДНЕВНО</div>
             <h2 style={{
-              fontFamily: 'Playfair Display, serif',
+              fontFamily: 'Space Grotesk, sans-serif',
               fontSize: 42, fontWeight: 800, color: TEXT, letterSpacing: -1, margin: 0,
             }}>
               Топовые{' '}
               <em style={{ color: A, fontStyle: 'italic' }}>AI‑экспрессы</em>
             </h2>
-            <p style={{ color: MUTED, fontSize: 15, marginTop: 14, fontFamily: 'Inter, sans-serif' }}>
+            <p style={{ color: MUTED, fontSize: 15, marginTop: 14, fontFamily: 'Outfit, sans-serif' }}>
               Каждый день — готовые экспрессы на основе реальной статистики и коэффициентов
             </p>
           </div>
@@ -312,7 +312,7 @@ export default function Landing() {
             <div style={{ marginBottom: 64 }}>
               <div className="badge" style={{ marginBottom: 16 }}>КАК ЭТО РАБОТАЕТ</div>
               <h2 className="section-title" style={{
-                fontFamily: 'Playfair Display, serif',
+                fontFamily: 'Space Grotesk, sans-serif',
                 fontSize: 42, fontWeight: 800, color: TEXT, letterSpacing: -1,
               }}>
                 Три шага до умного прогноза
@@ -330,14 +330,14 @@ export default function Landing() {
                 }}>
                   <Zap size={26} color={A} />
                 </div>
-                <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: 24, fontWeight: 700, color: TEXT, marginBottom: 14 }}>
+                <h3 style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: 24, fontWeight: 700, color: TEXT, marginBottom: 14 }}>
                   AI думает за тебя
                 </h3>
-                <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.85, fontFamily: 'Inter, sans-serif' }}>
+                <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.85, fontFamily: 'Outfit, sans-serif' }}>
                   Пока ты смотришь матч — AI уже проанализировал сотни факторов, нашёл паттерны и посчитал реальные вероятности.
                 </p>
                 <div style={{ marginTop: 28, padding: '16px 20px', borderRadius: 12, background: 'rgba(0,207,255,0.06)', border: `1px solid rgba(0,207,255,0.12)` }}>
-                  <div style={{ fontSize: 12, color: MUTED, marginBottom: 6, fontFamily: 'Inter, sans-serif' }}>Индекс уверенности</div>
+                  <div style={{ fontSize: 12, color: MUTED, marginBottom: 6, fontFamily: 'Outfit, sans-serif' }}>Индекс уверенности</div>
                   <div style={{ height: 6, borderRadius: 3, background: 'rgba(0,207,255,0.15)', overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: '78%', borderRadius: 3, background: `linear-gradient(90deg, ${A}, #7b5ea7)`, boxShadow: `0 0 8px ${AGLOW}` }} />
                   </div>
@@ -360,9 +360,9 @@ export default function Landing() {
                       boxShadow: `0 0 16px rgba(0,207,255,0.12)`,
                     }}>{s.icon}</div>
                     <div>
-                      <div style={{ fontSize: 11, color: A, fontWeight: 700, letterSpacing: 2, marginBottom: 6, fontFamily: 'Inter, sans-serif' }}>ШАГ {s.n}</div>
-                      <h3 style={{ fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 8, fontFamily: 'Inter, sans-serif' }}>{s.title}</h3>
-                      <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.75, fontFamily: 'Inter, sans-serif' }}>{s.desc}</p>
+                      <div style={{ fontSize: 11, color: A, fontWeight: 700, letterSpacing: 2, marginBottom: 6, fontFamily: 'Outfit, sans-serif' }}>ШАГ {s.n}</div>
+                      <h3 style={{ fontSize: 17, fontWeight: 700, color: TEXT, marginBottom: 8, fontFamily: 'Outfit, sans-serif' }}>{s.title}</h3>
+                      <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.75, fontFamily: 'Outfit, sans-serif' }}>{s.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -383,13 +383,13 @@ export default function Landing() {
               <div>
                 <div className="badge" style={{ marginBottom: 20 }}>ПРЕИМУЩЕСТВА</div>
                 <h2 style={{
-                  fontFamily: 'Playfair Display, serif',
+                  fontFamily: 'Space Grotesk, sans-serif',
                   fontSize: 42, fontWeight: 800, color: TEXT, letterSpacing: -1, marginBottom: 20, lineHeight: 1.15,
                 }}>
                   Почему именно<br />
                   <em style={{ color: A, fontStyle: 'italic' }}>Valorix AI</em>?
                 </h2>
-                <p style={{ fontSize: 15, color: MUTED, lineHeight: 1.8, marginBottom: 32, fontFamily: 'Inter, sans-serif' }}>
+                <p style={{ fontSize: 15, color: MUTED, lineHeight: 1.8, marginBottom: 32, fontFamily: 'Outfit, sans-serif' }}>
                   Мы не гарантируем победу — мы даём тебе данные для принятия умных решений. Как профессиональный аналитик в кармане.
                 </p>
                 <Link to="/analyze" className="btn-primary">
@@ -414,8 +414,8 @@ export default function Landing() {
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       marginBottom: 14, boxShadow: `0 0 14px ${f.glow}`,
                     }}>{f.icon}</div>
-                    <h3 style={{ fontSize: 15, fontWeight: 700, color: TEXT, marginBottom: 8, fontFamily: 'Inter, sans-serif' }}>{f.title}</h3>
-                    <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.7, fontFamily: 'Inter, sans-serif' }}>{f.desc}</p>
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: TEXT, marginBottom: 8, fontFamily: 'Outfit, sans-serif' }}>{f.title}</h3>
+                    <p style={{ fontSize: 13, color: MUTED, lineHeight: 1.7, fontFamily: 'Outfit, sans-serif' }}>{f.desc}</p>
                   </div>
                 ))}
               </div>
@@ -433,7 +433,7 @@ export default function Landing() {
             <div style={{ textAlign: 'center', marginBottom: 60 }}>
               <div className="badge" style={{ marginBottom: 16 }}>FAQ</div>
               <h2 style={{
-                fontFamily: 'Playfair Display, serif',
+                fontFamily: 'Space Grotesk, sans-serif',
                 fontSize: 42, fontWeight: 800, color: TEXT, letterSpacing: -1,
               }}>Частые вопросы</h2>
             </div>
@@ -469,13 +469,13 @@ export default function Landing() {
           <div style={{ maxWidth: 600, margin: '0 auto', position: 'relative' }}>
             <div className="badge" style={{ marginBottom: 24 }}>НАЧНИ СЕЙЧАС</div>
             <h2 style={{
-              fontFamily: 'Playfair Display, serif',
+              fontFamily: 'Space Grotesk, sans-serif',
               fontSize: 52, fontWeight: 800, color: TEXT, letterSpacing: -2, marginBottom: 20, lineHeight: 1.1,
             }}>
               Готов к умным<br />
               <em style={{ color: A, fontStyle: 'italic' }}>ставкам</em>?
             </h2>
-            <p style={{ fontSize: 16, color: MUTED, marginBottom: 40, lineHeight: 1.8, fontFamily: 'Inter, sans-serif' }}>
+            <p style={{ fontSize: 16, color: MUTED, marginBottom: 40, lineHeight: 1.8, fontFamily: 'Outfit, sans-serif' }}>
               Зарегистрируйся и получи{' '}
               <strong style={{ color: A }}>38 монет бесплатно</strong>{' '}
               для первого анализа
@@ -492,7 +492,7 @@ export default function Landing() {
             {/* Trust indicators */}
             <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 28, flexWrap: 'wrap' }}>
               {['✓ Регистрация бесплатна', '✓ 38 монет в подарок', '✓ Анализ за 15 секунд'].map((t, i) => (
-                <span key={i} style={{ fontSize: 13, color: MUTED, fontFamily: 'Inter, sans-serif' }}>{t}</span>
+                <span key={i} style={{ fontSize: 13, color: MUTED, fontFamily: 'Outfit, sans-serif' }}>{t}</span>
               ))}
             </div>
           </div>
@@ -513,18 +513,18 @@ export default function Landing() {
           <div style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div style={{ marginBottom: 20 }}>
               <span style={{
-                fontFamily: 'Playfair Display, serif', fontWeight: 800, fontSize: 22,
+                fontFamily: 'Space Grotesk, sans-serif', fontWeight: 800, fontSize: 22,
                 color: TEXT, letterSpacing: -0.5,
               }}>
                 Valorix <em style={{ color: A, fontStyle: 'italic' }}>AI</em>
               </span>
             </div>
-            <p style={{ fontSize: 13, marginBottom: 24, fontFamily: 'Inter, sans-serif' }}>
+            <p style={{ fontSize: 13, marginBottom: 24, fontFamily: 'Outfit, sans-serif' }}>
               AI-аналитика для спортивных ставок. Играйте ответственно. 18+
             </p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 28, flexWrap: 'wrap', marginBottom: 28 }}>
               {[{ to: '/support', l: 'Поддержка' }, { to: '/privacy', l: 'Конфиденциальность' }].map(({ to, l }) => (
-                <Link key={to} to={to} style={{ color: MUTED, fontSize: 13, textDecoration: 'none', fontWeight: 500, fontFamily: 'Inter, sans-serif', transition: 'color 0.18s' }}
+                <Link key={to} to={to} style={{ color: MUTED, fontSize: 13, textDecoration: 'none', fontWeight: 500, fontFamily: 'Outfit, sans-serif', transition: 'color 0.18s' }}
                   onMouseEnter={e => e.target.style.color = A}
                   onMouseLeave={e => e.target.style.color = MUTED}>
                   {l}
@@ -532,7 +532,7 @@ export default function Landing() {
               ))}
             </div>
             <div style={{ height: 1, background: 'rgba(255,255,255,0.04)', marginBottom: 20 }} />
-            <p style={{ fontSize: 12, color: '#1e3a5a', fontFamily: 'Inter, sans-serif' }}>© 2026 Valorix AI · Пищев Андрей Сергеевич · ИНН 470805349664 · Самозанятый</p>
+            <p style={{ fontSize: 12, color: '#1e3a5a', fontFamily: 'Outfit, sans-serif' }}>© 2026 Valorix AI · Пищев Андрей Сергеевич · ИНН 470805349664 · Самозанятый</p>
           </div>
         </footer>
       </div>
@@ -554,12 +554,12 @@ function FaqItem({ q, a }) {
       onClick={() => setOpen(!open)}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontWeight: 600, fontSize: 15, color: TEXT, fontFamily: 'Inter, sans-serif' }}>{q}</span>
+        <span style={{ fontWeight: 600, fontSize: 15, color: TEXT, fontFamily: 'Outfit, sans-serif' }}>{q}</span>
         <ChevronDown size={18} color={MUTED}
           style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.22s', flexShrink: 0 }} />
       </div>
       {open && (
-        <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.8, marginTop: 14, fontFamily: 'Inter, sans-serif' }}>{a}</p>
+        <p style={{ fontSize: 14, color: MUTED, lineHeight: 1.8, marginTop: 14, fontFamily: 'Outfit, sans-serif' }}>{a}</p>
       )}
     </div>
   )

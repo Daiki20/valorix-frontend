@@ -119,7 +119,7 @@ export default function ResetPassword() {
                   border: 'none', borderRadius: 10, padding: 13,
                   fontWeight: 700, fontSize: 15, cursor: loading ? 'not-allowed' : 'pointer',
                   boxShadow: loading ? 'none' : '0 4px 20px rgba(0,207,255,0.3)',
-                  marginTop: 4, fontFamily: 'Montserrat, sans-serif',
+                  marginTop: 4, fontFamily: 'Outfit, sans-serif',
                 }}>
                   {loading ? 'Сохранение...' : 'Сохранить пароль'}
                 </button>
@@ -136,5 +136,5 @@ const inputStyle = {
   width: '100%', padding: '12px 14px 12px 40px', paddingRight: 44,
   border: '1.5px solid rgba(255,255,255,0.07)', borderRadius: 10, fontSize: 14,
   outline: 'none', background: '#0c0f18', transition: 'border-color 0.2s',
-  fontFamily: 'Montserrat, sans-serif',
+  fontFamily: 'Outfit, sans-serif',
 }

@@ -565,7 +565,7 @@ function ActionBtn({ icon, label, color, loading, onClick }) {
 const inputStyle = {
   border: '1.5px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '10px 14px',
   fontSize: 14, outline: 'none', background: '#0c0f18', color: '#dde4ee',
-  fontFamily: 'Montserrat, sans-serif', width: 240,
+  fontFamily: 'Outfit, sans-serif', width: 240,
 }
 
 const tdStyle = { padding: '10px 12px', verticalAlign: 'middle' }
