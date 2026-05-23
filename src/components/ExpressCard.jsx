@@ -374,21 +374,13 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
 }
 
 const SPORT_OPTIONS = [
-  { id: 'football', label: 'Футбол',  emoji: '⚽', grad: 'linear-gradient(135deg, #2563eb, #7c3aed)', glow: 'rgba(37,99,235,0.35)' },
-  { id: 'hockey',   label: 'Хоккей',  emoji: '🏒', grad: 'linear-gradient(135deg, #0ea5e9, #2563eb)', glow: 'rgba(14,165,233,0.35)' },
-  { id: 'cs2',      label: 'CS2',     emoji: '🔫', grad: 'linear-gradient(135deg, #f97316, #ef4444)', glow: 'rgba(249,115,22,0.35)' },
-  { id: 'dota2',    label: 'Dota 2',  emoji: '🧙', grad: 'linear-gradient(135deg, #dc2626, #7c3aed)', glow: 'rgba(220,38,38,0.35)' },
-  { id: 'valorant', label: 'Valorant',emoji: '🎯', grad: 'linear-gradient(135deg, #ec4899, #ef4444)', glow: 'rgba(236,72,153,0.35)' },
-  { id: 'lol',      label: 'LoL',     emoji: '⚔️', grad: 'linear-gradient(135deg, #ea580c, #dc2626)', glow: 'rgba(234,88,12,0.35)'  },
+  { id: 'football', label: 'Футбол', emoji: '⚽', grad: 'linear-gradient(135deg, #2563eb, #7c3aed)', glow: 'rgba(37,99,235,0.35)' },
+  { id: 'hockey',   label: 'Хоккей', emoji: '🏒', grad: 'linear-gradient(135deg, #0ea5e9, #2563eb)', glow: 'rgba(14,165,233,0.35)' },
 ]
 
 const SPORT_LABEL_COLORS = {
   football: { color1: '#2563eb', color2: '#7c3aed', border: '#93c5fd', bg: '#eff6ff' },
   hockey:   { color1: '#0ea5e9', color2: '#2563eb', border: '#7dd3fc', bg: '#f0f9ff' },
-  cs2:      { color1: '#f97316', color2: '#ef4444', border: '#fdba74', bg: '#fff7ed' },
-  dota2:    { color1: '#dc2626', color2: '#7c3aed', border: '#f9a8d4', bg: '#fdf2f8' },
-  valorant: { color1: '#ec4899', color2: '#ef4444', border: '#fca5a5', bg: '#fff1f2' },
-  lol:      { color1: '#ea580c', color2: '#dc2626', border: '#fdba74', bg: '#fff7ed' },
 }
 
 export default function ExpressCard({ onAuthRequired }) {
@@ -434,8 +426,8 @@ export default function ExpressCard({ onAuthRequired }) {
         </div>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: 10,
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: 12,
         }}>
           {SPORT_OPTIONS.map(s => (
             <button
