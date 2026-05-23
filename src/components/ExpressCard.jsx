@@ -249,7 +249,14 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
             <div style={{ fontWeight: 900, fontSize: 14, color: '#1a1a2e', letterSpacing: -0.3 }}>
               {cfg.label}
             </div>
-            <div style={{ fontSize: 11, color: cfg.numberColor, fontWeight: 700 }}>{cfg.sublabel}</div>
+            <div style={{ fontSize: 11, color: cfg.numberColor, fontWeight: 700 }}>
+              {cfg.sublabel}
+              {data.generated_at && (
+                <span style={{ color: '#94a3b8', fontWeight: 500, marginLeft: 6 }}>
+                  · {new Date(data.generated_at + 'Z').toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Moscow' })} мск
+                </span>
+              )}
+            </div>
           </div>
         </div>
         {isPurchased ? (
@@ -493,7 +500,7 @@ export default function ExpressCard({ onAuthRequired }) {
         <div style={{ fontSize: 13, color: '#94a3b8', maxWidth: 320, margin: '0 auto' }}>
           {error || 'Генерация запланирована. Попробуйте позже.'}
         </div>
-        <button onClick={() => { setCache(c => { const n = {...c}; delete n[selectedSport]; return n }); loadSport(selectedSport) }} style={{
+        <button onClick={() => loadSport(selectedSport)} style={{
           marginTop: 16, padding: '8px 20px', borderRadius: 10,
           background: sportInfo?.grad || '#2563eb', color: 'white',
           border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer',
