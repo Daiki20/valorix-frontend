@@ -1,12 +1,50 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Upload, Zap, TrendingUp, ChevronDown, Shield, Clock, BarChart2, Star, Target, Activity, Trophy } from 'lucide-react'
+import { Search, Upload, Zap, TrendingUp, ChevronDown, Shield, Clock, BarChart2, Star, Target, Activity, Trophy, X } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import MatchPreviewCard from '../components/MatchPreviewCard'
 import Onboarding from '../components/Onboarding'
 import ExpressCard from '../components/ExpressCard'
 import AuthModal from '../components/AuthModal'
+import AnalysisResult from '../components/AnalysisResult'
 import { useAuth } from '../context/AuthContext'
+
+/* ── Sample analysis data ── */
+const SAMPLE_MATCH = {
+  home: 'Реал Мадрид',
+  away: 'Барселона',
+  homeImg: 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg',
+  awayImg: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg',
+  league: 'Ла Лига · Тур 28',
+  date: 'Пример анализа',
+}
+
+const SAMPLE_ANALYSIS = {
+  verdict: 'Победа Реал Мадрид или Ничья (Двойной шанс 1X)',
+  summary: 'Реал Мадрид находится в великолепной форме — 7 побед в последних 9 матчах. Барселона испытывает проблемы в обороне (пропустила 14 голов в последних 7 выездных играх). Исторически El Clásico на «Сантьяго Бернабеу» даёт 61% побед хозяев.',
+  confidence: 74,
+  risk: 'medium',
+  fairOdds: '1.62',
+  bookOdds: '1.75',
+  value: 8,
+  reasons: [
+    'Реал Мадрид выиграл 7 из последних 9 матчей Ла Лиги, набирая в среднем 2.3 гола за игру',
+    'Барселона пропустила в 6 из 7 последних выездных матчей чемпионата',
+    'На «Сантьяго Бернабеу» Реал не проигрывал Барселоне последние 4 встречи',
+    'Левандовски под вопросом — возможное отсутствие главного форварда гостей',
+    'Высокий мотивационный фактор: разница в 3 очка в таблице, Реал лидирует',
+  ],
+  extraBets: [
+    { type: 'Тотал голов Больше 2.5', confidence: 78, reason: 'Обе команды в высоких по результативности сериях — среднее 3.4 гола в очных встречах за последние 5 лет' },
+    { type: 'Обе команды забьют', confidence: 69, reason: 'Барселона забивала в 11 из 12 последних матчей, несмотря на проблемы в обороне' },
+  ],
+  bestOdds: [
+    { name: 'Фонбет',   odds: '1.75', draw: '3.40', away: '4.20', real: true },
+    { name: '1xBet',    odds: '1.72', draw: '3.45', away: '4.30', real: true },
+    { name: 'Betcity',  odds: '1.68', draw: '3.50', away: '4.15', real: true },
+    { name: 'Marathonbet', odds: '1.70', draw: '3.38', away: '4.25', real: true },
+  ],
+}
 
 const A = '#00cfff'
 const A2 = '#7b5ea7'
@@ -206,6 +244,7 @@ export default function Landing() {
   const { user } = useAuth()
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
+  const [showSampleAnalysis, setShowSampleAnalysis] = useState(false)
 
   useEffect(() => {
     let onboarded = false
@@ -296,6 +335,23 @@ export default function Landing() {
                     <Upload size={16} />
                     Загрузить скрин
                   </Link>
+                  <button
+                    onClick={() => setShowSampleAnalysis(true)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 8,
+                      padding: '14px 24px', fontSize: 15, fontWeight: 600,
+                      background: 'rgba(123,94,167,0.12)',
+                      color: '#c4a8ff',
+                      border: '1px solid rgba(123,94,167,0.35)',
+                      borderRadius: 12, cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      fontFamily: 'Outfit, sans-serif',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(123,94,167,0.22)'; e.currentTarget.style.borderColor = 'rgba(123,94,167,0.6)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(123,94,167,0.12)'; e.currentTarget.style.borderColor = 'rgba(123,94,167,0.35)' }}
+                  >
+                    📊 Пример анализа
+                  </button>
                 </div>
 
                 {/* Feature icon grid (2 rows × 3 cols) */}
@@ -604,6 +660,98 @@ export default function Landing() {
           </div>
         </footer>
       </div>
+
+      {/* ── Sample Analysis Modal ── */}
+      {showSampleAnalysis && (
+        <div
+          onClick={() => setShowSampleAnalysis(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(3,11,24,0.88)',
+            backdropFilter: 'blur(12px)',
+            display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+            padding: '24px 16px',
+            overflowY: 'auto',
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              width: '100%', maxWidth: 720,
+              background: 'rgba(5,15,34,0.98)',
+              border: '1px solid rgba(0,180,255,0.15)',
+              borderRadius: 20,
+              padding: '28px 28px 32px',
+              boxShadow: '0 0 60px rgba(0,207,255,0.12), 0 32px 80px rgba(0,0,0,0.6)',
+              position: 'relative',
+            }}
+          >
+            {/* Header */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              marginBottom: 24, paddingBottom: 16,
+              borderBottom: '1px solid rgba(0,180,255,0.1)',
+            }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <span style={{ fontSize: 18, }}>📊</span>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: TEXT, fontFamily: 'Space Grotesk, sans-serif' }}>
+                    Пример AI-анализа
+                  </span>
+                </div>
+                <p style={{ fontSize: 13, color: MUTED, fontFamily: 'Outfit, sans-serif', margin: 0 }}>
+                  Так выглядит полный анализ матча — данные примерные
+                </p>
+              </div>
+              <button
+                onClick={() => setShowSampleAnalysis(false)}
+                style={{
+                  width: 36, height: 36, borderRadius: '50%',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', color: MUTED,
+                  transition: 'all 0.2s', flexShrink: 0,
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.12)'; e.currentTarget.style.color = TEXT }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = MUTED }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <AnalysisResult match={SAMPLE_MATCH} analysis={SAMPLE_ANALYSIS} />
+
+            {/* CTA */}
+            <div style={{
+              marginTop: 24, padding: '20px 24px',
+              background: 'rgba(0,207,255,0.06)',
+              border: '1px solid rgba(0,207,255,0.18)',
+              borderRadius: 14,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              flexWrap: 'wrap', gap: 12,
+            }}>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: TEXT, marginBottom: 2, fontFamily: 'Space Grotesk, sans-serif' }}>
+                  Хочешь такой же анализ?
+                </div>
+                <div style={{ fontSize: 13, color: MUTED, fontFamily: 'Outfit, sans-serif' }}>
+                  Выбери матч — AI выдаст результат за 15 секунд
+                </div>
+              </div>
+              <Link
+                to="/analyze"
+                onClick={() => setShowSampleAnalysis(false)}
+                className="btn-primary"
+                style={{ fontSize: 14, padding: '12px 24px', whiteSpace: 'nowrap' }}
+              >
+                <Search size={15} />
+                Анализировать матч
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
