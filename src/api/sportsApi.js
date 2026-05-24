@@ -417,50 +417,54 @@ async function extractFromScreenshot(base64Image) {
 // Step 2: find teams in sstats, get stats, run full analysis
 async function enrichAndAnalyze(matchInfo, game = 'football') {
   let homeId = null, awayId = null
-  let stats = null, glicko = null, h2h = null, realOdds = []
+  let formData = { homeForm: null, awayForm: null, h2h: [] }
+  let glicko = null, realOdds = []
 
   if (SSTATS_KEY) {
-    // Find team IDs (try English name first, fallback to original)
+    // Step 1: find team IDs (English name first, fallback to original)
     const [homeTeams, awayTeams] = await Promise.all([
       sstatsGet('/Teams/list', { name: matchInfo.homeEn || matchInfo.home, limit: 3 }).catch(() => ({ data: [] })),
       sstatsGet('/Teams/list', { name: matchInfo.awayEn || matchInfo.away, limit: 3 }).catch(() => ({ data: [] })),
     ])
-
     homeId = homeTeams.data?.[0]?.id
     awayId = awayTeams.data?.[0]?.id
 
     if (homeId && awayId) {
-      const [h2hRes, homeGamesRes] = await Promise.allSettled([
-        sstatsGet('/Games/list', { ended: true, bothTeams: `${homeId},${awayId}`, limit: 10 }),
-        sstatsGet('/Games/list', { upcoming: true, team: homeId, limit: 10 }),
-      ])
+      // Step 2: fetch real form + H2H from backend (SQLite cache, 6h TTL)
+      try {
+        const token = localStorage.getItem('valorix_token')
+        const fRes = await fetch(`${API_BASE}/analyze/team-form`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ homeId, awayId }),
+        })
+        if (fRes.ok) formData = await fRes.json()
+      } catch { /* form data is optional — analysis still runs */ }
 
-      if (h2hRes.status === 'fulfilled') h2h = h2hRes.value?.data || []
-
-      const homeGames = homeGamesRes.status === 'fulfilled' ? homeGamesRes.value?.data || [] : []
-      const matchingGame = homeGames.find(g =>
-        g.homeTeam?.id === awayId || g.awayTeam?.id === awayId
-      )
-
-      if (matchingGame) {
-        const [statsRes, glickoRes, oddsRes] = await Promise.allSettled([
-          sstatsGet('/Games/last-games-stats', { gameId: matchingGame.id }),
-          sstatsGet(`/Games/glicko/${matchingGame.id}`),
-          sstatsGet(`/Odds/${matchingGame.id}`),
-        ])
-        if (statsRes.status === 'fulfilled') stats = statsRes.value
-        if (glickoRes.status === 'fulfilled') glicko = glickoRes.value?.data?.glicko
-        if (oddsRes.status === 'fulfilled') realOdds = extractBookmakerOdds(oddsRes.value?.data || [])
-      }
+      // Step 3: try upcoming game for glicko probabilities + bookmaker odds
+      try {
+        const upcomingRes = await sstatsGet('/Games/list', { upcoming: true, team: homeId, limit: 10 })
+        const matchingGame = (upcomingRes?.data || []).find(g =>
+          g.homeTeam?.id === awayId || g.awayTeam?.id === awayId
+        )
+        if (matchingGame) {
+          const [glickoRes, oddsRes] = await Promise.allSettled([
+            sstatsGet(`/Games/glicko/${matchingGame.id}`),
+            sstatsGet(`/Odds/${matchingGame.id}`),
+          ])
+          if (glickoRes.status === 'fulfilled') glicko = glickoRes.value?.data?.glicko
+          if (oddsRes.status === 'fulfilled') realOdds = extractBookmakerOdds(oddsRes.value?.data || [])
+        }
+      } catch { /* glicko/odds are optional */ }
     }
   }
 
-  // Build match object compatible with analyzeMatch format
   const match = {
     home: matchInfo.home,
     away: matchInfo.away,
-    homeOriginal: matchInfo.home,
-    awayOriginal: matchInfo.away,
     league: matchInfo.league || '',
     date: matchInfo.score ? `Лайв · ${matchInfo.minute}'` : 'Предстоящий матч',
     score: matchInfo.score,
@@ -468,7 +472,7 @@ async function enrichAndAnalyze(matchInfo, game = 'football') {
     odds1x2: matchInfo.odds1 ? { home: matchInfo.odds1, draw: matchInfo.oddsX, away: matchInfo.odds2 } : null,
   }
 
-  const prompt = buildFullScreenPrompt(match, stats, glicko, h2h)
+  const prompt = buildFullScreenPrompt(match, formData, glicko)
   const cacheKey = `f_${(matchInfo.home||'').toLowerCase().replace(/\s/g,'')}_${(matchInfo.away||'').toLowerCase().replace(/\s/g,'')}`
   const jsonStr = await callOpenAI(prompt, cacheKey)
   const analysis = parseAnalysis(jsonStr, match)
@@ -488,51 +492,50 @@ async function enrichAndAnalyze(matchInfo, game = 'football') {
   }
 }
 
-function buildFullScreenPrompt(match, stats, glicko, h2h) {
+function buildFullScreenPrompt(match, formData = {}, glicko = null) {
   const isLive = !!match.score
-  const homeStats = stats?.home
-  const awayStats = stats?.away
+  const { homeForm, awayForm, h2h = [] } = formData
+  const hasRealData = !!(homeForm && awayForm) || h2h.length > 0
 
+  // ── Form stats block ──────────────────────────────────────────────────────
   let statsBlock = ''
-  if (homeStats && awayStats) {
+  if (homeForm && awayForm) {
     statsBlock = `
-СТАТИСТИКА из базы данных:
-${match.home} (хозяева, последние ${homeStats.gamesCount} матчей дома):
-- Побед: ${homeStats.wins} | Ничьих: ${homeStats.draws} | Поражений: ${homeStats.loses}
-- Среднее голов: ${homeStats.avgScore?.toFixed(2)} забито / ${homeStats.avgConceded?.toFixed(2)} пропущено
-- Удары: ${homeStats.avgShots?.toFixed(1)} / Удары соперника: ${homeStats.avgOppShots?.toFixed(1)}
+── СТАТИСТИКА (реальные данные из базы) ──
+${match.home} — последние ${homeForm.gamesCount} матчей ДОМА:
+  Форма: ${homeForm.wins}П / ${homeForm.draws}Н / ${homeForm.loses}П
+  Голы: ${homeForm.avgScore.toFixed(2)} забито / ${homeForm.avgConceded.toFixed(2)} пропущено за матч
 
-${match.away} (гости, последние ${awayStats.gamesCount} матчей в гостях):
-- Побед: ${awayStats.wins} | Ничьих: ${awayStats.draws} | Поражений: ${awayStats.loses}
-- Среднее голов: ${awayStats.avgScore?.toFixed(2)} забито / ${awayStats.avgConceded?.toFixed(2)} пропущено`
+${match.away} — последние ${awayForm.gamesCount} матчей В ГОСТЯХ:
+  Форма: ${awayForm.wins}П / ${awayForm.draws}Н / ${awayForm.loses}П
+  Голы: ${awayForm.avgScore.toFixed(2)} забито / ${awayForm.avgConceded.toFixed(2)} пропущено за матч`
   }
 
+  // ── H2H block ─────────────────────────────────────────────────────────────
+  let h2hBlock = ''
+  if (h2h.length > 0) {
+    const lines = h2h.slice(0, 6).map(g =>
+      `  ${g.date ? g.date + ': ' : ''}${g.homeTeam} ${g.homeScore}:${g.awayScore} ${g.awayTeam}`
+    ).join('\n')
+    h2hBlock = `\n── ИСТОРИЯ ВСТРЕЧ (последние ${Math.min(h2h.length, 6)}, реальные данные) ──\n${lines}`
+  }
+
+  // ── Glicko block ──────────────────────────────────────────────────────────
   let glickoBlock = ''
   if (glicko) {
+    const homePct = (glicko.homeWinProbability * 100).toFixed(1)
+    const awayPct = (glicko.awayWinProbability * 100).toFixed(1)
+    const drawPct = Math.max(0, 100 - glicko.homeWinProbability * 100 - glicko.awayWinProbability * 100).toFixed(1)
     glickoBlock = `
-МАТЕМАТИЧЕСКАЯ МОДЕЛЬ (Glicko-2):
-- Рейтинг ${match.home}: ${glicko.homeRating?.toFixed(0)}, xG: ${glicko.homeXg?.toFixed(2)}
-- Рейтинг ${match.away}: ${glicko.awayRating?.toFixed(0)}, xG: ${glicko.awayXg?.toFixed(2)}
-- Вероятность победы хозяев: ${(glicko.homeWinProbability * 100).toFixed(1)}%
-- Вероятность победы гостей: ${(glicko.awayWinProbability * 100).toFixed(1)}%`
+── МАТЕМАТИЧЕСКАЯ МОДЕЛЬ Glicko-2 ──
+  Рейтинг ${match.home}: ${glicko.homeRating?.toFixed(0)}${glicko.homeXg ? ` | xG: ${glicko.homeXg.toFixed(2)}` : ''}
+  Рейтинг ${match.away}: ${glicko.awayRating?.toFixed(0)}${glicko.awayXg ? ` | xG: ${glicko.awayXg.toFixed(2)}` : ''}
+  Вероятности: П1 ${homePct}% | X ${drawPct}% | П2 ${awayPct}%`
   }
 
-  let h2hBlock = ''
-  if (h2h?.length) {
-    const results = h2h.slice(0, 5).map(g => {
-      const hScore = g.homeFTResult ?? '?'
-      const aScore = g.awayFTResult ?? '?'
-      return `${g.homeTeam?.name} ${hScore}:${aScore} ${g.awayTeam?.name}`
-    }).join('\n')
-    h2hBlock = `\nИСТОРИЯ ВСТРЕЧ (последние ${Math.min(h2h.length, 5)}):\n${results}`
-  }
-
-  const liveBlock = isLive
-    ? `\nТЕКУЩИЙ СЧЁТ: ${match.score} (${match.minute} минута)`
-    : ''
-
+  const liveBlock = isLive ? `\nТЕКУЩИЙ СЧЁТ: ${match.score} (${match.minute} мин)` : ''
   const oddsBlock = match.odds1x2
-    ? `\nКОЭФФИЦИЕНТЫ: хозяева ${match.odds1x2.home}, ничья ${match.odds1x2.draw}, гости ${match.odds1x2.away}`
+    ? `\n── КОЭФФИЦИЕНТЫ С ЭКРАНА ──\n  П1 ${match.odds1x2.home} | Х ${match.odds1x2.draw ?? '—'} | П2 ${match.odds1x2.away}`
     : ''
 
   return `Ты профессиональный спортивный аналитик. Отвечай СТРОГО по-русски.
@@ -540,37 +543,37 @@ ${match.away} (гости, последние ${awayStats.gamesCount} матче
 МАТЧ: ${match.home} vs ${match.away}
 ЛИГА: ${match.league}
 ${liveBlock}
-
 ${statsBlock}
 ${glickoBlock}
 ${h2hBlock}
 ${oddsBlock}
 
 ══ ПРАВИЛА РАБОТЫ С ДАННЫМИ ══
-${(statsBlock || glickoBlock || h2hBlock)
-    ? `• ИСПОЛЬЗУЙ цифры из блоков выше — они из реальной базы данных
-• ЗАПРЕЩЕНО придумывать статистику которой нет выше
-• Если данных нет — пиши "данных нет", не выдумывай цифры
-• Своими знаниями о командах дополняй контекст, но НЕ статистику`
-    : `• Данных из базы нет — опирайся на свои знания об этих командах
-• В reasons пиши что это оценка на основе общих знаний, не свежей статистики`}
+${hasRealData
+  ? `• ИСПОЛЬЗУЙ цифры из блоков выше — они из реальной базы данных
+• ЗАПРЕЩЕНО придумывать статистику которой нет в блоках выше
+• Ссылайся на конкретные цифры: "выиграл X из Y домашних", "забивает X.XX голов/игру", "H2H: X из Y в пользу..."
+• Своими знаниями о командах дополняй контекст (состав, тренер, стиль), но НЕ выдумывай цифры`
+  : `• Данных из базы нет — опирайся на свои знания об этих командах
+• НЕ выдумывай конкретные цифры — пиши "по общим данным" или "предположительно"
+• В reasons явно укажи что оценка на основе общих знаний, не свежей статистики`}
 
 ${isLive
-    ? `Матч ИДЁТ. Счёт ${match.score} на ${match.minute} минуте.
-Задача: оцени ход матча по статистике выше. Кто доминирует по xG и ударам? Какова вероятность смены счёта?`
-    : `Задача: предматчевый анализ.
-Определи фаворита. Рассчитай Fair Odds. Найди Value если есть коэффициенты.`}
+  ? `Матч ИДЁТ. Счёт ${match.score} на ${match.minute} минуте.
+Задача: оцени ход матча. Кто доминирует? Вероятность смены счёта?`
+  : `Задача: предматчевый анализ.
+Определи фаворита по данным выше. Рассчитай Fair Odds. Найди Value если есть коэффициенты.`}
 
-Дополнительные ставки — ОБЯЗАТЕЛЬНО 3-4 штуки. Используй статистику выше, а если её нет — свои знания о командах:
+Дополнительные ставки — ОБЯЗАТЕЛЬНО 3-4 штуки:
 - Целевой диапазон коэфа: 1.80 — 3.00
-- Ищи: форы, угловые, карточки, обе забьют/не забьют — там коэфы выше
+- Ищи: форы, обе забьют, тотал, угловые, карточки
 - ЗАПРЕЩЕНО: ставки с коэфом < 1.75
-- Пустой массив возвращать НЕЛЬЗЯ — всегда минимум 3 ставки
+- Обоснование ДОЛЖНО содержать цифру из данных выше (если они есть)
 
 Ответь строго в JSON:
 {
   "verdict": "чёткий вердикт кто победит или какой исход",
-  "summary": "3-4 предложения анализа с конкретными цифрами из данных",
+  "summary": "3-4 предложения анализа с конкретными цифрами из данных выше",
   "confidence": число 0-100,
   "risk": "low | medium | high",
   "fairOdds": "справедливый коэффициент на фаворита",
@@ -581,7 +584,7 @@ ${isLive
     {
       "type": "Название ставки по-русски",
       "confidence": число 50-95,
-      "reason": "Цифра из данных выше: например 'avgCorners=7.8 → линия на 7.5 проходная'"
+      "reason": "цифра из данных: например '${match.home} забивает 1.82 гола/игру → тотал 1.5 проходной'"
     }
   ],
   "bestOdds": []
