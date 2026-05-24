@@ -364,14 +364,18 @@ async function extractFromScreenshot(base64Image) {
 - "mixed" — несколько матчей
 
 Определи игру/спорт:
-- "football" — футбол (любой футбол, включая американский = нет, это soccer)
+- "football" — футбол (soccer, любые футбольные лиги)
 - "basketball" — баскетбол (NBA, EuroLeague, NCAAB, WNBA и т.д.)
 - "hockey" — хоккей (НХЛ, КХЛ, ИИХФ и т.д.)
-- "cs2" — Counter-Strike 2
+- "cs2" — Counter-Strike 2 / CS:GO
 - "dota2" — Dota 2
 - "valorant" — Valorant
 - "lol" — League of Legends
-- "other" — другое (теннис, MMA, формула 1 и т.д.)
+- "tennis" — теннис (ATP, WTA, Grand Slam, US Open и т.д.)
+- "mma" — MMA/UFC/Bellator и другие единоборства, бокс
+- "nfl" — американский футбол (NFL, NCAA Football)
+- "baseball" — бейсбол (MLB и т.д.)
+- "other" — другое (формула 1, гольф, крикет и т.д.)
 
 Для каждого матча:
 1. Прочитай названия команд ТОЧНО как написано
@@ -383,7 +387,7 @@ async function extractFromScreenshot(base64Image) {
 Ответь строго в JSON:
 {
   "screenType": "live | prematch | mixed",
-  "game": "football | basketball | hockey | cs2 | dota2 | valorant | lol | other",
+  "game": "football | basketball | hockey | cs2 | dota2 | valorant | lol | tennis | mma | nfl | baseball | other",
   "matches": [
     {
       "home": "название с экрана",
@@ -418,8 +422,12 @@ async function extractFromScreenshot(base64Image) {
 
 // Step 2: find teams in sstats, get stats, run full analysis
 async function enrichAndAnalyze(matchInfo, game = 'football') {
-  // ── Basketball: separate path with BallDontLie API ──
+  // ── Basketball: separate path with BallDontLie NBA API ──
   if (game === 'basketball') return enrichBasketball(matchInfo)
+
+  // ── All other BDL sports: NHL, NFL, MLB, CS2, Dota2, LoL, Valorant, Tennis, MMA ──
+  const BDL_SPORTS = ['hockey', 'cs2', 'dota2', 'lol', 'valorant', 'tennis', 'mma', 'nfl', 'baseball']
+  if (BDL_SPORTS.includes(game)) return enrichWithBDL(matchInfo, game)
 
   let homeId = null, awayId = null
   let formData = { homeForm: null, awayForm: null, h2h: [] }
@@ -533,6 +541,212 @@ async function enrichBasketball(matchInfo) {
   const analysis = parseAnalysis(jsonStr, match)
 
   return { home: matchInfo.home, away: matchInfo.away, league: matchInfo.league, score: matchInfo.score, minute: matchInfo.minute, ...analysis }
+}
+
+// ── Universal BDL sport enrichment (NHL, NFL, MLB, CS2, Dota2, LoL, Valorant, Tennis, MMA) ──
+
+async function enrichWithBDL(matchInfo, game) {
+  let formData = {}
+
+  try {
+    const token = localStorage.getItem('valorix_token')
+    const res = await fetch(`${API_BASE}/analyze/sport-form`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        sport: game,
+        homeTeam: matchInfo.homeEn || matchInfo.home,
+        awayTeam: matchInfo.awayEn || matchInfo.away,
+      }),
+    })
+    if (res.ok) formData = await res.json()
+  } catch { /* optional */ }
+
+  const match = {
+    home: matchInfo.home,
+    away: matchInfo.away,
+    league: matchInfo.league || '',
+    date: matchInfo.score ? `Лайв · ${matchInfo.minute}'` : 'Предстоящий матч',
+    score: matchInfo.score,
+    minute: matchInfo.minute,
+    odds1x2: matchInfo.odds1 ? { home: matchInfo.odds1, draw: matchInfo.oddsX, away: matchInfo.odds2 } : null,
+  }
+
+  const cacheKey = `bdl_${game}_${(matchInfo.home || '').toLowerCase().replace(/\s/g, '')}_${(matchInfo.away || '').toLowerCase().replace(/\s/g, '')}`
+  const prompt = buildSportPrompt(game, match, formData)
+  const jsonStr = await callOpenAI(prompt, cacheKey)
+  const analysis = parseAnalysis(jsonStr, match)
+
+  return {
+    home: matchInfo.home,
+    away: matchInfo.away,
+    league: matchInfo.league,
+    score: matchInfo.score,
+    minute: matchInfo.minute,
+    odds: matchInfo.odds1,
+    oddsX: matchInfo.oddsX,
+    odds2: matchInfo.odds2,
+    ...analysis,
+  }
+}
+
+function buildSportPrompt(sport, match, formData = {}) {
+  const isLive = !!match.score
+  const isIndividual = ['tennis', 'mma'].includes(sport)
+  const hasRealData = !!(
+    formData.homeForm || formData.awayForm ||
+    formData.player1Form || formData.player2Form ||
+    (formData.h2h && formData.h2h.length > 0)
+  )
+
+  // Sport metadata: display name + terminology block
+  const SPORT_META = {
+    hockey:   {
+      name: 'хоккей (НХЛ)',
+      terms: '• Единица счёта: ГОЛЫ (не очки)\n• Периоды: 1-й, 2-й, 3-й + ОТ + буллиты\n• Тотал: обычно 5.5–6.5 голов\n• В НХЛ нет ничьих (ОТ/буллиты)\n• Форы: -0.5/+0.5, -1.5/+1.5',
+      bets: '- Победа в матче (учитывай ОТ/буллиты)\n- Тотал голов (больше/меньше 5.5 или 6.5)\n- Фора по голам (-1.5/+1.5)\n- Обе команды забьют 2+',
+    },
+    cs2:      {
+      name: 'Counter-Strike 2',
+      terms: '• Единица: КАРТЫ (не очки)\n• Формат: Best of 3 → тотал карт под/над 2.5\n• Нет ничьих\n• На каждой карте 30 раундов (16 для победы)',
+      bets: '- Победа в матче\n- Тотал карт (под/над 2.5)\n- Фора по картам (-1.5/+1.5)\n- Победа на первой карте',
+    },
+    dota2:    {
+      name: 'Dota 2',
+      terms: '• Единица: КАРТЫ (не очки)\n• Формат: Best of 3 или Best of 5 → тотал карт\n• Нет ничьих\n• Средняя длина карты: 35–45 минут',
+      bets: '- Победа в матче\n- Тотал карт (под/над 2.5)\n- Фора по картам (-1.5/+1.5)\n- Победа на первой карте',
+    },
+    lol:      {
+      name: 'League of Legends',
+      terms: '• Единица: КАРТЫ (не очки)\n• Формат: Best of 3 → тотал карт под/над 2.5\n• Нет ничьих\n• Победитель: кто уничтожит Нексус больше раз',
+      bets: '- Победа в матче\n- Тотал карт (под/над 2.5)\n- Фора по картам (-1.5/+1.5)\n- Победа на первой карте',
+    },
+    valorant: {
+      name: 'Valorant',
+      terms: '• Единица: КАРТЫ (не очки)\n• Формат: Best of 3 → тотал карт под/над 2.5\n• На каждой карте 25 раундов (13 для победы)\n• Нет ничьих',
+      bets: '- Победа в матче\n- Тотал карт (под/над 2.5)\n- Фора по картам (-1.5/+1.5)\n- Победа на первой карте',
+    },
+    tennis:   {
+      name: 'теннис (ATP/WTA)',
+      terms: '• Единицы: СЕТЫ, ГЕЙМЫ (не очки)\n• Нет ничьих — только П1 или П2\n• Форы по сетам: -1.5/+1.5\n• Тотал геймов: обычно 19.5–24.5\n• Учитывай покрытие (хард/грунт/трава)',
+      bets: '- Победа в матче\n- Тотал геймов (под/над 21.5 или 22.5)\n- Фора по сетам (-1.5/+1.5)\n- Победа в 1-м сете',
+    },
+    mma:      {
+      name: 'MMA/UFC',
+      terms: '• Нет ничьих\n• Способы победы: KO/TKO, сабмишн, решение судей\n• Тотал раундов: под/над 1.5, 2.5, 3.5\n• Основной бой: 3 раунда × 5 мин\n• Чемпионский/главный: 5 раундов',
+      bets: '- Победа в бою\n- Тотал раундов (под/над 1.5 или 2.5)\n- Метод победы (KO/TKO, сабмишн, решение)\n- Бой дойдёт до конца (да/нет)',
+    },
+    nfl:      {
+      name: 'американский футбол (NFL)',
+      terms: '• Единица счёта: ОЧКИ\n• Тачдаун: 6 очков + конверсия\n• Тотал: обычно 42–52 очка за матч\n• Форы: -3, -3.5, -6.5, -7, -10 и т.д.\n• 4 четверти по 15 минут',
+      bets: '- Победа в матче\n- Тотал очков (под/над 47.5)\n- Фора по очкам (-3.5 / -6.5)\n- Победа в 1-й четверти',
+    },
+    baseball: {
+      name: 'бейсбол (MLB)',
+      terms: '• Единица счёта: РАННЫ (runs)\n• 9 иннингов\n• Тотал: обычно 7.5–9.5 рандов\n• Runline (фора): -1.5/+1.5\n• Очень важен стартовый питчер',
+      bets: '- Победа в матче\n- Тотал рандов (под/над 8.5)\n- Runline -1.5/+1.5\n- F5 (первые 5 иннингов) победитель',
+    },
+  }
+
+  const meta = SPORT_META[sport] || { name: sport, terms: '• Нет ничьих в большинстве случаев', bets: '- Победа\n- Тотал\n- Фора' }
+
+  // ── Stats block ──
+  let statsBlock = ''
+  if (isIndividual) {
+    const { player1Form, player2Form, player1Name, player2Name } = formData
+    if (player1Form || player2Form) {
+      statsBlock = `
+── СТАТИСТИКА (BallDontLie ${new Date().getFullYear()}) ──
+${player1Name || match.home} — последние ${player1Form?.gamesCount || '?'} матчей:
+  Результат: ${player1Form?.wins ?? '?'}П / ${player1Form?.losses ?? '?'}П
+
+${player2Name || match.away} — последние ${player2Form?.gamesCount || '?'} матчей:
+  Результат: ${player2Form?.wins ?? '?'}П / ${player2Form?.losses ?? '?'}П`
+    }
+  } else {
+    const { homeForm, awayForm, homeStanding, awayStanding, season } = formData
+    if (homeForm || awayForm) {
+      statsBlock = `
+── СТАТИСТИКА (BallDontLie, сезон ${season || new Date().getFullYear()}) ──
+${match.home} — ${homeForm?.gamesCount || '?'} матчей ДОМА:
+  Форма: ${homeForm?.wins ?? '?'}П / ${homeForm?.losses ?? '?'}П
+  Счёт: ${homeForm?.avgScore ?? '?'} забито / ${homeForm?.avgConceded ?? '?'} пропущено за матч
+
+${match.away} — ${awayForm?.gamesCount || '?'} матчей В ГОСТЯХ:
+  Форма: ${awayForm?.wins ?? '?'}П / ${awayForm?.losses ?? '?'}П
+  Счёт: ${awayForm?.avgScore ?? '?'} забито / ${awayForm?.avgConceded ?? '?'} пропущено за матч`
+    }
+    if (homeStanding || awayStanding) {
+      statsBlock += `\n\n── ТУРНИРНАЯ ТАБЛИЦА (сезон ${formData.season}) ──
+${match.home}: ${homeStanding?.wins ?? '?'}П / ${homeStanding?.losses ?? '?'}П${homeStanding?.rank ? ` · ${homeStanding.rank} место в конференции` : ''}
+${match.away}: ${awayStanding?.wins ?? '?'}П / ${awayStanding?.losses ?? '?'}П${awayStanding?.rank ? ` · ${awayStanding.rank} место в конференции` : ''}`
+    }
+  }
+
+  // ── H2H block ──
+  const h2h = formData.h2h || []
+  let h2hBlock = ''
+  if (h2h.length > 0) {
+    const lines = isIndividual
+      ? h2h.map(m => `  ${m.date || ''}: Победа ${m.winnerName || '?'}${m.result ? ` (${m.result})` : ''}`).join('\n')
+      : h2h.map(g => `  ${g.date || ''}: ${g.homeTeam} ${g.homeScore}:${g.awayScore} ${g.awayTeam}`).join('\n')
+    h2hBlock = `\n── ИСТОРИЯ ВСТРЕЧ (реальные данные) ──\n${lines}`
+  }
+
+  const oddsBlock = match.odds1x2
+    ? `\n── КОЭФФИЦИЕНТЫ ──\n  П1 ${match.odds1x2.home}${match.odds1x2.draw ? ` | Х ${match.odds1x2.draw}` : ''} | П2 ${match.odds1x2.away}`
+    : ''
+  const liveBlock = isLive
+    ? `\n🔴 ЛАЙВ — ТЕКУЩИЙ СЧЁТ: ${match.score}${match.minute ? ` (${match.minute} мин)` : ''}`
+    : ''
+
+  return `Ты профессиональный аналитик (${meta.name}). Отвечай СТРОГО по-русски.
+
+МАТЧ: ${match.home} vs ${match.away}
+ТУРНИР: ${match.league || meta.name}
+${liveBlock}
+${statsBlock}
+${h2hBlock}
+${oddsBlock}
+
+ТЕРМИНОЛОГИЯ (СТРОГО СОБЛЮДАЙ):
+${meta.terms}
+
+══ ПРАВИЛА РАБОТЫ С ДАННЫМИ ══
+${hasRealData
+  ? `• ИСПОЛЬЗУЙ цифры из блоков выше — они из реальной базы данных
+• ЗАПРЕЩЕНО придумывать статистику которой нет в блоках
+• Ссылайся конкретно: "выиграл X из Y", "забивает X за матч"
+• Своими знаниями дополняй контекст (состав, стиль), но НЕ выдумывай цифры`
+  : `• Данных из базы нет — опирайся на свои знания об этих командах/игроках
+• НЕ выдумывай конкретные цифры — пиши "по общим данным"
+• В reasons укажи что оценка без свежей статистики`}
+
+${isLive
+  ? `Задача: лайв-анализ. Счёт ${match.score}. Кто доминирует?`
+  : `Задача: предматчевый анализ.
+1. Форма: кто на подъёме по данным выше?
+2. H2H: история очных встреч
+3. Таблица/рейтинг: позиции команд
+4. Ставки — ОБЯЗАТЕЛЬНО 3-4 штуки:
+${meta.bets}`}
+
+Ответь строго в JSON:
+{
+  "verdict": "чёткий вердикт кто победит",
+  "summary": "3-4 предложения с конкретными фактами и цифрами",
+  "confidence": число 0-100,
+  "risk": "low | medium | high",
+  "fairOdds": "справедливый коэффициент",
+  "bookOdds": "коэф букмекера если есть",
+  "value": число,
+  "reasons": ["факт с цифрой 1", "факт 2", "факт 3", "факт 4"],
+  "extraBets": [{"type": "Название ставки", "confidence": число, "reason": "обоснование цифрами"}],
+  "bestOdds": []
+}`
 }
 
 function buildBasketballPrompt(match, formData = {}) {
