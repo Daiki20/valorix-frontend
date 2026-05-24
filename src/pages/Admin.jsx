@@ -245,6 +245,9 @@ function DashboardTab({ toast }) {
         })}
       </div>
 
+      {/* Football Debug */}
+      <FootballDebugPanel toast={toast} />
+
       {/* API Status */}
       <ApiStatusPanel />
 
@@ -272,6 +275,158 @@ function DashboardTab({ toast }) {
               ))}
             </tbody>
           </table></div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ─── Football Debug Panel ─── */
+function FootballDebugPanel({ toast }) {
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState(null)
+
+  const run = async () => {
+    setLoading(true)
+    setData(null)
+    try {
+      const token = localStorage.getItem('valorix_token')
+      const res = await fetch(`${API_BASE}/express/debug-football`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      setData(await res.json())
+    } catch (err) {
+      setData({ error: err.message })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const LEAGUE_NAMES = {
+    2: 'Лига Чемпионов', 3: 'Лига Европы', 39: 'Английская Премьер-лига',
+    140: 'Ла Лига', 135: 'Серия А', 78: 'Бундеслига',
+    61: 'Лига 1', 235: 'РПЛ',
+  }
+
+  return (
+    <div className="card" style={{ padding: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#dde4ee', display: 'flex', alignItems: 'center', gap: 8 }}>
+          ⚽ Диагностика футбольного экспресса
+        </h3>
+        <button onClick={run} disabled={loading} style={{
+          padding: '8px 18px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13,
+          background: loading ? 'rgba(0,207,255,0.2)' : 'linear-gradient(90deg,#00cfff,#7b5ea7)',
+          color: loading ? 'rgba(255,255,255,0.4)' : '#030b18', cursor: loading ? 'not-allowed' : 'pointer',
+        }}>
+          {loading ? 'Проверяем...' : '🔍 Проверить'}
+        </button>
+      </div>
+      <p style={{ fontSize: 12, color: '#4a6a8a', marginBottom: data ? 16 : 0 }}>
+        Проверяет sstats.net — сколько матчей найдено на завтра и есть ли коэффициенты
+      </p>
+
+      {data && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
+
+          {/* Ключ + дата */}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <span style={{
+              padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+              background: data.sstatsKeySet ? 'rgba(34,197,94,0.12)' : 'rgba(220,38,38,0.12)',
+              color: data.sstatsKeySet ? '#4ade80' : '#f87171',
+              border: `1px solid ${data.sstatsKeySet ? 'rgba(34,197,94,0.3)' : 'rgba(220,38,38,0.3)'}`,
+            }}>
+              {data.sstatsKeySet ? '✓ SSTATS_API_KEY установлен' : '✗ SSTATS_API_KEY не найден'}
+            </span>
+            <span style={{ padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700, background: 'rgba(0,207,255,0.1)', color: '#00cfff', border: '1px solid rgba(0,207,255,0.2)' }}>
+              📅 Дата: {data.targetDate}
+            </span>
+            <span style={{
+              padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+              background: data.totalMatches >= 2 ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)',
+              color: data.totalMatches >= 2 ? '#4ade80' : '#fbbf24',
+              border: `1px solid ${data.totalMatches >= 2 ? 'rgba(34,197,94,0.3)' : 'rgba(245,158,11,0.3)'}`,
+            }}>
+              ⚽ Матчей найдено: {data.totalMatches} {data.totalMatches < 2 ? '(нужно минимум 2)' : '✓'}
+            </span>
+            {data.totalMatches > 0 && (
+              <span style={{
+                padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+                background: data.matchesWithOdds > 0 ? 'rgba(34,197,94,0.12)' : 'rgba(220,38,38,0.12)',
+                color: data.matchesWithOdds > 0 ? '#4ade80' : '#f87171',
+                border: `1px solid ${data.matchesWithOdds > 0 ? 'rgba(34,197,94,0.3)' : 'rgba(220,38,38,0.3)'}`,
+              }}>
+                📊 С коэф-ами: {data.matchesWithOdds} из {Math.min(3, data.totalMatches)} (из первых 3)
+              </span>
+            )}
+          </div>
+
+          {/* Ошибка */}
+          {data.error && (
+            <div style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#fca5a5' }}>
+              ❌ {data.error}
+            </div>
+          )}
+
+          {/* По лигам */}
+          {data.leagues && Object.keys(data.leagues).length > 0 && (
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#4a6a8a', marginBottom: 8, letterSpacing: 1, textTransform: 'uppercase' }}>По лигам на {data.targetDate}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 8 }}>
+                {Object.entries(data.leagues).map(([id, info]) => (
+                  <div key={id} style={{
+                    borderRadius: 8, padding: '8px 12px',
+                    background: info.error ? 'rgba(220,38,38,0.06)' : info.onTargetDate > 0 ? 'rgba(34,197,94,0.06)' : 'rgba(0,15,40,0.5)',
+                    border: `1px solid ${info.error ? 'rgba(220,38,38,0.2)' : info.onTargetDate > 0 ? 'rgba(34,197,94,0.2)' : 'rgba(0,180,255,0.08)'}`,
+                  }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#d8eeff', marginBottom: 2 }}>
+                      {LEAGUE_NAMES[id] || `Лига ${id}`}
+                    </div>
+                    {info.error
+                      ? <div style={{ fontSize: 11, color: '#f87171' }}>Ошибка: {info.error}</div>
+                      : <div style={{ fontSize: 11, color: info.onTargetDate > 0 ? '#4ade80' : '#4a6a8a' }}>
+                          {info.onTargetDate} матчей на дату · всего upcoming: {info.total}
+                          {info.sample?.length > 0 && <div style={{ marginTop: 3, color: '#94a3b8' }}>{info.sample.join(', ')}</div>}
+                        </div>
+                    }
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Список матчей */}
+          {data.matchesList?.length > 0 && (
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#4a6a8a', marginBottom: 8, letterSpacing: 1, textTransform: 'uppercase' }}>Все найденные матчи</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {data.matchesList.map((m, i) => (
+                  <div key={i} style={{ fontSize: 12, color: '#d8eeff', padding: '5px 10px', background: 'rgba(0,207,255,0.04)', borderRadius: 6, border: '1px solid rgba(0,180,255,0.08)' }}>
+                    <span style={{ color: '#4a6a8a', marginRight: 6 }}>{i + 1}.</span>
+                    <b>{m.home}</b> — <b>{m.away}</b>
+                    <span style={{ color: '#4a6a8a', marginLeft: 8, fontSize: 11 }}>{m.league}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Сэмпл коэффициентов */}
+          {data.oddsSample?.length > 0 && (
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#4a6a8a', marginBottom: 8, letterSpacing: 1, textTransform: 'uppercase' }}>Коэффициенты (первые 3)</div>
+              {data.oddsSample.map((s, i) => (
+                <div key={i} style={{ marginBottom: 6, padding: '8px 12px', background: 'rgba(0,15,40,0.5)', borderRadius: 8, border: '1px solid rgba(0,180,255,0.08)' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#d8eeff', marginBottom: 4 }}>
+                    {s.match} — {s.hasOdds ? <span style={{ color: '#4ade80' }}>✓ коэф есть</span> : <span style={{ color: '#f87171' }}>✗ нет коэф</span>}
+                  </div>
+                  {s.oddsPreview && <div style={{ fontSize: 11, color: '#4a6a8a', fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>{s.oddsPreview}...</div>}
+                </div>
+              ))}
+            </div>
+          )}
+
         </div>
       )}
     </div>
