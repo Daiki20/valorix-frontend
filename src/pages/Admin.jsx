@@ -248,6 +248,9 @@ function DashboardTab({ toast }) {
       {/* Football Debug */}
       <FootballDebugPanel toast={toast} />
 
+      {/* Hockey Debug */}
+      <HockeyDebugPanel toast={toast} />
+
       {/* API Status */}
       <ApiStatusPanel />
 
@@ -523,6 +526,250 @@ function FootballDebugPanel({ toast }) {
                         {d.picks?.map((p, j) => (
                           <div key={j} style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>
                             {j + 1}. {p.home} — {p.away} · <b style={{ color: '#00cfff' }}>{p.prediction}</b> × {p.odds}
+                          </div>
+                        ))}
+                      </div>
+                    ) : d?.error ? (
+                      <div key={label} style={{ fontSize: 12, color: '#f87171', marginBottom: 6 }}>{label}: {d.error}</div>
+                    ) : null
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/* ─── Hockey Debug Panel ─── */
+function HockeyDebugPanel({ toast }) {
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState(null)
+  const [genLoading, setGenLoading] = useState({})
+  const [genResults, setGenResults] = useState({})
+
+  const getDateOffset = (days) => {
+    const d = new Date()
+    d.setDate(d.getDate() + days)
+    return d.toISOString().slice(0, 10)
+  }
+
+  const DATE_OPTIONS = [
+    { key: 'today',      label: '📅 Сегодня',    days: 0 },
+    { key: 'overmorrow', label: '📅 Послезавтра', days: 2 },
+  ]
+
+  const run = async () => {
+    setLoading(true)
+    setData(null)
+    try {
+      const token = localStorage.getItem('valorix_token')
+      const res = await fetch(`${API_BASE}/express/debug-hockey`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      setData(await res.json())
+    } catch (err) {
+      setData({ error: err.message })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const generateForDate = async (dateKey, days) => {
+    const date = getDateOffset(days)
+    setGenLoading(p => ({ ...p, [dateKey]: true }))
+    setGenResults(p => ({ ...p, [dateKey]: null }))
+    try {
+      const token = localStorage.getItem('valorix_token')
+      const [resL, resH] = await Promise.all(
+        ['standard', 'high'].map(type =>
+          fetch(`${API_BASE}/express/generate`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sport: 'hockey', type, date }),
+          }).then(r => r.json())
+        )
+      )
+      if (resL.error && resH.error) {
+        toast.error(resL.error || resH.error)
+        setGenResults(p => ({ ...p, [dateKey]: { error: resL.error } }))
+      } else {
+        toast.success(`🏒 Хоккей на ${date} создан!`)
+        setGenResults(p => ({ ...p, [dateKey]: { date, standard: resL, high: resH } }))
+      }
+    } catch (err) {
+      toast.error(err.message)
+      setGenResults(p => ({ ...p, [dateKey]: { error: err.message } }))
+    } finally {
+      setGenLoading(p => ({ ...p, [dateKey]: false }))
+    }
+  }
+
+  return (
+    <div className="card" style={{ padding: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#dde4ee', display: 'flex', alignItems: 'center', gap: 8 }}>
+          🏒 Диагностика хоккейного экспресса
+        </h3>
+        <button onClick={run} disabled={loading} style={{
+          padding: '8px 18px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13,
+          background: loading ? 'rgba(14,165,233,0.2)' : 'linear-gradient(90deg,#0ea5e9,#00cfff)',
+          color: loading ? 'rgba(255,255,255,0.4)' : '#030b18', cursor: loading ? 'not-allowed' : 'pointer',
+        }}>
+          {loading ? 'Проверяем...' : '🔍 Проверить'}
+        </button>
+      </div>
+      <p style={{ fontSize: 12, color: '#4a6a8a', marginBottom: data ? 16 : 0 }}>
+        Проверяет NHL API + AllSports/Sofascore — матчи ИИХФ ЧМ, КХЛ, МХЛ, ВХЛ, НХЛ на завтра
+      </p>
+
+      {data && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
+
+          {/* Ключи + счётчики */}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            {[
+              { label: 'NHL API (free)', ok: true },
+              { label: `RAPIDAPI_KEY ${data.rapidApiKeySet ? '✓' : '✗'}`, ok: data.rapidApiKeySet },
+              { label: `ODDS_API_KEY ${data.oddsApiKeySet ? '✓' : '✗'}`, ok: data.oddsApiKeySet },
+            ].map(({ label, ok }) => (
+              <span key={label} style={{
+                padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+                background: ok ? 'rgba(34,197,94,0.12)' : 'rgba(220,38,38,0.12)',
+                color: ok ? '#4ade80' : '#f87171',
+                border: `1px solid ${ok ? 'rgba(34,197,94,0.3)' : 'rgba(220,38,38,0.3)'}`,
+              }}>{label}</span>
+            ))}
+            <span style={{
+              padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+              background: 'rgba(14,165,233,0.1)', color: '#38bdf8', border: '1px solid rgba(14,165,233,0.2)',
+            }}>📅 {data.targetDate}</span>
+            <span style={{
+              padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+              background: data.totalMatches >= 2 ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)',
+              color: data.totalMatches >= 2 ? '#4ade80' : '#fbbf24',
+              border: `1px solid ${data.totalMatches >= 2 ? 'rgba(34,197,94,0.3)' : 'rgba(245,158,11,0.3)'}`,
+            }}>🏒 Матчей: {data.totalMatches} {data.totalMatches < 2 ? '(нужно минимум 2)' : '✓'}</span>
+            {data.totalMatches > 0 && (
+              <span style={{
+                padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+                background: data.withOdds > 0 ? 'rgba(34,197,94,0.12)' : 'rgba(220,38,38,0.12)',
+                color: data.withOdds > 0 ? '#4ade80' : '#f87171',
+                border: `1px solid ${data.withOdds > 0 ? 'rgba(34,197,94,0.3)' : 'rgba(220,38,38,0.3)'}`,
+              }}>📊 С коэф-ами: {data.withOdds}</span>
+            )}
+          </div>
+
+          {/* Ошибка */}
+          {data.error && (
+            <div style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#fca5a5' }}>
+              ❌ {data.error}
+            </div>
+          )}
+
+          {/* По источникам */}
+          {data.sources && Object.keys(data.sources).length > 0 && (
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#4a6a8a', marginBottom: 8, letterSpacing: 1, textTransform: 'uppercase' }}>По источникам на {data.targetDate}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 8 }}>
+                {Object.entries(data.sources).map(([name, info]) => (
+                  <div key={name} style={{
+                    borderRadius: 8, padding: '8px 12px',
+                    background: info.status === 'error' ? 'rgba(220,38,38,0.06)' : info.count > 0 ? 'rgba(34,197,94,0.06)' : 'rgba(0,15,40,0.5)',
+                    border: `1px solid ${info.status === 'error' ? 'rgba(220,38,38,0.2)' : info.count > 0 ? 'rgba(34,197,94,0.2)' : 'rgba(0,180,255,0.08)'}`,
+                  }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#d8eeff', marginBottom: 2 }}>{name}</div>
+                    {info.status === 'error'
+                      ? <div style={{ fontSize: 11, color: '#f87171' }}>Ошибка: {info.detail}</div>
+                      : info.status === 'no_season'
+                      ? <div style={{ fontSize: 11, color: '#fbbf24' }}>Сезон не найден</div>
+                      : <div style={{ fontSize: 11, color: info.count > 0 ? '#4ade80' : '#4a6a8a' }}>
+                          {info.count} матчей
+                          {info.sample?.length > 0 && <div style={{ marginTop: 3, color: '#94a3b8' }}>{info.sample.join(' · ')}</div>}
+                        </div>
+                    }
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Список матчей */}
+          {data.matchesList?.length > 0 && (
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#4a6a8a', marginBottom: 8, letterSpacing: 1, textTransform: 'uppercase' }}>Все найденные матчи</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {data.matchesList.map((m, i) => (
+                  <div key={i} style={{ fontSize: 12, color: '#d8eeff', padding: '5px 10px', background: 'rgba(14,165,233,0.04)', borderRadius: 6, border: '1px solid rgba(14,165,233,0.08)' }}>
+                    <span style={{ color: '#4a6a8a', marginRight: 6 }}>{i + 1}.</span>
+                    <b>{m.home}</b> — <b>{m.away}</b>
+                    <span style={{ color: '#4a6a8a', marginLeft: 8, fontSize: 11 }}>{m.league}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Сэмпл коэффициентов */}
+          {data.oddsSample?.length > 0 && (
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#4a6a8a', marginBottom: 8, letterSpacing: 1, textTransform: 'uppercase' }}>Коэффициенты (первые 3)</div>
+              {data.oddsSample.map((s, i) => (
+                <div key={i} style={{ marginBottom: 6, padding: '8px 12px', background: 'rgba(0,15,40,0.5)', borderRadius: 8, border: '1px solid rgba(14,165,233,0.08)' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#d8eeff', marginBottom: 2 }}>
+                    {s.match} — {s.hasOdds
+                      ? <span style={{ color: '#4ade80' }}>✓ П1: {s.odds?.home} · П2: {s.odds?.away}</span>
+                      : <span style={{ color: '#f87171' }}>✗ нет коэф</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {data.oddsError && (
+            <div style={{ fontSize: 12, color: '#f87171' }}>Odds API: {data.oddsError}</div>
+          )}
+
+        </div>
+      )}
+
+      {/* ── Генерация на другие даты ── */}
+      <div style={{ marginTop: data ? 20 : 0, paddingTop: data ? 20 : 0, borderTop: data ? '1px solid rgba(14,165,233,0.1)' : 'none' }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#4a6a8a', marginBottom: 12, letterSpacing: 1, textTransform: 'uppercase' }}>
+          Сгенерировать на другую дату (Lite + Hard)
+        </div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          {DATE_OPTIONS.map(({ key, label, days }) => (
+            <button key={key} onClick={() => generateForDate(key, days)} disabled={genLoading[key]} style={{
+              padding: '9px 20px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13,
+              background: genLoading[key] ? 'rgba(14,165,233,0.15)' : 'linear-gradient(90deg,#0ea5e9,#00cfff)',
+              color: genLoading[key] ? 'rgba(255,255,255,0.35)' : '#030b18',
+              cursor: genLoading[key] ? 'not-allowed' : 'pointer', transition: 'all 0.2s',
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}>
+              {genLoading[key] ? '⏳ Генерируем...' : `${label} (${getDateOffset(days)})`}
+            </button>
+          ))}
+        </div>
+
+        {DATE_OPTIONS.map(({ key }) => {
+          const r = genResults[key]
+          if (!r) return null
+          return (
+            <div key={key} style={{ marginTop: 12, borderRadius: 10, overflow: 'hidden', border: r.error ? '1px solid rgba(220,38,38,0.25)' : '1px solid rgba(34,197,94,0.25)' }}>
+              {r.error ? (
+                <div style={{ padding: '10px 14px', background: 'rgba(220,38,38,0.08)', fontSize: 13, color: '#fca5a5' }}>❌ {r.error}</div>
+              ) : (
+                <div style={{ padding: '12px 16px', background: 'rgba(34,197,94,0.06)' }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#4ade80', marginBottom: 10 }}>✓ Хоккей на {r.date} создан</div>
+                  {[{ label: '⚡ Lite', d: r.standard }, { label: '🔥 Hard', d: r.high }].map(({ label, d }) =>
+                    d && !d.error ? (
+                      <div key={label} style={{ marginBottom: 8 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 4 }}>{label}</div>
+                        {d.picks?.map((p, j) => (
+                          <div key={j} style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>
+                            {j + 1}. {p.home} — {p.away} · <b style={{ color: '#38bdf8' }}>{p.prediction}</b>
                           </div>
                         ))}
                       </div>
