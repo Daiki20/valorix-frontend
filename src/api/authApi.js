@@ -52,7 +52,7 @@ export const coinsApi = {
 
 export const expressApi = {
   today: (sport = 'football') => fetch(`${BASE}/express/today?sport=${sport}`, { headers: authHeaders() }).then(r => r.json()),
-  purchase: (type = 'standard', sport = 'football') => request('POST', '/express/purchase', { type, sport }),
+  purchase: (type = 'standard', sport = 'football', date) => request('POST', '/express/purchase', { type, sport, ...(date ? { date } : {}) }),
   generate: () => request('POST', '/express/generate'),
 }
 

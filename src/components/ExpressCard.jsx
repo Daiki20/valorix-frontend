@@ -221,7 +221,7 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
     if (!user) { onAuthRequired?.(); return }
     setBuying(true)
     try {
-      const res = await expressApi.purchase(type, sport)
+      const res = await expressApi.purchase(type, sport, data.date)
       if (res.error) { alert(res.error); return }
       onUpdate(type, res)
       if (res.coins !== undefined) updateCoins(res.coins)
@@ -266,6 +266,29 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
                 </span>
               )}
             </div>
+            {data.date && (() => {
+              const today = new Date().toISOString().slice(0, 10)
+              const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10)
+              const d = new Date(data.date + 'T12:00:00')
+              const label = data.date === today
+                ? 'Сегодня'
+                : data.date === tomorrow
+                ? 'Завтра'
+                : d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })
+              const isNotTomorrow = data.date !== tomorrow
+              return (
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                  marginTop: 4, fontSize: 11, fontWeight: 700,
+                  color: isNotTomorrow ? '#f59e0b' : MUTED,
+                  background: isNotTomorrow ? 'rgba(245,158,11,0.1)' : 'transparent',
+                  border: isNotTomorrow ? '1px solid rgba(245,158,11,0.25)' : 'none',
+                  borderRadius: 20, padding: isNotTomorrow ? '1px 8px' : '0',
+                }}>
+                  📅 {label}
+                </div>
+              )
+            })()}
           </div>
         </div>
         {isPurchased ? (
