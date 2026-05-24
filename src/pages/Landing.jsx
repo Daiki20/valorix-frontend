@@ -19,15 +19,15 @@ const BORDER = 'rgba(0,180,255,0.1)'
 const TEXT = '#d8eeff'
 const MUTED = '#4a6a8a'
 
-/* ── Glowing cosmic orb (иллюстрация справа) ── */
+/* ── Space Football (иллюстрация справа) ── */
 function CosmicOrb() {
   return (
     <div style={{ position: 'relative', width: 480, height: 480, flexShrink: 0 }}>
-      {/* Outer glow ring 1 */}
+      {/* Outer ambient glow */}
       <div style={{
         position: 'absolute', inset: -40,
         borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(0,207,255,0.08) 0%, transparent 65%)',
+        background: 'radial-gradient(circle, rgba(0,207,255,0.09) 0%, transparent 65%)',
         animation: 'glowPulse 4s ease-in-out infinite',
       }} />
       {/* Rotating outer ring */}
@@ -56,38 +56,106 @@ function CosmicOrb() {
           background: A2, boxShadow: `0 0 10px ${A2}`,
         }} />
       </div>
-      {/* Core sphere */}
+
+      {/* ── Space Football SVG ── */}
       <div style={{
         position: 'absolute', inset: 80,
-        borderRadius: '50%',
-        background: `radial-gradient(circle at 35% 35%, rgba(0,207,255,0.35) 0%, rgba(123,94,167,0.25) 45%, rgba(0,10,40,0.9) 100%)`,
-        boxShadow: `0 0 60px rgba(0,207,255,0.2), 0 0 120px rgba(123,94,167,0.15), inset 0 0 40px rgba(0,207,255,0.1)`,
         animation: 'floatOrb 7s ease-in-out infinite',
+        filter: 'drop-shadow(0 0 32px rgba(0,207,255,0.45)) drop-shadow(0 0 80px rgba(123,94,167,0.3))',
       }}>
-        {/* Inner highlight */}
-        <div style={{
-          position: 'absolute', top: '18%', left: '22%',
-          width: '30%', height: '30%',
-          borderRadius: '50%',
-          background: 'rgba(255,255,255,0.08)',
-          filter: 'blur(8px)',
-        }} />
-        {/* Stats floating inside */}
-        <div style={{
-          position: 'absolute', inset: 0, display: 'flex',
-          flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
-        }}>
-          <div style={{ fontSize: 11, color: 'rgba(0,207,255,0.7)', fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' }}>Точность</div>
-          <div style={{ fontSize: 38, fontWeight: 800, fontFamily: 'Space Grotesk, sans-serif', color: TEXT, letterSpacing: -1 }}>73%</div>
-          <div style={{ fontSize: 11, color: MUTED, fontWeight: 500 }}>прогнозов</div>
-        </div>
+        <svg viewBox="0 0 320 320" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            {/* Space sphere gradient */}
+            <radialGradient id="sfBg" cx="34%" cy="29%" r="70%">
+              <stop offset="0%"   stopColor="#00cfff" stopOpacity="0.55"/>
+              <stop offset="30%"  stopColor="#7b5ea7" stopOpacity="0.4"/>
+              <stop offset="75%"  stopColor="#020d2e" stopOpacity="0.95"/>
+              <stop offset="100%" stopColor="#000510" stopOpacity="1"/>
+            </radialGradient>
+            {/* Seam glow filter */}
+            <filter id="sfGlow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            {/* Specular highlight */}
+            <filter id="sfSpec" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="12"/>
+            </filter>
+            {/* Clip to circle */}
+            <clipPath id="sfClip">
+              <circle cx="160" cy="160" r="138"/>
+            </clipPath>
+          </defs>
+
+          {/* Base sphere */}
+          <circle cx="160" cy="160" r="140" fill="url(#sfBg)"/>
+
+          {/* Pentagon patches — classic soccer ball geometry */}
+          <g clipPath="url(#sfClip)" filter="url(#sfGlow)">
+            {/* Central pentagon (inset 80→ radius 40 from center) */}
+            <polygon
+              points="160,120 198,148 184,192 137,192 122,148"
+              fill="rgba(0,6,30,0.78)"
+              stroke="#00cfff" strokeWidth="1.9" strokeOpacity="0.85"
+            />
+            {/* Outer pentagon — upper-right */}
+            <polygon
+              points="198,108 184,63 222,35 260,63 245,108"
+              fill="rgba(0,6,30,0.78)"
+              stroke="#00cfff" strokeWidth="1.9" strokeOpacity="0.65"
+            />
+            {/* Outer pentagon — right */}
+            <polygon
+              points="222,180 260,153 298,180 283,225 236,225"
+              fill="rgba(0,6,30,0.78)"
+              stroke="#00cfff" strokeWidth="1.9" strokeOpacity="0.5"
+            />
+            {/* Outer pentagon — bottom */}
+            <polygon
+              points="160,225 198,253 184,297 137,297 122,253"
+              fill="rgba(0,6,30,0.78)"
+              stroke="#7b5ea7" strokeWidth="1.9" strokeOpacity="0.6"
+            />
+            {/* Outer pentagon — left */}
+            <polygon
+              points="98,180 84,225 37,225 22,180 60,153"
+              fill="rgba(0,6,30,0.78)"
+              stroke="#7b5ea7" strokeWidth="1.9" strokeOpacity="0.5"
+            />
+            {/* Outer pentagon — upper-left */}
+            <polygon
+              points="122,108 75,108 60,63 98,35 136,63"
+              fill="rgba(0,6,30,0.78)"
+              stroke="#00cfff" strokeWidth="1.9" strokeOpacity="0.65"
+            />
+          </g>
+
+          {/* Outer rim */}
+          <circle cx="160" cy="160" r="139" fill="none" stroke="#00cfff" strokeWidth="1.2" strokeOpacity="0.3"/>
+
+          {/* Specular highlight (top-left) */}
+          <ellipse cx="118" cy="102" rx="42" ry="28"
+            fill="white" opacity="0.07" filter="url(#sfSpec)"/>
+
+          {/* Stats overlay */}
+          <text x="160" y="150" textAnchor="middle"
+            fill="rgba(0,207,255,0.8)" fontSize="10" fontWeight="700"
+            letterSpacing="2" fontFamily="Outfit, sans-serif">ТОЧНОСТЬ</text>
+          <text x="160" y="184" textAnchor="middle"
+            fill="#d8eeff" fontSize="40" fontWeight="800"
+            fontFamily="Space Grotesk, sans-serif" letterSpacing="-1">73%</text>
+          <text x="160" y="202" textAnchor="middle"
+            fill="#4a6a8a" fontSize="10" fontWeight="500"
+            fontFamily="Outfit, sans-serif">прогнозов</text>
+        </svg>
       </div>
+
       {/* Floating data bubbles */}
       {[
-        { top: '8%',  left: '12%',  label: 'Форма',    val: '↑ 89%', color: A },
+        { top: '8%',  left: '12%',  label: 'Форма',    val: '↑ 89%',    color: A },
         { top: '75%', left: '5%',   label: 'Травмы',   val: '3 игрока', color: '#ff7043' },
-        { top: '15%', right: '5%',  label: 'Value',    val: '+12%', color: '#b5ff4e' },
-        { top: '70%', right: '8%',  label: 'Риск',     val: 'Низкий', color: '#4caf7d' },
+        { top: '15%', right: '5%',  label: 'Value',    val: '+12%',     color: '#b5ff4e' },
+        { top: '70%', right: '8%',  label: 'Риск',     val: 'Низкий',   color: '#4caf7d' },
       ].map((b, i) => (
         <div key={i} style={{
           position: 'absolute', ...b,
