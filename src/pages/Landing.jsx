@@ -329,7 +329,11 @@ export default function Landing() {
                     <span style={{
                       background: 'rgba(3,11,24,0.3)', borderRadius: 20,
                       padding: '2px 8px', fontSize: 12, fontWeight: 800,
-                    }}>19 🔥</span>
+                      display: 'flex', alignItems: 'center', gap: 3,
+                    }}>
+                      <Zap size={11} fill="currentColor" strokeWidth={0} />
+                      19
+                    </span>
                   </Link>
                   <Link to="/upload" className="btn-outline" style={{ fontSize: 15 }}>
                     <Upload size={16} />
