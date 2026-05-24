@@ -285,6 +285,19 @@ function DashboardTab({ toast }) {
 function FootballDebugPanel({ toast }) {
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState(null)
+  const [genLoading, setGenLoading] = useState({})
+  const [genResults, setGenResults] = useState({})
+
+  const getDateOffset = (days) => {
+    const d = new Date()
+    d.setDate(d.getDate() + days)
+    return d.toISOString().slice(0, 10)
+  }
+
+  const DATE_OPTIONS = [
+    { key: 'today',    label: '📅 Сегодня',       days: 0 },
+    { key: 'overmorrow', label: '📅 Послезавтра', days: 2 },
+  ]
 
   const run = async () => {
     setLoading(true)
@@ -299,6 +312,37 @@ function FootballDebugPanel({ toast }) {
       setData({ error: err.message })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const generateForDate = async (dateKey, days) => {
+    const date = getDateOffset(days)
+    setGenLoading(p => ({ ...p, [dateKey]: true }))
+    setGenResults(p => ({ ...p, [dateKey]: null }))
+    try {
+      const token = localStorage.getItem('valorix_token')
+      // Генерируем Lite и Hard параллельно
+      const [resL, resH] = await Promise.all(
+        ['standard', 'high'].map(type =>
+          fetch(`${API_BASE}/express/generate`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sport: 'football', type, date }),
+          }).then(r => r.json())
+        )
+      )
+      if (resL.error && resH.error) {
+        toast.error(resL.error || resH.error)
+        setGenResults(p => ({ ...p, [dateKey]: { error: resL.error } }))
+      } else {
+        toast.success(`⚽ Экспресс на ${date} создан!`)
+        setGenResults(p => ({ ...p, [dateKey]: { date, standard: resL, high: resH } }))
+      }
+    } catch (err) {
+      toast.error(err.message)
+      setGenResults(p => ({ ...p, [dateKey]: { error: err.message } }))
+    } finally {
+      setGenLoading(p => ({ ...p, [dateKey]: false }))
     }
   }
 
@@ -429,6 +473,69 @@ function FootballDebugPanel({ toast }) {
 
         </div>
       )}
+
+      {/* ── Генерация на другие даты ── */}
+      <div style={{ marginTop: data ? 20 : 0, paddingTop: data ? 20 : 0, borderTop: data ? '1px solid rgba(0,180,255,0.1)' : 'none' }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#4a6a8a', marginBottom: 12, letterSpacing: 1, textTransform: 'uppercase' }}>
+          Сгенерировать на другую дату (Lite + Hard)
+        </div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          {DATE_OPTIONS.map(({ key, label, days }) => (
+            <button
+              key={key}
+              onClick={() => generateForDate(key, days)}
+              disabled={genLoading[key]}
+              style={{
+                padding: '9px 20px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13,
+                background: genLoading[key] ? 'rgba(0,207,255,0.15)' : 'linear-gradient(90deg,#00cfff,#7b5ea7)',
+                color: genLoading[key] ? 'rgba(255,255,255,0.35)' : '#030b18',
+                cursor: genLoading[key] ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex', alignItems: 'center', gap: 6,
+              }}
+            >
+              {genLoading[key] ? '⏳ Генерируем...' : `${label} (${getDateOffset(days)})`}
+            </button>
+          ))}
+        </div>
+
+        {/* Результаты генерации */}
+        {DATE_OPTIONS.map(({ key }) => {
+          const r = genResults[key]
+          if (!r) return null
+          return (
+            <div key={key} style={{ marginTop: 12, borderRadius: 10, overflow: 'hidden', border: r.error ? '1px solid rgba(220,38,38,0.25)' : '1px solid rgba(34,197,94,0.25)' }}>
+              {r.error ? (
+                <div style={{ padding: '10px 14px', background: 'rgba(220,38,38,0.08)', fontSize: 13, color: '#fca5a5' }}>
+                  ❌ {r.error}
+                </div>
+              ) : (
+                <div style={{ padding: '12px 16px', background: 'rgba(34,197,94,0.06)' }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#4ade80', marginBottom: 10 }}>
+                    ✓ Экспресс на {r.date} создан
+                  </div>
+                  {[{ label: '⚡ Lite', d: r.standard }, { label: '🔥 Hard', d: r.high }].map(({ label, d }) =>
+                    d && !d.error ? (
+                      <div key={label} style={{ marginBottom: 8 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 4 }}>
+                          {label} · ×{d.total_odds?.toFixed(2)}
+                        </div>
+                        {d.picks?.map((p, j) => (
+                          <div key={j} style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>
+                            {j + 1}. {p.home} — {p.away} · <b style={{ color: '#00cfff' }}>{p.prediction}</b> × {p.odds}
+                          </div>
+                        ))}
+                      </div>
+                    ) : d?.error ? (
+                      <div key={label} style={{ fontSize: 12, color: '#f87171', marginBottom: 6 }}>{label}: {d.error}</div>
+                    ) : null
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
