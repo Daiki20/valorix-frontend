@@ -364,12 +364,14 @@ async function extractFromScreenshot(base64Image) {
 - "mixed" — несколько матчей
 
 Определи игру/спорт:
-- "football" — футбол
+- "football" — футбол (любой футбол, включая американский = нет, это soccer)
+- "basketball" — баскетбол (NBA, EuroLeague, NCAAB, WNBA и т.д.)
+- "hockey" — хоккей (НХЛ, КХЛ, ИИХФ и т.д.)
 - "cs2" — Counter-Strike 2
 - "dota2" — Dota 2
 - "valorant" — Valorant
 - "lol" — League of Legends
-- "other" — другое
+- "other" — другое (теннис, MMA, формула 1 и т.д.)
 
 Для каждого матча:
 1. Прочитай названия команд ТОЧНО как написано
@@ -381,7 +383,7 @@ async function extractFromScreenshot(base64Image) {
 Ответь строго в JSON:
 {
   "screenType": "live | prematch | mixed",
-  "game": "football | cs2 | dota2 | valorant | lol | other",
+  "game": "football | basketball | hockey | cs2 | dota2 | valorant | lol | other",
   "matches": [
     {
       "home": "название с экрана",
@@ -416,6 +418,9 @@ async function extractFromScreenshot(base64Image) {
 
 // Step 2: find teams in sstats, get stats, run full analysis
 async function enrichAndAnalyze(matchInfo, game = 'football') {
+  // ── Basketball: separate path with BallDontLie API ──
+  if (game === 'basketball') return enrichBasketball(matchInfo)
+
   let homeId = null, awayId = null
   let formData = { homeForm: null, awayForm: null, h2h: [] }
   let glicko = null, realOdds = []
@@ -490,6 +495,141 @@ async function enrichAndAnalyze(matchInfo, game = 'football') {
     odds2: matchInfo.odds2,
     ...analysis,
   }
+}
+
+// ── Basketball enrichment (BallDontLie API) ───────────────────────────────────
+
+async function enrichBasketball(matchInfo) {
+  let formData = {}
+
+  try {
+    const token = localStorage.getItem('valorix_token')
+    const res = await fetch(`${API_BASE}/analyze/basketball-form`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        homeTeam: matchInfo.homeEn || matchInfo.home,
+        awayTeam: matchInfo.awayEn || matchInfo.away,
+      }),
+    })
+    if (res.ok) formData = await res.json()
+  } catch { /* optional */ }
+
+  const match = {
+    home: matchInfo.home,
+    away: matchInfo.away,
+    league: matchInfo.league || 'НБА',
+    date: matchInfo.score ? `Лайв · ${matchInfo.minute}'` : 'Предстоящий матч',
+    score: matchInfo.score,
+    minute: matchInfo.minute,
+    odds1x2: matchInfo.odds1 ? { home: matchInfo.odds1, away: matchInfo.odds2 } : null,
+  }
+
+  const cacheKey = `bball_${(matchInfo.home||'').toLowerCase().replace(/\s/g,'')}_${(matchInfo.away||'').toLowerCase().replace(/\s/g,'')}`
+  const jsonStr = await callOpenAI(buildBasketballPrompt(match, formData), cacheKey)
+  const analysis = parseAnalysis(jsonStr, match)
+
+  return { home: matchInfo.home, away: matchInfo.away, league: matchInfo.league, score: matchInfo.score, minute: matchInfo.minute, ...analysis }
+}
+
+function buildBasketballPrompt(match, formData = {}) {
+  const isLive = !!match.score
+  const { homeForm, awayForm, homeStanding, awayStanding, h2h = [], season, homeTeamName, awayTeamName } = formData
+  const hasRealData = !!(homeForm || awayForm || homeStanding || h2h.length)
+
+  let statsBlock = ''
+  if (homeForm || awayForm) {
+    statsBlock = `
+── СТАТИСТИКА (реальные данные, сезон НБА ${season}) ──
+${match.home} — последние ${homeForm?.gamesCount || '?'} матчей ДОМА:
+  Форма: ${homeForm?.wins ?? '?'}П / ${homeForm?.losses ?? '?'}П
+  Среднее: ${homeForm?.avgPts ?? '?'} очков забито / ${homeForm?.avgPtsAllowed ?? '?'} пропущено за матч
+
+${match.away} — последние ${awayForm?.gamesCount || '?'} матчей В ГОСТЯХ:
+  Форма: ${awayForm?.wins ?? '?'}П / ${awayForm?.losses ?? '?'}П
+  Среднее: ${awayForm?.avgPts ?? '?'} очков забито / ${awayForm?.avgPtsAllowed ?? '?'} пропущено за матч`
+  }
+
+  let standingsBlock = ''
+  if (homeStanding || awayStanding) {
+    standingsBlock = `
+── ТУРНИРНАЯ ТАБЛИЦА сезона ${season} ──
+${match.home}: ${homeStanding?.wins ?? '?'}П / ${homeStanding?.losses ?? '?'}П${homeStanding?.rank ? ` · ${homeStanding.rank} место в конференции` : ''}
+${match.away}: ${awayStanding?.wins ?? '?'}П / ${awayStanding?.losses ?? '?'}П${awayStanding?.rank ? ` · ${awayStanding.rank} место в конференции` : ''}`
+  }
+
+  let h2hBlock = ''
+  if (h2h.length) {
+    const lines = h2h.slice(0, 5).map(g =>
+      `  ${g.date || ''}: ${g.homeTeam} ${g.homeScore}:${g.awayScore} ${g.awayTeam}`
+    ).join('\n')
+    h2hBlock = `\n── ИСТОРИЯ ВСТРЕЧ (реальные данные) ──\n${lines}`
+  }
+
+  const oddsBlock = match.odds1x2
+    ? `\n── КОЭФФИЦИЕНТЫ ──\n  П1 ${match.odds1x2.home} | П2 ${match.odds1x2.away}`
+    : ''
+  const liveBlock = isLive
+    ? `\n🔴 ЛАЙВ — ТЕКУЩИЙ СЧЁТ: ${match.score}${match.minute ? ` (${match.minute} мин)` : ''}`
+    : ''
+
+  return `Ты профессиональный аналитик баскетбола. Отвечай СТРОГО по-русски.
+
+МАТЧ: ${match.home} vs ${match.away}
+ТУРНИР: ${match.league}
+${liveBlock}
+${statsBlock}
+${standingsBlock}
+${h2hBlock}
+${oddsBlock}
+
+ТЕРМИНОЛОГИЯ (обязательно):
+• Используй "очки" (НЕ "голы"), "четверть", "овертайм"
+• Тотал НБА обычно 210–230 очков (больше/меньше X.5)
+• Нет ничьих — только П1 или П2
+• Форы: -5.5, -7.5, -10.5 и т.д.
+
+══ ПРАВИЛА РАБОТЫ С ДАННЫМИ ══
+${hasRealData
+  ? `• ИСПОЛЬЗУЙ цифры из блоков выше — они из реальной базы данных
+• ЗАПРЕЩЕНО придумывать статистику которой нет в блоках
+• Ссылайся конкретно: "набирает X очков дома", "выиграл X из Y выездных"
+• Знаниями о ключевых игроках дополняй (если знаешь актуальный состав), но НЕ статистику`
+  : `• Данных из базы нет — опирайся на свои знания об этих командах
+• НЕ выдумывай конкретные цифры — пиши "по общим данным"
+• В reasons укажи что это оценка без свежей статистики`}
+
+${isLive
+  ? `Задача: лайв-анализ. Счёт ${match.score}. Кто доминирует? Ожидаемый итоговый тотал?`
+  : `Задача: предматчевый анализ.
+1. Форма: кто на подъёме по данным выше?
+2. Таблица: позиции, регулярный сезон или плей-офф?
+3. H2H: кто выигрывал в последних встречах?
+4. Ключевые игроки: только если знаешь реальный состав этого сезона
+5. Тотал: сколько очков будет по форме команд?`}
+
+Ставки — ОБЯЗАТЕЛЬНО 3-4 штуки:
+- Победитель матча
+- Тотал очков (больше/меньше X.5)
+- Фора (-X.5 на фаворита)
+- Победа в 1-й четверти
+
+Ответь строго в JSON:
+{
+  "verdict": "Победа [команда] (с форой или без)",
+  "summary": "3-4 предложения с цифрами из данных выше",
+  "confidence": число 0-100,
+  "risk": "low | medium | high",
+  "fairOdds": "справедливый коэффициент",
+  "bookOdds": "коэф букмекера если есть",
+  "value": число,
+  "reasons": ["факт с цифрой 1", "факт 2", "факт 3", "факт 4"],
+  "extraBets": [{"type": "Название ставки", "confidence": число, "reason": "обоснование цифрами"}],
+  "bestOdds": []
+}`
 }
 
 function buildFullScreenPrompt(match, formData = {}, glicko = null) {
