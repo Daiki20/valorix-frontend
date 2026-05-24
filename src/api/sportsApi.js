@@ -537,13 +537,14 @@ async function enrichBasketball(matchInfo) {
 
 function buildBasketballPrompt(match, formData = {}) {
   const isLive = !!match.score
-  const { homeForm, awayForm, homeStanding, awayStanding, h2h = [], season, homeTeamName, awayTeamName } = formData
+  const { homeForm, awayForm, homeStanding, awayStanding, h2h = [], season, source } = formData
   const hasRealData = !!(homeForm || awayForm || homeStanding || h2h.length)
+  const dataSource = source === 'allsports' ? 'AllSports' : 'BallDontLie'
 
   let statsBlock = ''
   if (homeForm || awayForm) {
     statsBlock = `
-── СТАТИСТИКА (реальные данные, сезон НБА ${season}) ──
+── СТАТИСТИКА (реальные данные${season ? `, сезон НБА ${season}` : ''}, источник: ${dataSource}) ──
 ${match.home} — последние ${homeForm?.gamesCount || '?'} матчей ДОМА:
   Форма: ${homeForm?.wins ?? '?'}П / ${homeForm?.losses ?? '?'}П
   Среднее: ${homeForm?.avgPts ?? '?'} очков забито / ${homeForm?.avgPtsAllowed ?? '?'} пропущено за матч
