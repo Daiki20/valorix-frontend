@@ -251,6 +251,9 @@ function DashboardTab({ toast }) {
       {/* Hockey Debug */}
       <HockeyDebugPanel toast={toast} />
 
+      {/* Cache Management */}
+      <CachePanel toast={toast} />
+
       {/* API Status */}
       <ApiStatusPanel />
 
@@ -1043,6 +1046,110 @@ function TransactionsTab() {
           <button onClick={() => setPage(p => Math.min(data.pages, p + 1))} disabled={page === data.pages} style={pageBtn}>
             <ChevronRight size={16} />
           </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* ─── Cache Panel ─── */
+function CachePanel({ toast }) {
+  const [entries, setEntries] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [clearing, setClearing] = useState(false)
+  const [pattern, setPattern] = useState('')
+
+  const token = () => localStorage.getItem('valorix_token')
+
+  const loadCache = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch(`${API_BASE}/admin/cache`, { headers: { Authorization: `Bearer ${token()}` } })
+      const data = await res.json()
+      setEntries(data.entries || [])
+    } catch { toast.error('Ошибка загрузки кэша') }
+    setLoading(false)
+  }
+
+  const clearCache = async (p = '') => {
+    setClearing(true)
+    try {
+      const url = p ? `${API_BASE}/admin/cache?pattern=${encodeURIComponent(p)}` : `${API_BASE}/admin/cache`
+      const res = await fetch(url, { method: 'DELETE', headers: { Authorization: `Bearer ${token()}` } })
+      const data = await res.json()
+      toast.success(`Удалено записей: ${data.deleted}`)
+      setEntries(null)
+    } catch { toast.error('Ошибка очистки') }
+    setClearing(false)
+  }
+
+  return (
+    <div className="card" style={{ padding: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 10 }}>
+        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#dde4ee', display: 'flex', alignItems: 'center', gap: 8 }}>
+          🗄️ Кэш анализов
+        </h3>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button onClick={loadCache} disabled={loading} style={{
+            padding: '7px 14px', fontSize: 13, borderRadius: 8, border: '1px solid rgba(0,207,255,0.3)',
+            background: 'rgba(0,207,255,0.08)', color: '#00cfff', cursor: 'pointer', fontWeight: 600,
+          }}>
+            {loading ? '...' : '🔍 Посмотреть'}
+          </button>
+          <button onClick={() => clearCache('f_')} disabled={clearing} style={{
+            padding: '7px 14px', fontSize: 13, borderRadius: 8, border: '1px solid rgba(245,158,11,0.3)',
+            background: 'rgba(245,158,11,0.08)', color: '#f59e0b', cursor: 'pointer', fontWeight: 600,
+          }}>
+            {clearing ? '...' : '🧹 Очистить скрин-анализы'}
+          </button>
+          <button onClick={() => clearCache('')} disabled={clearing} style={{
+            padding: '7px 14px', fontSize: 13, borderRadius: 8, border: '1px solid rgba(239,68,68,0.3)',
+            background: 'rgba(239,68,68,0.08)', color: '#ef4444', cursor: 'pointer', fontWeight: 600,
+          }}>
+            {clearing ? '...' : '🗑️ Очистить всё'}
+          </button>
+        </div>
+      </div>
+
+      {/* Очистка по паттерну */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <input
+          value={pattern}
+          onChange={e => setPattern(e.target.value)}
+          placeholder="Паттерн (напр: аякс, f_real, tf_)"
+          style={{ ...inputStyle, flex: 1, minWidth: 0 }}
+        />
+        <button onClick={() => clearCache(pattern)} disabled={clearing || !pattern} style={{
+          padding: '7px 14px', fontSize: 13, borderRadius: 8, border: '1px solid rgba(239,68,68,0.25)',
+          background: 'rgba(239,68,68,0.08)', color: '#ef4444', cursor: pattern ? 'pointer' : 'not-allowed',
+          fontWeight: 600, opacity: pattern ? 1 : 0.5,
+        }}>
+          Удалить по паттерну
+        </button>
+      </div>
+
+      {entries !== null && (
+        <div>
+          <div style={{ fontSize: 12, color: '#64748b', marginBottom: 8 }}>
+            Записей в кэше: <b style={{ color: '#dde4ee' }}>{entries.length}</b>
+          </div>
+          {entries.length > 0 && (
+            <div style={{ maxHeight: 200, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {entries.map((e, i) => (
+                <div key={i} style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '6px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: 6,
+                  fontSize: 12,
+                }}>
+                  <span style={{ color: '#94a3b8', fontFamily: 'monospace' }}>{e.key}</span>
+                  <div style={{ display: 'flex', gap: 12, flexShrink: 0 }}>
+                    <span style={{ color: e.age_minutes < 60 ? '#22c55e' : '#f59e0b' }}>{e.age_minutes}м назад</span>
+                    <span style={{ color: '#64748b' }}>{e.size_kb} KB</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
