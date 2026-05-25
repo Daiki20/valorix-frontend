@@ -274,16 +274,24 @@ function translateNBATeam(name) {
   return name   // already English or unknown
 }
 
+// Detect WNBA / women's basketball — don't use NBA translation for these
+function isWNBATeam(name, league) {
+  return /\(ж\)|женщ|wnba/i.test((name || '') + ' ' + (league || ''))
+}
+
 // Analyze basketball match (Fonbet match → enrichBasketball)
 export async function analyzeBasketballMatch(match) {
-  const homeEn = translateNBATeam(match.home)
-  const awayEn = translateNBATeam(match.away)
+  const wnba = isWNBATeam(match.home, match.league) || isWNBATeam(match.away, match.league)
+  // For WNBA: don't translate through NBA map — BallDontLie only has NBA
+  const homeEn = wnba ? null : translateNBATeam(match.home)
+  const awayEn = wnba ? null : translateNBATeam(match.away)
   const matchInfo = {
     home: match.home,          // display name (Russian for UI)
-    homeEn,                    // English for BallDontLie lookup
+    homeEn,                    // English for BallDontLie lookup (null for WNBA)
     away: match.away,
     awayEn,
     league: match.league || 'Баскетбол',
+    isWNBA: wnba,
     score: match.score || null,
     minute: match.minute || null,
     odds1: match.odds1x2?.home || null,
@@ -714,6 +722,7 @@ async function enrichBasketball(matchInfo) {
     home: matchInfo.home,
     away: matchInfo.away,
     league: matchInfo.league || 'НБА',
+    isWNBA: matchInfo.isWNBA || false,
     date: matchInfo.score ? `Лайв · ${matchInfo.minute}'` : 'Предстоящий матч',
     score: matchInfo.score,
     minute: matchInfo.minute,
@@ -993,12 +1002,21 @@ ${oddsBlock}
 
 ══ ПРАВИЛА РАБОТЫ С ДАННЫМИ ══
 ${hasRealData
-  ? `• ИСПОЛЬЗУЙ цифры из блоков выше — они из реальной базы данных
-• ЗАПРЕЩЕНО придумывать статистику которой нет в блоках
+  ? `• ИСПОЛЬЗУЙ только цифры из блоков выше — они из реальной базы данных
+• СТРОГО ЗАПРЕЩЕНО придумывать статистику которой нет в блоках выше
 • Ссылайся конкретно: "набирает X очков дома", "выиграл X из Y выездных"
 • Знаниями о ключевых игроках дополняй (если знаешь актуальный состав), но НЕ статистику`
-  : `• Данных из базы нет — опирайся на свои знания об этих командах
-• НЕ выдумывай конкретные цифры — пиши "по общим данным"
+  : match.isWNBA
+    ? `• Это матч WNBA (женская лига). У нас НЕТ базы данных по WNBA.
+• КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО выдумывать конкретные числа (очки, победы, поражения)
+• НЕ пиши "набирает X очков" или "выиграла Y из Z" — ты не знаешь этих цифр точно
+• Пиши общими словами: "Атланта (ж) традиционно сильна в гостях", "Миннесота (ж) известна своей обороной"
+• В summary обязательно упомяни: "Точных данных по WNBA нет, анализ основан на общих знаниях"
+• В reasons пиши без конкретных цифр`
+    : `• Данных из базы нет — опирайся на свои знания об этих командах
+• ЗАПРЕЩЕНО выдумывать конкретные числа (очки, победы, поражения за матч)
+• Не пиши "набирает X.X очков" или "выиграл X из Y" если у тебя нет этих данных
+• Пиши "по общим данным", "исторически", "как правило"
 • В reasons укажи что это оценка без свежей статистики`}
 
 ${isLive
