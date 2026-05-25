@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import ballImg from '../assets/ball.png'
 import { Link } from 'react-router-dom'
 import { Search, Upload, Zap, TrendingUp, ChevronDown, Shield, Clock, BarChart2, Star, Target, Activity, Trophy, X } from 'lucide-react'
 import Navbar from '../components/Navbar'
@@ -95,97 +96,35 @@ function CosmicOrb() {
         }} />
       </div>
 
-      {/* ── Space Football SVG ── */}
+      {/* ── Real Ball Image ── */}
       <div style={{
         position: 'absolute', inset: 80,
         animation: 'floatOrb 7s ease-in-out infinite',
-        filter: 'drop-shadow(0 0 32px rgba(0,207,255,0.45)) drop-shadow(0 0 80px rgba(123,94,167,0.3))',
+        filter: 'drop-shadow(0 0 44px rgba(0,207,255,0.55)) drop-shadow(0 0 90px rgba(123,94,167,0.38))',
       }}>
-        <svg viewBox="0 0 320 320" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            {/* Space sphere gradient */}
-            <radialGradient id="sfBg" cx="34%" cy="29%" r="70%">
-              <stop offset="0%"   stopColor="#00cfff" stopOpacity="0.55"/>
-              <stop offset="30%"  stopColor="#7b5ea7" stopOpacity="0.4"/>
-              <stop offset="75%"  stopColor="#020d2e" stopOpacity="0.95"/>
-              <stop offset="100%" stopColor="#000510" stopOpacity="1"/>
-            </radialGradient>
-            {/* Seam glow filter */}
-            <filter id="sfGlow" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-            {/* Specular highlight */}
-            <filter id="sfSpec" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="12"/>
-            </filter>
-            {/* Clip to circle */}
-            <clipPath id="sfClip">
-              <circle cx="160" cy="160" r="138"/>
-            </clipPath>
-          </defs>
-
-          {/* Base sphere */}
-          <circle cx="160" cy="160" r="140" fill="url(#sfBg)"/>
-
-          {/* Pentagon patches — classic soccer ball geometry */}
-          <g clipPath="url(#sfClip)" filter="url(#sfGlow)">
-            {/* Central pentagon (inset 80→ radius 40 from center) */}
-            <polygon
-              points="160,120 198,148 184,192 137,192 122,148"
-              fill="rgba(0,6,30,0.78)"
-              stroke="#00cfff" strokeWidth="1.9" strokeOpacity="0.85"
-            />
-            {/* Outer pentagon — upper-right */}
-            <polygon
-              points="198,108 184,63 222,35 260,63 245,108"
-              fill="rgba(0,6,30,0.78)"
-              stroke="#00cfff" strokeWidth="1.9" strokeOpacity="0.65"
-            />
-            {/* Outer pentagon — right */}
-            <polygon
-              points="222,180 260,153 298,180 283,225 236,225"
-              fill="rgba(0,6,30,0.78)"
-              stroke="#00cfff" strokeWidth="1.9" strokeOpacity="0.5"
-            />
-            {/* Outer pentagon — bottom */}
-            <polygon
-              points="160,225 198,253 184,297 137,297 122,253"
-              fill="rgba(0,6,30,0.78)"
-              stroke="#7b5ea7" strokeWidth="1.9" strokeOpacity="0.6"
-            />
-            {/* Outer pentagon — left */}
-            <polygon
-              points="98,180 84,225 37,225 22,180 60,153"
-              fill="rgba(0,6,30,0.78)"
-              stroke="#7b5ea7" strokeWidth="1.9" strokeOpacity="0.5"
-            />
-            {/* Outer pentagon — upper-left */}
-            <polygon
-              points="122,108 75,108 60,63 98,35 136,63"
-              fill="rgba(0,6,30,0.78)"
-              stroke="#00cfff" strokeWidth="1.9" strokeOpacity="0.65"
-            />
-          </g>
-
-          {/* Outer rim */}
-          <circle cx="160" cy="160" r="139" fill="none" stroke="#00cfff" strokeWidth="1.2" strokeOpacity="0.3"/>
-
-          {/* Specular highlight (top-left) */}
-          <ellipse cx="118" cy="102" rx="42" ry="28"
-            fill="white" opacity="0.07" filter="url(#sfSpec)"/>
-
-          {/* Stats overlay */}
-          <text x="160" y="150" textAnchor="middle"
-            fill="rgba(0,207,255,0.8)" fontSize="10" fontWeight="700"
-            letterSpacing="2" fontFamily="Outfit, sans-serif">ТОЧНОСТЬ</text>
-          <text x="160" y="184" textAnchor="middle"
-            fill="#d8eeff" fontSize="40" fontWeight="800"
-            fontFamily="Space Grotesk, sans-serif" letterSpacing="-1">73%</text>
-          <text x="160" y="202" textAnchor="middle"
-            fill="#4a6a8a" fontSize="10" fontWeight="500"
-            fontFamily="Outfit, sans-serif">прогнозов</text>
-        </svg>
+        {/* Circle clip wrapper */}
+        <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', position: 'relative' }}>
+          <img
+            src={ballImg}
+            alt="ball"
+            style={{
+              width: '100%', height: '100%',
+              objectFit: 'cover', display: 'block',
+              // Тёмная адаптация: приглушаем яркость, усиливаем насыщенность
+              filter: 'brightness(0.78) contrast(1.12) saturate(1.25)',
+            }}
+          />
+          {/* Cyan ambient light overlay (top-left) */}
+          <div style={{
+            position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none',
+            background: 'radial-gradient(circle at 32% 28%, rgba(0,207,255,0.13) 0%, transparent 55%)',
+          }} />
+          {/* Bottom dark vignette */}
+          <div style={{
+            position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none',
+            background: 'radial-gradient(circle at 50% 80%, rgba(1,8,30,0.45) 0%, transparent 60%)',
+          }} />
+        </div>
       </div>
 
       {/* Floating data bubbles */}
