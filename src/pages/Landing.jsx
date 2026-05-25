@@ -1,4 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+
+/* ── Хук: подписывается на ширину окна ── */
+function useWidth() {
+  const [w, setW] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 1200)
+  useEffect(() => {
+    const handler = () => setW(window.innerWidth)
+    window.addEventListener('resize', handler)
+    return () => window.removeEventListener('resize', handler)
+  }, [])
+  return w
+}
 import ballImg from '../assets/ball.png'
 import { Link } from 'react-router-dom'
 import { Search, Upload, Zap, TrendingUp, ChevronDown, Shield, Clock, BarChart2, Star, Target, Activity, Trophy, X } from 'lucide-react'
@@ -196,6 +207,10 @@ export default function Landing() {
   const [showAuth, setShowAuth] = useState(false)
   const [showSampleAnalysis, setShowSampleAnalysis] = useState(false)
 
+  const vw = useWidth()
+  const isMobile  = vw <= 767   // планшет и ниже
+  const isSmall   = vw <= 479   // маленький телефон
+
   useEffect(() => {
     let onboarded = false
     try { onboarded = !!localStorage.getItem('valorix_onboarded') } catch {}
@@ -246,7 +261,10 @@ export default function Landing() {
         {/* ════════════════════════════════════
             HERO
         ════════════════════════════════════ */}
-        <section className="hero-section" style={{ padding: '80px 24px 60px', position: 'relative', overflow: 'hidden' }}>
+        <section className="hero-section" style={{
+          padding: isSmall ? '36px 20px 28px' : isMobile ? '52px 24px 36px' : '80px 24px 60px',
+          position: 'relative', overflow: 'hidden',
+        }}>
           <div className="container" style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
 
@@ -309,7 +327,7 @@ export default function Landing() {
                 </div>
 
                 {/* Feature icon grid (2 rows × 3 cols) */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, maxWidth: 360 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, maxWidth: isSmall ? '100%' : 360 }}>
                   <IconCell href="/analyze" icon={<BarChart2 size={18} color={A} />} label="AI Анализ" />
                   <IconCell href="/#express" icon={<Zap size={18} color="#b5ff4e" />} label="Экспресс" />
                   <IconCell href="/upload" icon={<Upload size={18} color="#7b5ea7" />} label="Скриншот" />
@@ -320,12 +338,23 @@ export default function Landing() {
               </div>
 
               {/* ── Right: cosmic orb ── */}
-              <div className="hero-orb-section" style={{
-                display: 'flex', justifyContent: 'flex-end',
-                animation: 'fadeInRight 0.8s ease forwards',
-              }}>
-                <CosmicOrb />
-              </div>
+              {!isSmall && (
+                <div className="hero-orb-section" style={{
+                  display: 'flex',
+                  justifyContent: isMobile ? 'center' : 'flex-end',
+                  overflow: 'hidden',
+                  height: isMobile ? 300 : 'auto',
+                  animation: 'fadeInRight 0.8s ease forwards',
+                }}>
+                  <div style={{
+                    transform: isMobile ? 'scale(0.6)' : 'none',
+                    transformOrigin: 'top center',
+                    flexShrink: 0,
+                  }}>
+                    <CosmicOrb />
+                  </div>
+                </div>
+              )}
 
             </div>
           </div>
@@ -339,7 +368,7 @@ export default function Landing() {
           padding: '20px 24px',
           backdropFilter: 'blur(8px)',
         }}>
-          <div className="container stats-ticker-inner" style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'center', gap: 64, flexWrap: 'wrap' }}>
+          <div className="container stats-ticker-inner" style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'center', gap: isMobile ? 20 : 64, flexWrap: 'wrap' }}>
             {[
               { num: '10 000+', label: 'Анализов сделано' },
               { num: '73%',     label: 'Точность прогнозов' },
@@ -397,9 +426,9 @@ export default function Landing() {
               </h2>
             </div>
 
-            <div className="how-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 48, alignItems: 'start' }}>
-              {/* Left: big card */}
-              <div className="card-glow how-grid-feature" style={{ padding: '36px 32px' }}>
+            <div className="how-grid" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 2fr', gap: isMobile ? 20 : 48, alignItems: 'start' }}>
+              {/* Left: big card — скрываем на мобилке */}
+              {!isMobile && <div className="card-glow how-grid-feature" style={{ padding: '36px 32px' }}>
                 <div style={{
                   width: 56, height: 56, borderRadius: 16,
                   background: ADIM, border: `1px solid rgba(0,207,255,0.15)`,
@@ -421,7 +450,7 @@ export default function Landing() {
                   </div>
                   <div style={{ fontSize: 13, color: A, fontWeight: 700, marginTop: 6 }}>78% — Высокий</div>
                 </div>
-              </div>
+              </div>}
 
               {/* Right: 3 steps */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -456,7 +485,7 @@ export default function Landing() {
         ════════════════════════════════════ */}
         <section className="section-pad" style={{ padding: '96px 24px', background: BG }}>
           <div className="container" style={{ maxWidth: 1200, margin: '0 auto' }}>
-            <div className="features-outer" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'start' }}>
+            <div className="features-outer" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 28 : 48, alignItems: 'start' }}>
               {/* Left header */}
               <div>
                 <div className="badge" style={{ marginBottom: 20 }}>ПРЕИМУЩЕСТВА</div>
