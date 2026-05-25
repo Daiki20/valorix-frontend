@@ -338,23 +338,21 @@ export default function Landing() {
               </div>
 
               {/* ── Right: cosmic orb ── */}
-              {!isSmall && (
-                <div className="hero-orb-section" style={{
-                  display: 'flex',
-                  justifyContent: isMobile ? 'center' : 'flex-end',
-                  overflow: 'hidden',
-                  height: isMobile ? 300 : 'auto',
-                  animation: 'fadeInRight 0.8s ease forwards',
+              <div className="hero-orb-section" style={{
+                display: 'flex',
+                justifyContent: isMobile ? 'center' : 'flex-end',
+                overflow: 'hidden',
+                height: isSmall ? 220 : isMobile ? 300 : 'auto',
+                animation: 'fadeInRight 0.8s ease forwards',
+              }}>
+                <div style={{
+                  transform: isSmall ? 'scale(0.44)' : isMobile ? 'scale(0.6)' : 'none',
+                  transformOrigin: 'top center',
+                  flexShrink: 0,
                 }}>
-                  <div style={{
-                    transform: isMobile ? 'scale(0.6)' : 'none',
-                    transformOrigin: 'top center',
-                    flexShrink: 0,
-                  }}>
-                    <CosmicOrb />
-                  </div>
+                  <CosmicOrb />
                 </div>
-              )}
+              </div>
 
             </div>
           </div>
