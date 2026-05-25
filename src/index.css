@@ -372,10 +372,15 @@ h1, h2, h3, .heading-font {
    LANDING MOBILE — CosmicOrb, grids, CTA
    ══════════════════════════════════════ */
 
-/* Tablet: центрировать шар (он уже под текстом, т.к. hero-grid → 1fr) */
+/* Tablet: центрировать шар */
 @media (max-width: 1023px) {
   .hero-orb-section { justify-content: center !important; }
   .hero-section     { padding: 60px 24px 40px !important; }
+}
+
+/* Mobile: мяч вверх (над текстом), чтобы сразу был виден */
+@media (max-width: 767px) {
+  .hero-orb-section { order: -1 !important; }
 }
 
 @media (max-width: 767px) {
