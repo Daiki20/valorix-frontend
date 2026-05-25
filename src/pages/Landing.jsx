@@ -110,19 +110,28 @@ function CosmicOrb() {
             style={{
               width: '100%', height: '100%',
               objectFit: 'cover', display: 'block',
-              // Тёмная адаптация: приглушаем яркость, усиливаем насыщенность
-              filter: 'brightness(0.78) contrast(1.12) saturate(1.25)',
+              // Адаптация под тёмную космо-тему:
+              // brightness — убираем студийную белизну
+              // contrast  — сохраняем объём и детали панелей
+              // saturate  — золото и синие швы становятся ярче
+              // hue-rotate — лёгкий сдвиг в сторону cyan сайта
+              filter: 'brightness(0.72) contrast(1.18) saturate(1.4) hue-rotate(-8deg)',
             }}
           />
-          {/* Cyan ambient light overlay (top-left) */}
+          {/* Cyan ambient light — имитирует основной источник света сайта */}
           <div style={{
             position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none',
-            background: 'radial-gradient(circle at 32% 28%, rgba(0,207,255,0.13) 0%, transparent 55%)',
+            background: 'radial-gradient(circle at 30% 25%, rgba(0,207,255,0.18) 0%, transparent 52%)',
           }} />
-          {/* Bottom dark vignette */}
+          {/* Purple rim light справа */}
           <div style={{
             position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none',
-            background: 'radial-gradient(circle at 50% 80%, rgba(1,8,30,0.45) 0%, transparent 60%)',
+            background: 'radial-gradient(circle at 78% 40%, rgba(123,94,167,0.12) 0%, transparent 45%)',
+          }} />
+          {/* Тёмная виньетка снизу — приземляет */}
+          <div style={{
+            position: 'absolute', inset: 0, borderRadius: '50%', pointerEvents: 'none',
+            background: 'radial-gradient(circle at 50% 85%, rgba(1,6,24,0.55) 0%, transparent 55%)',
           }} />
         </div>
       </div>
