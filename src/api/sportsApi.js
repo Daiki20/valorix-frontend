@@ -190,6 +190,38 @@ export async function getUpcomingTennisMatches(limit = 60) {
   } catch { return [] }
 }
 
+// Get ALL live matches from Fonbet (football, hockey, basketball, esports, tennis)
+export async function getAllLiveMatches() {
+  try {
+    const res = await fetch(`${API_BASE}/matches/live-all`)
+    if (!res.ok) return []
+    const { data } = await res.json()
+    return data || []
+  } catch { return [] }
+}
+
+// Team logo lookup via backend proxy (TheSportsDB, cached per session)
+const _logoCache = new Map()
+export async function fetchTeamLogo(name) {
+  if (!name) return null
+  const key = name.toLowerCase().trim()
+  if (_logoCache.has(key)) {
+    const v = _logoCache.get(key)
+    // if promise is still pending, return it; if resolved value, return it
+    return v
+  }
+  const promise = fetch(`${API_BASE}/matches/team-logo?name=${encodeURIComponent(name)}`)
+    .then(r => r.ok ? r.json() : { url: null })
+    .then(d => {
+      const url = d?.url || null
+      _logoCache.set(key, url)
+      return url
+    })
+    .catch(() => { _logoCache.set(key, null); return null })
+  _logoCache.set(key, promise)
+  return promise
+}
+
 // Analyze basketball match (Fonbet match → enrichBasketball)
 export async function analyzeBasketballMatch(match) {
   const matchInfo = {
