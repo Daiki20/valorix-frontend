@@ -122,9 +122,11 @@ export default function Analyze() {
   }, [activeTab])
 
   const filtered = matches.filter(m =>
-    m.home.toLowerCase().includes(query.toLowerCase()) ||
-    m.away.toLowerCase().includes(query.toLowerCase()) ||
-    m.league.toLowerCase().includes(query.toLowerCase())
+    !m.isLive && (
+      m.home.toLowerCase().includes(query.toLowerCase()) ||
+      m.away.toLowerCase().includes(query.toLowerCase()) ||
+      m.league.toLowerCase().includes(query.toLowerCase())
+    )
   )
 
   async function handleSearch(e) {
@@ -338,7 +340,7 @@ export default function Analyze() {
                 {/* If matches have league field (Fonbet) — use grouped SportMatchList */}
                 {hockeyMatches[0]?.sport === 'hockey' && hockeyMatches[0]?.league ? (
                   <SportMatchList
-                    matches={hockeyMatches}
+                    matches={hockeyMatches.filter(m => !m.isLive)}
                     loading={false}
                     emptyIcon="🏒"
                     emptyText="Хоккейные матчи не найдены"
@@ -384,7 +386,7 @@ export default function Analyze() {
 
         {activeTab === 'basketball' && (
           <SportMatchList
-            matches={basketballMatches}
+            matches={basketballMatches.filter(m => !m.isLive)}
             loading={basketballLoading}
             emptyIcon="🏀"
             emptyText="Матчи по баскетболу не найдены"
@@ -394,7 +396,7 @@ export default function Analyze() {
 
         {activeTab === 'esports' && (
           <SportMatchList
-            matches={esportsMatches}
+            matches={esportsMatches.filter(m => !m.isLive)}
             loading={esportsLoading}
             emptyIcon="🎮"
             emptyText="Матчи по киберспорту не найдены"
@@ -404,7 +406,7 @@ export default function Analyze() {
 
         {activeTab === 'tennis' && (
           <SportMatchList
-            matches={tennisMatches}
+            matches={tennisMatches.filter(m => !m.isLive)}
             loading={tennisLoading}
             emptyIcon="🎾"
             emptyText="Матчи по теннису не найдены"
