@@ -266,7 +266,32 @@ export default function Landing() {
           position: 'relative', overflow: 'hidden',
         }}>
           <div className="container" style={{ maxWidth: 1200, margin: '0 auto' }}>
-            <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+
+            {/* ── На мобилке: мяч сверху, затем текст ── */}
+            {isMobile && (
+              <div style={{
+                display: 'flex', justifyContent: 'center',
+                overflow: 'hidden',
+                height: isSmall ? 200 : 280,
+                marginBottom: 24,
+                animation: 'fadeInRight 0.8s ease forwards',
+              }}>
+                <div style={{
+                  transform: isSmall ? 'scale(0.40)' : 'scale(0.56)',
+                  transformOrigin: 'top center',
+                  flexShrink: 0,
+                }}>
+                  <CosmicOrb />
+                </div>
+              </div>
+            )}
+
+            <div className="hero-grid" style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+              gap: isMobile ? 0 : 60,
+              alignItems: 'center',
+            }}>
 
               {/* ── Left: text ── */}
               <div style={{ animation: 'fadeInUp 0.7s ease forwards' }}>
@@ -337,22 +362,15 @@ export default function Landing() {
                 </div>
               </div>
 
-              {/* ── Right: cosmic orb ── */}
-              <div className="hero-orb-section" style={{
-                display: 'flex',
-                justifyContent: isMobile ? 'center' : 'flex-end',
-                overflow: 'hidden',
-                height: isSmall ? 220 : isMobile ? 300 : 'auto',
-                animation: 'fadeInRight 0.8s ease forwards',
-              }}>
-                <div style={{
-                  transform: isSmall ? 'scale(0.44)' : isMobile ? 'scale(0.6)' : 'none',
-                  transformOrigin: 'top center',
-                  flexShrink: 0,
+              {/* ── Right: cosmic orb (только десктоп) ── */}
+              {!isMobile && (
+                <div className="hero-orb-section" style={{
+                  display: 'flex', justifyContent: 'flex-end',
+                  animation: 'fadeInRight 0.8s ease forwards',
                 }}>
                   <CosmicOrb />
                 </div>
-              </div>
+              )}
 
             </div>
           </div>
