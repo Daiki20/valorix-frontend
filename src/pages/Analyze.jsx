@@ -4,7 +4,11 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import AnalysisResult from '../components/AnalysisResult'
 import AuthModal from '../components/AuthModal'
-import { searchMatches, analyzeMatch, analyzeHockeyMatch, getUpcomingMatches, getLiveMatches, getUpcomingHockeyMatches } from '../api/sportsApi'
+import {
+  searchMatches, analyzeMatch, analyzeHockeyMatch, analyzeBasketballMatch, analyzeEsportsMatch, analyzeTennisMatch,
+  getUpcomingMatches, getLiveMatches, getUpcomingHockeyMatches,
+  getUpcomingBasketballMatches, getUpcomingEsportsMatches, getUpcomingTennisMatches,
+} from '../api/sportsApi'
 import { coinsApi } from '../api/authApi'
 import ExpressCard from '../components/ExpressCard'
 import { useAuth } from '../context/AuthContext'
@@ -37,6 +41,13 @@ export default function Analyze() {
   const [hockeyAway, setHockeyAway] = useState('')
   const [hockeyLeague, setHockeyLeague] = useState('КХЛ')
 
+  const [basketballMatches, setBasketballMatches] = useState([])
+  const [basketballLoading, setBasketballLoading] = useState(false)
+  const [esportsMatches, setEsportsMatches] = useState([])
+  const [esportsLoading, setEsportsLoading] = useState(false)
+  const [tennisMatches, setTennisMatches] = useState([])
+  const [tennisLoading, setTennisLoading] = useState(false)
+
   const [liveFilter, setLiveFilter] = useState('football')
 
   useEffect(() => {
@@ -62,6 +73,33 @@ export default function Analyze() {
       .then(m => { setHockeyMatches(m); if (m.length === 0) setShowHockeyForm(true) })
       .catch(() => setShowHockeyForm(true))
       .finally(() => setHockeyLoading(false))
+  }, [activeTab])
+
+  useEffect(() => {
+    if (activeTab !== 'basketball' || basketballMatches.length > 0) return
+    setBasketballLoading(true)
+    getUpcomingBasketballMatches()
+      .then(setBasketballMatches)
+      .catch(() => {})
+      .finally(() => setBasketballLoading(false))
+  }, [activeTab])
+
+  useEffect(() => {
+    if (activeTab !== 'esports' || esportsMatches.length > 0) return
+    setEsportsLoading(true)
+    getUpcomingEsportsMatches()
+      .then(setEsportsMatches)
+      .catch(() => {})
+      .finally(() => setEsportsLoading(false))
+  }, [activeTab])
+
+  useEffect(() => {
+    if (activeTab !== 'tennis' || tennisMatches.length > 0) return
+    setTennisLoading(true)
+    getUpcomingTennisMatches()
+      .then(setTennisMatches)
+      .catch(() => {})
+      .finally(() => setTennisLoading(false))
   }, [activeTab])
 
   const filtered = matches.filter(m =>
@@ -91,8 +129,13 @@ export default function Analyze() {
     setAnalysisLoading(true)
     setError(null)
     try {
-      const isHockey = match.sport === 'hockey'
-      const result = isHockey ? await analyzeHockeyMatch(match) : await analyzeMatch(match)
+      const sport = match.sport || 'football'
+      let result
+      if (sport === 'hockey') result = await analyzeHockeyMatch(match)
+      else if (sport === 'basketball') result = await analyzeBasketballMatch(match)
+      else if (['cs2','dota2','lol','valorant'].includes(sport)) result = await analyzeEsportsMatch(match)
+      else if (sport === 'tennis') result = await analyzeTennisMatch(match)
+      else result = await analyzeMatch(match)
       pendingResult.current = result
       setLocked(true)
     } catch (err) {
@@ -222,6 +265,9 @@ export default function Analyze() {
           {[
             { id: 'football', label: '⚽ Футбол' },
             { id: 'hockey', label: '🏒 Хоккей' },
+            { id: 'basketball', label: '🏀 Баскет' },
+            { id: 'esports', label: '🎮 Киберспорт' },
+            { id: 'tennis', label: '🎾 Теннис' },
             { id: 'live', label: '🔴 Лайв' },
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
@@ -303,6 +349,36 @@ export default function Analyze() {
               />
             )}
           </>
+        )}
+
+        {activeTab === 'basketball' && (
+          <SportMatchList
+            matches={basketballMatches}
+            loading={basketballLoading}
+            emptyIcon="🏀"
+            emptyText="Матчи по баскетболу не найдены"
+            onSelect={handleSelectMatch}
+          />
+        )}
+
+        {activeTab === 'esports' && (
+          <SportMatchList
+            matches={esportsMatches}
+            loading={esportsLoading}
+            emptyIcon="🎮"
+            emptyText="Матчи по киберспорту не найдены"
+            onSelect={handleSelectMatch}
+          />
+        )}
+
+        {activeTab === 'tennis' && (
+          <SportMatchList
+            matches={tennisMatches}
+            loading={tennisLoading}
+            emptyIcon="🎾"
+            emptyText="Матчи по теннису не найдены"
+            onSelect={handleSelectMatch}
+          />
         )}
 
         {activeTab === 'football' && (loading ? (
@@ -817,14 +893,28 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
   )
 }
 
+const SPORT_LOADING_META = {
+  hockey:     { emoji: '🏒', label: '🏒 AI анализирует матч...', hint: 'Анализируем вратарей, форму, статистику голов и большинство', steps: ['Форма команд и серии', 'Анализ вратарей и голевой статистики', 'Игра в большинстве и меньшинстве', 'Формирование вердикта'] },
+  basketball: { emoji: '🏀', label: '🏀 AI анализирует матч...', hint: 'Анализируем очки, форму, позицию в турнирной таблице', steps: ['Форма команд дома/в гостях', 'Статистика очков и пропусков', 'Позиция в конференции', 'Формирование вердикта'] },
+  cs2:        { emoji: '🎮', label: '🎮 AI анализирует CS2...', hint: 'Анализируем карты, форму, статистику раундов', steps: ['Форма команд по картам', 'Статистика раундов и рейтинг', 'Факторы карт', 'Формирование вердикта'] },
+  dota2:      { emoji: '🎮', label: '🎮 AI анализирует Dota 2...', hint: 'Анализируем пики, форму, последние результаты', steps: ['Форма команд в турнире', 'Статистика последних игр', 'Факторы драфта', 'Формирование вердикта'] },
+  lol:        { emoji: '🎮', label: '🎮 AI анализирует LoL...', hint: 'Анализируем пики, форму, статистику карт', steps: ['Форма команд', 'История встреч', 'Метагейм анализ', 'Формирование вердикта'] },
+  valorant:   { emoji: '🎮', label: '🎮 AI анализирует Valorant...', hint: 'Анализируем карты, форму, статистику раундов', steps: ['Форма команд по картам', 'Статистика раундов', 'Факторы карт', 'Формирование вердикта'] },
+  tennis:     { emoji: '🎾', label: '🎾 AI анализирует теннис...', hint: 'Анализируем форму, покрытие, H2H встречи', steps: ['Форма игроков', 'Покрытие и стиль', 'Очные встречи', 'Формирование вердикта'] },
+}
+
 function LoadingAnalysis({ match }) {
+  const sport = match.sport || 'football'
+  const meta = SPORT_LOADING_META[sport] || { emoji: '⚽', label: 'AI анализирует матч...', hint: 'Изучаем форму команд, травмы, статистику и новости', steps: ['Анализ формы команд', 'Проверка травм и дисквалификаций', 'Сравнение коэффициентов', 'Формирование вердикта'] }
+  const isTextOnly = ['hockey','basketball','cs2','dota2','lol','valorant','tennis'].includes(sport)
+
   return (
     <div className="card" style={{ padding: 48, textAlign: 'center' }}>
       <div className="loading-teams" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginBottom: 24 }}>
-        {match.sport === 'hockey'
+        {isTextOnly
           ? <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{ fontWeight: 800, fontSize: 18, color: '#dde4ee' }}>{match.home}</div>
-              <span style={{ fontSize: 20, fontWeight: 800, color: '#dde4ee' }}>🏒 VS</span>
+              <span style={{ fontSize: 20, fontWeight: 800, color: '#dde4ee' }}>{meta.emoji} VS</span>
               <div style={{ fontWeight: 800, fontSize: 18, color: '#dde4ee' }}>{match.away}</div>
             </div>
           : <>
@@ -834,22 +924,13 @@ function LoadingAnalysis({ match }) {
             </>
         }
       </div>
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#dde4ee', marginBottom: 8 }}>
-        {match.sport === 'hockey' ? '🏒 AI анализирует матч...' : 'AI анализирует матч...'}
-      </h2>
-      <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
-        {match.sport === 'hockey'
-          ? 'Анализируем вратарей, форму, статистику голов и большинство'
-          : 'Изучаем форму команд, травмы, статистику и новости'}
-      </p>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#dde4ee', marginBottom: 8 }}>{meta.label}</h2>
+      <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>{meta.hint}</p>
       <div className="thinking-dots" style={{ fontSize: 24 }}>
         <span>●</span><span> ●</span><span> ●</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 400, margin: '24px auto 0' }}>
-        {(match.sport === 'hockey'
-          ? ['Форма команд и серии', 'Анализ вратарей и голевой статистики', 'Игра в большинстве и меньшинстве', 'Формирование вердикта']
-          : ['Анализ формы команд', 'Проверка травм и дисквалификаций', 'Сравнение коэффициентов', 'Формирование вердикта']
-        ).map((step, i) => (
+        {meta.steps.map((step, i) => (
           <div key={i} style={{
             display: 'flex', alignItems: 'flex-start', gap: 8,
             padding: '8px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: 8,
@@ -859,6 +940,120 @@ function LoadingAnalysis({ match }) {
             <span style={{ textAlign: 'left' }}>{step}</span>
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+// Generic sport match list (basketball, esports, tennis — all from Fonbet, no team images)
+function SportMatchList({ matches, loading, emptyIcon, emptyText, onSelect }) {
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {[1,2,3,4].map(i => (
+          <div key={i} className="card" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div className="skeleton" style={{ height: 15, flex: 1, maxWidth: 140 }} />
+            <div className="skeleton" style={{ height: 15, width: 60 }} />
+            <div className="skeleton" style={{ height: 15, flex: 1, maxWidth: 140 }} />
+            <div style={{ display: 'flex', gap: 6, marginLeft: 'auto' }}>
+              {[1,2].map(j => <div key={j} className="skeleton" style={{ width: 44, height: 38, borderRadius: 8 }} />)}
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (!matches.length) {
+    return (
+      <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8' }}>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>{emptyIcon}</div>
+        <p>{emptyText}</p>
+      </div>
+    )
+  }
+
+  // Group by league for better readability
+  const grouped = matches.reduce((acc, m) => {
+    const key = m.league || 'Другие'
+    if (!acc[key]) acc[key] = []
+    acc[key].push(m)
+    return acc
+  }, {})
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {Object.entries(grouped).map(([league, leagueMatches]) => (
+        <div key={league}>
+          <div style={{
+            fontSize: 11, fontWeight: 700, color: '#4a6a8a', letterSpacing: 0.8,
+            textTransform: 'uppercase', marginBottom: 8, paddingLeft: 4,
+          }}>{league}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {leagueMatches.map(match => (
+              <SportMatchRow key={match.id} match={match} onClick={() => onSelect(match)} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function SportMatchRow({ match, onClick }) {
+  const [hovered, setHovered] = useState(false)
+  const odds = match.odds1x2
+  const sportColor = { basketball: '#f59e0b', cs2: '#ef4444', dota2: '#8b5cf6', lol: '#3b82f6', valorant: '#ef4444', tennis: '#22c55e' }[match.sport] || '#00cfff'
+
+  return (
+    <div
+      className="card match-row"
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        padding: '14px 18px', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', gap: 12,
+        transition: 'all 0.15s',
+        transform: hovered ? 'translateX(4px)' : 'none',
+        border: hovered ? `1.5px solid ${sportColor}55` : '1.5px solid transparent',
+      }}
+    >
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontWeight: 700, fontSize: 13, color: '#dde4ee', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {match.home}
+          <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 400, margin: '0 6px' }}>vs</span>
+          {match.away}
+        </div>
+        {match.date && <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{match.date}</div>}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+        {odds && (
+          <div style={{ display: 'flex', gap: 4 }}>
+            {[{ label: '1', val: odds.home }, ...(odds.draw ? [{ label: 'X', val: odds.draw }] : []), { label: '2', val: odds.away }].map(o => (
+              <div key={o.label} style={{
+                textAlign: 'center', background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '4px 7px', minWidth: 38,
+              }}>
+                <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600 }}>{o.label}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#dde4ee' }}>{o.val}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div style={{
+          background: hovered ? `${sportColor}22` : 'rgba(0,25,60,0.5)',
+          color: hovered ? sportColor : '#4a6a8a',
+          border: `1px solid ${hovered ? sportColor + '55' : 'rgba(0,180,255,0.1)'}`,
+          borderRadius: 20, padding: '6px 12px',
+          fontSize: 13, fontWeight: 600,
+          display: 'flex', alignItems: 'center', gap: 5,
+          transition: 'all 0.15s',
+        }}>
+          <Zap size={13} /> Анализ
+        </div>
       </div>
     </div>
   )

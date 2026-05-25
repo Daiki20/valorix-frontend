@@ -140,6 +140,92 @@ export async function getUpcomingHockeyMatches() {
   } catch { return [] }
 }
 
+// Get upcoming football matches from Fonbet (replaces sstats.net)
+export async function getUpcomingFootballMatchesFonbet(limit = 100) {
+  try {
+    const res = await fetch(`${API_BASE}/matches/football`)
+    if (!res.ok) return MOCK_MATCHES
+    const { data } = await res.json()
+    return (data || []).slice(0, limit)
+  } catch { return MOCK_MATCHES }
+}
+
+// Get upcoming basketball matches from Fonbet
+export async function getUpcomingBasketballMatches(limit = 60) {
+  try {
+    const res = await fetch(`${API_BASE}/matches/basketball-fonbet`)
+    if (!res.ok) return []
+    const { data } = await res.json()
+    return data || []
+  } catch { return [] }
+}
+
+// Get upcoming esports matches from Fonbet
+export async function getUpcomingEsportsMatches(limit = 80) {
+  try {
+    const res = await fetch(`${API_BASE}/matches/esports`)
+    if (!res.ok) return []
+    const { data } = await res.json()
+    return data || []
+  } catch { return [] }
+}
+
+// Get upcoming tennis matches from Fonbet
+export async function getUpcomingTennisMatches(limit = 60) {
+  try {
+    const res = await fetch(`${API_BASE}/matches/tennis`)
+    if (!res.ok) return []
+    const { data } = await res.json()
+    return data || []
+  } catch { return [] }
+}
+
+// Analyze basketball match (Fonbet match → enrichBasketball)
+export async function analyzeBasketballMatch(match) {
+  const matchInfo = {
+    home: match.home,
+    away: match.away,
+    league: match.league || 'Баскетбол',
+    score: match.score || null,
+    minute: match.minute || null,
+    odds1: match.odds1x2?.home || null,
+    oddsX: match.odds1x2?.draw || null,
+    odds2: match.odds1x2?.away || null,
+  }
+  return enrichBasketball(matchInfo)
+}
+
+// Analyze esports match (Fonbet match → enrichWithBDL)
+export async function analyzeEsportsMatch(match) {
+  const game = match.sport || 'cs2'
+  const matchInfo = {
+    home: match.home,
+    away: match.away,
+    league: match.league || game,
+    score: match.score || null,
+    minute: match.minute || null,
+    odds1: match.odds1x2?.home || null,
+    oddsX: match.odds1x2?.draw || null,
+    odds2: match.odds1x2?.away || null,
+  }
+  return enrichWithBDL(matchInfo, game)
+}
+
+// Analyze tennis match (Fonbet match → enrichWithBDL)
+export async function analyzeTennisMatch(match) {
+  const matchInfo = {
+    home: match.home,
+    away: match.away,
+    league: match.league || 'Теннис',
+    score: match.score || null,
+    minute: match.minute || null,
+    odds1: match.odds1x2?.home || null,
+    oddsX: null,
+    odds2: match.odds1x2?.away || null,
+  }
+  return enrichWithBDL(matchInfo, 'tennis')
+}
+
 // Get live matches — via backend proxy (avoids browser rate-limiting sstats)
 export async function getLiveMatches() {
   try {
