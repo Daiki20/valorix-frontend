@@ -8,7 +8,7 @@ import {
   searchMatches, analyzeMatch, analyzeHockeyMatch, analyzeBasketballMatch, analyzeEsportsMatch, analyzeTennisMatch,
   getUpcomingMatches, getLiveMatches, getUpcomingHockeyMatches, getUpcomingHockeyMatchesFonbet, getUpcomingFootballMatchesFonbet,
   getUpcomingBasketballMatches, getUpcomingEsportsMatches, getUpcomingTennisMatches,
-  getAllLiveMatches, fetchTeamLogo,
+  getAllLiveMatches,
 } from '../api/sportsApi'
 import { coinsApi } from '../api/authApi'
 import ExpressCard from '../components/ExpressCard'
@@ -752,40 +752,45 @@ function MatchRow({ match, onClick, isLiveTab }) {
   )
 }
 
+// Deterministic color from team name
+function teamColor(name) {
+  const palette = ['#ef4444','#3b82f6','#22c55e','#f59e0b','#8b5cf6','#ec4899','#0ea5e9','#14b8a6','#f97316','#6366f1']
+  let hash = 0
+  for (let i = 0; i < (name || '').length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0
+  return palette[hash % palette.length]
+}
+
 function TeamLogo({ name, img, size = 44 }) {
-  const [resolvedImg, setResolvedImg] = useState(img || null)
   const [imgError, setImgError] = useState(false)
+  const color = teamColor(name)
+  const letter = (name || '?').trim()[0].toUpperCase()
 
-  useEffect(() => {
-    if (img) { setResolvedImg(img); setImgError(false); return }
-    if (!name) return
-    // Try to load logo from backend proxy (TheSportsDB, cached)
-    fetchTeamLogo(name).then(url => {
-      if (url) { setResolvedImg(url); setImgError(false) }
-    })
-  }, [name, img])
-
-  const colors = ['#ef4444', '#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#ec4899']
-  const color = colors[(name || '').charCodeAt(0) % colors.length]
-
-  if (resolvedImg && !imgError) {
+  // Use real image only if explicitly provided (NHL/AllSports logos)
+  if (img && !imgError) {
     return (
       <img
-        src={resolvedImg}
+        src={img}
         alt={name}
         onError={() => setImgError(true)}
         style={{ width: size, height: size, borderRadius: '50%', objectFit: 'contain', background: 'rgba(255,255,255,0.06)', flexShrink: 0 }}
       />
     )
   }
+
+  // Badge-style letter avatar — looks intentional, not like a fallback
+  const radius = size > 36 ? size * 0.22 : size * 0.28
   return (
     <div style={{
-      width: size, height: size, borderRadius: '50%',
-      background: color, color: 'white', flexShrink: 0,
+      width: size, height: size, borderRadius: radius,
+      background: `linear-gradient(135deg, ${color}cc, ${color}88)`,
+      border: `1.5px solid ${color}55`,
+      color: 'white', flexShrink: 0,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: size * 0.36, fontWeight: 800,
+      fontSize: size * 0.42, fontWeight: 900,
+      letterSpacing: -0.5,
+      boxShadow: `0 2px 8px ${color}33`,
     }}>
-      {(name || '?')[0].toUpperCase()}
+      {letter}
     </div>
   )
 }
