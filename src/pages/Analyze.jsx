@@ -286,7 +286,6 @@ export default function Analyze() {
           {[
             { id: 'football', label: '⚽ Футбол' },
             { id: 'hockey', label: '🏒 Хоккей' },
-            { id: 'basketball', label: '🏀 Баскет' },
             { id: 'esports', label: '🎮 Киберспорт' },
             { id: 'tennis', label: '🎾 Теннис' },
             { id: 'live', label: '🔴 Лайв' },
@@ -384,15 +383,7 @@ export default function Analyze() {
           </>
         )}
 
-        {activeTab === 'basketball' && (
-          <SportMatchList
-            matches={basketballMatches.filter(m => !m.isLive)}
-            loading={basketballLoading}
-            emptyIcon="🏀"
-            emptyText="Матчи по баскетболу не найдены"
-            onSelect={handleSelectMatch}
-          />
-        )}
+        {/* basketball tab hidden — no reliable stats source for NBA 2025-26 season */}
 
         {activeTab === 'esports' && (
           <SportMatchList
@@ -448,30 +439,33 @@ export default function Analyze() {
             all:        { label: '🔴 Все',        color: '#ef4444' },
             football:   { label: '⚽ Футбол',     color: '#22c55e' },
             hockey:     { label: '🏒 Хоккей',     color: '#0ea5e9' },
-            basketball: { label: '🏀 Баскет',     color: '#f59e0b' },
+            // basketball hidden — no reliable NBA stats source
             esports:    { label: '🎮 Кибер',      color: '#8b5cf6' },
             tennis:     { label: '🎾 Теннис',     color: '#10b981' },
           }
 
+          // basketball hidden — no reliable stats source, filter it out
+          const liveFiltered = liveAllMatches.filter(m => m.sport !== 'basketball')
+
           // group by sport
           const bySport = {}
-          for (const m of liveAllMatches) {
+          for (const m of liveFiltered) {
             const s = m.sport || 'other'
             if (!bySport[s]) bySport[s] = []
             bySport[s].push(m)
           }
           // esports sub-sports all roll up to 'esports' for filtering
           const esportSports = ['cs2', 'dota2', 'lol', 'valorant']
-          const esportsMatches_ = liveAllMatches.filter(m => esportSports.includes(m.sport))
+          const esportsMatches_ = liveFiltered.filter(m => esportSports.includes(m.sport))
 
           const countFor = id => {
-            if (id === 'all') return liveAllMatches.length
+            if (id === 'all') return liveFiltered.length
             if (id === 'esports') return esportsMatches_.length
             return (bySport[id] || []).length
           }
 
           const currentMatches = (() => {
-            if (liveFilter === 'all') return liveAllMatches
+            if (liveFilter === 'all') return liveFiltered
             if (liveFilter === 'esports') return esportsMatches_
             return bySport[liveFilter] || []
           })()

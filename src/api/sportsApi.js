@@ -718,6 +718,15 @@ async function enrichBasketball(matchInfo) {
     if (res.ok) formData = await res.json()
   } catch { /* optional */ }
 
+  // ── Guard: no real data → refuse to fabricate ─────────────────────────────
+  const hasRealData = !!(formData.homeForm || formData.awayForm || formData.homeStanding || formData.h2h?.length)
+  if (!hasRealData) {
+    throw new Error(
+      `Статистика по матчу ${matchInfo.home} — ${matchInfo.away} недоступна в базе данных BallDontLie. ` +
+      `Анализ без реальных данных отключён, чтобы исключить недостоверные прогнозы.`
+    )
+  }
+
   const match = {
     home: matchInfo.home,
     away: matchInfo.away,
