@@ -146,7 +146,7 @@ export async function getUpcomingHockeyMatchesFonbet(limit = 100) {
     const res = await fetch(`${API_BASE}/matches/hockey-fonbet`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return data || []
+    return resolveMatchImgs(data)
   } catch { return [] }
 }
 
@@ -156,8 +156,17 @@ export async function getUpcomingFootballMatchesFonbet(limit = 100) {
     const res = await fetch(`${API_BASE}/matches/football`)
     if (!res.ok) return MOCK_MATCHES
     const { data } = await res.json()
-    return (data || []).slice(0, limit)
+    return resolveMatchImgs(data).slice(0, limit)
   } catch { return MOCK_MATCHES }
+}
+
+// Resolve relative image paths (backend proxy) to full URLs
+function resolveMatchImgs(matches) {
+  return (matches || []).map(m => ({
+    ...m,
+    homeImg: resolveImg(m.homeImg),
+    awayImg: resolveImg(m.awayImg),
+  }))
 }
 
 // Get upcoming basketball matches from Fonbet
@@ -166,7 +175,7 @@ export async function getUpcomingBasketballMatches(limit = 60) {
     const res = await fetch(`${API_BASE}/matches/basketball-fonbet`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return data || []
+    return resolveMatchImgs(data)
   } catch { return [] }
 }
 
@@ -176,7 +185,7 @@ export async function getUpcomingEsportsMatches(limit = 80) {
     const res = await fetch(`${API_BASE}/matches/esports`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return data || []
+    return resolveMatchImgs(data)
   } catch { return [] }
 }
 
@@ -186,7 +195,7 @@ export async function getUpcomingTennisMatches(limit = 60) {
     const res = await fetch(`${API_BASE}/matches/tennis`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return data || []
+    return resolveMatchImgs(data)
   } catch { return [] }
 }
 
@@ -196,7 +205,7 @@ export async function getAllLiveMatches() {
     const res = await fetch(`${API_BASE}/matches/live-all`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return data || []
+    return resolveMatchImgs(data)
   } catch { return [] }
 }
 
@@ -222,11 +231,58 @@ export async function fetchTeamLogo(name) {
   return promise
 }
 
+// ── NBA team name translation: Fonbet Russian names → English for BallDontLie lookup ──
+const NBA_TEAMS_RU = {
+  'атланта': 'Atlanta Hawks',       'хоукс': 'Atlanta Hawks',
+  'бостон': 'Boston Celtics',       'селтикс': 'Boston Celtics',
+  'бруклин': 'Brooklyn Nets',       'нетс': 'Brooklyn Nets',
+  'шарлотт': 'Charlotte Hornets',   'хорнетс': 'Charlotte Hornets',
+  'чикаго': 'Chicago Bulls',        'буллс': 'Chicago Bulls',
+  'кливленд': 'Cleveland Cavaliers','кавальерс': 'Cleveland Cavaliers', 'кавс': 'Cleveland Cavaliers',
+  'даллас': 'Dallas Mavericks',     'маверикс': 'Dallas Mavericks',
+  'денвер': 'Denver Nuggets',       'наггетс': 'Denver Nuggets',
+  'детройт': 'Detroit Pistons',     'пистонс': 'Detroit Pistons',
+  'голден стейт': 'Golden State Warriors', 'уорриорс': 'Golden State Warriors',
+  'хьюстон': 'Houston Rockets',     'рокетс': 'Houston Rockets',
+  'индиана': 'Indiana Pacers',      'пейсерс': 'Indiana Pacers',
+  'лос-анджелес клипперс': 'Los Angeles Clippers', 'клипперс': 'Los Angeles Clippers',
+  'лос-анджелес лейкерс': 'Los Angeles Lakers',    'лейкерс': 'Los Angeles Lakers',
+  'мемфис': 'Memphis Grizzlies',    'гриззлис': 'Memphis Grizzlies',
+  'майами': 'Miami Heat',           'хит': 'Miami Heat',
+  'милуоки': 'Milwaukee Bucks',     'бакс': 'Milwaukee Bucks',
+  'миннесота': 'Minnesota Timberwolves', 'тимбервулвс': 'Minnesota Timberwolves',
+  'нью-орлеан': 'New Orleans Pelicans',  'пеликанс': 'New Orleans Pelicans',
+  'нью-йорк': 'New York Knicks',    'никс': 'New York Knicks',
+  'оклахома': 'Oklahoma City Thunder', 'тандер': 'Oklahoma City Thunder',
+  'орландо': 'Orlando Magic',       'мэджик': 'Orlando Magic',
+  'филадельфия': 'Philadelphia 76ers', '76ers': 'Philadelphia 76ers',
+  'финикс': 'Phoenix Suns',         'санс': 'Phoenix Suns',
+  'портленд': 'Portland Trail Blazers', 'блейзерс': 'Portland Trail Blazers',
+  'сакраменто': 'Sacramento Kings', 'кингс': 'Sacramento Kings',
+  'сан-антонио': 'San Antonio Spurs', 'спёрс': 'San Antonio Spurs', 'спурс': 'San Antonio Spurs',
+  'торонто': 'Toronto Raptors',     'рэпторс': 'Toronto Raptors',
+  'юта': 'Utah Jazz',               'джаз': 'Utah Jazz',
+  'вашингтон': 'Washington Wizards','уизардс': 'Washington Wizards',
+}
+function translateNBATeam(name) {
+  const key = (name || '').toLowerCase().trim()
+  // exact match
+  if (NBA_TEAMS_RU[key]) return NBA_TEAMS_RU[key]
+  // partial match — first word
+  const firstWord = key.split(/\s+/)[0]
+  if (NBA_TEAMS_RU[firstWord]) return NBA_TEAMS_RU[firstWord]
+  return name   // already English or unknown
+}
+
 // Analyze basketball match (Fonbet match → enrichBasketball)
 export async function analyzeBasketballMatch(match) {
+  const homeEn = translateNBATeam(match.home)
+  const awayEn = translateNBATeam(match.away)
   const matchInfo = {
-    home: match.home,
+    home: match.home,          // display name (Russian for UI)
+    homeEn,                    // English for BallDontLie lookup
     away: match.away,
+    awayEn,
     league: match.league || 'Баскетбол',
     score: match.score || null,
     minute: match.minute || null,
