@@ -267,24 +267,6 @@ export default function Landing() {
         }}>
           <div className="container" style={{ maxWidth: 1200, margin: '0 auto' }}>
 
-            {/* ── На мобилке: мяч сверху, затем текст ── */}
-            {isMobile && (
-              <div style={{
-                display: 'flex', justifyContent: 'center',
-                overflow: 'hidden',
-                height: isSmall ? 200 : 280,
-                marginBottom: 24,
-                animation: 'fadeInRight 0.8s ease forwards',
-              }}>
-                <div style={{
-                  transform: isSmall ? 'scale(0.40)' : 'scale(0.56)',
-                  transformOrigin: 'top center',
-                  flexShrink: 0,
-                }}>
-                  <CosmicOrb />
-                </div>
-              </div>
-            )}
 
             <div className="hero-grid" style={{
               display: 'grid',
