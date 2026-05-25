@@ -6,7 +6,7 @@ import AnalysisResult from '../components/AnalysisResult'
 import AuthModal from '../components/AuthModal'
 import {
   searchMatches, analyzeMatch, analyzeHockeyMatch, analyzeBasketballMatch, analyzeEsportsMatch, analyzeTennisMatch,
-  getUpcomingMatches, getLiveMatches, getUpcomingHockeyMatches,
+  getUpcomingMatches, getLiveMatches, getUpcomingHockeyMatches, getUpcomingHockeyMatchesFonbet, getUpcomingFootballMatchesFonbet,
   getUpcomingBasketballMatches, getUpcomingEsportsMatches, getUpcomingTennisMatches,
 } from '../api/sportsApi'
 import { coinsApi } from '../api/authApi'
@@ -51,9 +51,10 @@ export default function Analyze() {
   const [liveFilter, setLiveFilter] = useState('football')
 
   useEffect(() => {
-    getUpcomingMatches(20)
-      .then(setMatches)
-      .catch(() => {})
+    // Football: Fonbet primary (has odds), fallback to sstats
+    getUpcomingFootballMatchesFonbet(100)
+      .then(m => { if (m.length > 0) setMatches(m); else return getUpcomingMatches(20).then(setMatches) })
+      .catch(() => getUpcomingMatches(20).then(setMatches).catch(() => {}))
       .finally(() => setLoading(false))
   }, [])
 
@@ -69,9 +70,22 @@ export default function Analyze() {
   useEffect(() => {
     if (activeTab !== 'hockey' || hockeyMatches.length > 0) return
     setHockeyLoading(true)
-    getUpcomingHockeyMatches()
-      .then(m => { setHockeyMatches(m); if (m.length === 0) setShowHockeyForm(true) })
-      .catch(() => setShowHockeyForm(true))
+    // Hockey: Fonbet primary (has odds for КХЛ/НХЛ/etc), fallback to AllSports (has logos)
+    getUpcomingHockeyMatchesFonbet(100)
+      .then(fonbetMatches => {
+        if (fonbetMatches.length > 0) {
+          setHockeyMatches(fonbetMatches)
+        } else {
+          return getUpcomingHockeyMatches()
+            .then(m => { setHockeyMatches(m); if (m.length === 0) setShowHockeyForm(true) })
+            .catch(() => setShowHockeyForm(true))
+        }
+      })
+      .catch(() => {
+        getUpcomingHockeyMatches()
+          .then(m => { setHockeyMatches(m); if (m.length === 0) setShowHockeyForm(true) })
+          .catch(() => setShowHockeyForm(true))
+      })
       .finally(() => setHockeyLoading(false))
   }, [activeTab])
 
@@ -316,11 +330,23 @@ export default function Analyze() {
               </div>
             ) : hockeyMatches.length > 0 ? (
               <>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
-                  {hockeyMatches.map(match => (
-                    <HockeyMatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} />
-                  ))}
-                </div>
+                {/* If matches have league field (Fonbet) — use grouped SportMatchList */}
+                {hockeyMatches[0]?.sport === 'hockey' && hockeyMatches[0]?.league ? (
+                  <SportMatchList
+                    matches={hockeyMatches}
+                    loading={false}
+                    emptyIcon="🏒"
+                    emptyText="Хоккейные матчи не найдены"
+                    onSelect={handleSelectMatch}
+                    accentColor="#0ea5e9"
+                  />
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+                    {hockeyMatches.map(match => (
+                      <HockeyMatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} />
+                    ))}
+                  </div>
+                )}
                 <button
                   onClick={() => setShowHockeyForm(f => !f)}
                   style={{
@@ -328,10 +354,10 @@ export default function Analyze() {
                     background: 'none', border: '1.5px dashed rgba(0,180,255,0.2)',
                     borderRadius: 10, padding: '10px 16px', cursor: 'pointer',
                     fontSize: 13, fontWeight: 600, color: '#4a6a8a',
-                    marginBottom: 16, width: '100%',
+                    marginBottom: 16, marginTop: 8, width: '100%',
                     transition: 'all 0.15s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#00cfff'; e.currentTarget.style.color = '#00cfff' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#0ea5e9'; e.currentTarget.style.color = '#0ea5e9' }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,180,255,0.2)'; e.currentTarget.style.color = '#4a6a8a' }}
                 >
                   {showHockeyForm ? '✕ Скрыть форму' : '+ Другой матч (ввести вручную)'}
@@ -945,8 +971,8 @@ function LoadingAnalysis({ match }) {
   )
 }
 
-// Generic sport match list (basketball, esports, tennis — all from Fonbet, no team images)
-function SportMatchList({ matches, loading, emptyIcon, emptyText, onSelect }) {
+// Generic sport match list (basketball, esports, tennis, hockey — all from Fonbet, no team images)
+function SportMatchList({ matches, loading, emptyIcon, emptyText, onSelect, accentColor }) {
   if (loading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -991,7 +1017,7 @@ function SportMatchList({ matches, loading, emptyIcon, emptyText, onSelect }) {
           }}>{league}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {leagueMatches.map(match => (
-              <SportMatchRow key={match.id} match={match} onClick={() => onSelect(match)} />
+              <SportMatchRow key={match.id} match={match} onClick={() => onSelect(match)} accentColor={accentColor} />
             ))}
           </div>
         </div>
@@ -1000,10 +1026,10 @@ function SportMatchList({ matches, loading, emptyIcon, emptyText, onSelect }) {
   )
 }
 
-function SportMatchRow({ match, onClick }) {
+function SportMatchRow({ match, onClick, accentColor }) {
   const [hovered, setHovered] = useState(false)
   const odds = match.odds1x2
-  const sportColor = { basketball: '#f59e0b', cs2: '#ef4444', dota2: '#8b5cf6', lol: '#3b82f6', valorant: '#ef4444', tennis: '#22c55e' }[match.sport] || '#00cfff'
+  const sportColor = accentColor || { basketball: '#f59e0b', cs2: '#ef4444', dota2: '#8b5cf6', lol: '#3b82f6', valorant: '#ef4444', tennis: '#22c55e', hockey: '#0ea5e9' }[match.sport] || '#00cfff'
 
   return (
     <div

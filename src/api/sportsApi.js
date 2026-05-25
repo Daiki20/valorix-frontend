@@ -140,6 +140,16 @@ export async function getUpcomingHockeyMatches() {
   } catch { return [] }
 }
 
+// Get upcoming hockey matches from Fonbet (КХЛ, НХЛ, ВХЛ, МХЛ — with odds)
+export async function getUpcomingHockeyMatchesFonbet(limit = 100) {
+  try {
+    const res = await fetch(`${API_BASE}/matches/hockey-fonbet`)
+    if (!res.ok) return []
+    const { data } = await res.json()
+    return data || []
+  } catch { return [] }
+}
+
 // Get upcoming football matches from Fonbet (replaces sstats.net)
 export async function getUpcomingFootballMatchesFonbet(limit = 100) {
   try {
