@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /history
+Disallow: /analyze
+Disallow: /upload
+Disallow: /payment-return
+
+Sitemap: https://valorix.ai/sitemap.xml
