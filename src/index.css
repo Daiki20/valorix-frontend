@@ -367,3 +367,74 @@ h1, h2, h3, .heading-font {
   .locked-card   { padding: 20px 16px !important; }
   .express-section { padding: 24px 12px 0 !important; }
 }
+
+/* ══════════════════════════════════════
+   LANDING MOBILE — CosmicOrb, grids, CTA
+   ══════════════════════════════════════ */
+
+/* Tablet: центрировать шар (он уже под текстом, т.к. hero-grid → 1fr) */
+@media (max-width: 1023px) {
+  .hero-orb-section { justify-content: center !important; }
+  .hero-section     { padding: 60px 24px 40px !important; }
+}
+
+@media (max-width: 767px) {
+  /* Hero section */
+  .hero-section       { padding: 40px 20px 28px !important; }
+
+  /* Шар: уменьшаем через transform чтобы пропорции внутри сохранились */
+  .hero-orb-section   { overflow: hidden; height: 300px; }
+  .cosmic-orb         { transform: scale(0.6); transform-origin: top center; }
+
+  /* "Как это работает" — 2 колонки → 1 */
+  .how-grid           { grid-template-columns: 1fr !important; gap: 20px !important; }
+
+  /* "Преимущества" — 2 колонки → 1 */
+  .features-outer     { grid-template-columns: 1fr !important; gap: 28px !important; }
+
+  /* Статистика-тикер */
+  .stats-ticker-inner { gap: 20px !important; }
+
+  /* Секционные заголовки */
+  .section-title      { font-size: 30px !important; }
+
+  /* CTA */
+  .cta-title          { font-size: 38px !important; letter-spacing: -1.5px !important; }
+}
+
+@media (max-width: 479px) {
+  /* Шар — скрываем на совсем маленьких, чтобы не отвлекал */
+  .hero-orb-section   { display: none !important; }
+
+  /* Доп. уменьшение */
+  .cta-title          { font-size: 30px !important; letter-spacing: -1px !important; }
+  .how-grid           { gap: 14px !important; }
+  .features-outer     { gap: 20px !important; }
+  .stats-ticker-inner { gap: 16px !important; }
+
+  /* Убираем левый большой card в "Как работает" — он дублирует 3 шага */
+  .how-grid-feature   { display: none !important; }
+}
+
+/* ══════════════════════════════════════
+   ANALYZE PAGE MOBILE
+   ══════════════════════════════════════ */
+@media (max-width: 767px) {
+  .loading-teams      { flex-wrap: wrap !important; justify-content: center !important; gap: 10px !important; }
+  .bk-odds-header     { flex-wrap: wrap !important; gap: 8px !important; }
+}
+
+/* ══════════════════════════════════════
+   UPLOAD PAGE
+   ══════════════════════════════════════ */
+@media (max-width: 479px) {
+  .upload-dropzone    { padding: 40px 20px !important; }
+}
+
+/* ══════════════════════════════════════
+   COINS MODAL
+   ══════════════════════════════════════ */
+@media (max-width: 479px) {
+  .coin-packages-inner { padding: 24px 18px !important; }
+  .coin-packages-modal { align-items: flex-start !important; padding: 12px 12px 24px !important; }
+}

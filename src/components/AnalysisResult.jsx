@@ -191,7 +191,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
       {/* Best odds */}
       {analysis.bestOdds && analysis.bestOdds.length > 0 && (
         <div className="card" style={{ padding: '24px 28px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <div className="bk-odds-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 8, flexWrap: 'wrap' }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: TEXT, display: 'flex', alignItems: 'center', gap: 8 }}>
               <TrendingUp size={18} color={ACCENT} />
               Коэффициенты букмекеров

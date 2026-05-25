@@ -51,15 +51,18 @@ export default function CoinsModal({ onClose }) {
       }} />
 
       <div className="coin-packages-modal" style={{
-        position: 'fixed', top: '50%', left: '50%',
-        transform: 'translate(-50%,-50%)',
-        zIndex: 201, width: '100%', maxWidth: 460, padding: '0 16px',
+        position: 'fixed', inset: 0,
+        zIndex: 201,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '16px', overflowY: 'auto',
       }}>
-        <div className="card" style={{
+        <div className="card coin-packages-inner" style={{
+          width: '100%', maxWidth: 460,
           padding: '36px 32px', position: 'relative',
           background: '#07132a',
           border: `1px solid ${BORDER}`,
           boxShadow: '0 24px 80px rgba(0,0,0,0.6)',
+          flexShrink: 0,
         }}>
           {/* Close */}
           <button onClick={onClose} style={{

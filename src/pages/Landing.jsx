@@ -61,7 +61,7 @@ const MUTED = '#4a6a8a'
 /* ── Space Football (иллюстрация справа) ── */
 function CosmicOrb() {
   return (
-    <div style={{ position: 'relative', width: 480, height: 480, flexShrink: 0 }}>
+    <div className="cosmic-orb" style={{ position: 'relative', width: 480, height: 480, flexShrink: 0 }}>
       {/* Outer ambient glow */}
       <div style={{
         position: 'absolute', inset: -40,
@@ -246,7 +246,7 @@ export default function Landing() {
         {/* ════════════════════════════════════
             HERO
         ════════════════════════════════════ */}
-        <section style={{ padding: '80px 24px 60px', position: 'relative', overflow: 'hidden' }}>
+        <section className="hero-section" style={{ padding: '80px 24px 60px', position: 'relative', overflow: 'hidden' }}>
           <div className="container" style={{ maxWidth: 1200, margin: '0 auto' }}>
             <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
 
@@ -320,7 +320,7 @@ export default function Landing() {
               </div>
 
               {/* ── Right: cosmic orb ── */}
-              <div style={{
+              <div className="hero-orb-section" style={{
                 display: 'flex', justifyContent: 'flex-end',
                 animation: 'fadeInRight 0.8s ease forwards',
               }}>
@@ -339,7 +339,7 @@ export default function Landing() {
           padding: '20px 24px',
           backdropFilter: 'blur(8px)',
         }}>
-          <div className="container" style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'center', gap: 64, flexWrap: 'wrap' }}>
+          <div className="container stats-ticker-inner" style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'center', gap: 64, flexWrap: 'wrap' }}>
             {[
               { num: '10 000+', label: 'Анализов сделано' },
               { num: '73%',     label: 'Точность прогнозов' },
@@ -360,7 +360,7 @@ export default function Landing() {
         <div id="express" className="express-section" style={{ maxWidth: 1440, margin: '0 auto', padding: '72px 32px 0' }}>
           <div style={{ textAlign: 'center', marginBottom: 36 }}>
             <div className="badge" style={{ marginBottom: 16 }}>ЕЖЕДНЕВНО</div>
-            <h2 style={{
+            <h2 className="section-title" style={{
               fontFamily: 'Space Grotesk, sans-serif',
               fontSize: 42, fontWeight: 800, color: TEXT, letterSpacing: -1, margin: 0,
             }}>
@@ -397,9 +397,9 @@ export default function Landing() {
               </h2>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 48, alignItems: 'start' }}>
+            <div className="how-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 48, alignItems: 'start' }}>
               {/* Left: big card */}
-              <div className="card-glow" style={{ padding: '36px 32px' }}>
+              <div className="card-glow how-grid-feature" style={{ padding: '36px 32px' }}>
                 <div style={{
                   width: 56, height: 56, borderRadius: 16,
                   background: ADIM, border: `1px solid rgba(0,207,255,0.15)`,
@@ -456,11 +456,11 @@ export default function Landing() {
         ════════════════════════════════════ */}
         <section className="section-pad" style={{ padding: '96px 24px', background: BG }}>
           <div className="container" style={{ maxWidth: 1200, margin: '0 auto' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'start' }}>
+            <div className="features-outer" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'start' }}>
               {/* Left header */}
               <div>
                 <div className="badge" style={{ marginBottom: 20 }}>ПРЕИМУЩЕСТВА</div>
-                <h2 style={{
+                <h2 className="section-title" style={{
                   fontFamily: 'Space Grotesk, sans-serif',
                   fontSize: 42, fontWeight: 800, color: TEXT, letterSpacing: -1, marginBottom: 20, lineHeight: 1.15,
                 }}>
@@ -510,7 +510,7 @@ export default function Landing() {
           <div className="container" style={{ maxWidth: 760, margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: 60 }}>
               <div className="badge" style={{ marginBottom: 16 }}>FAQ</div>
-              <h2 style={{
+              <h2 className="section-title" style={{
                 fontFamily: 'Space Grotesk, sans-serif',
                 fontSize: 42, fontWeight: 800, color: TEXT, letterSpacing: -1,
               }}>Частые вопросы</h2>
@@ -546,7 +546,7 @@ export default function Landing() {
           }} />
           <div style={{ maxWidth: 600, margin: '0 auto', position: 'relative' }}>
             <div className="badge" style={{ marginBottom: 24 }}>НАЧНИ СЕЙЧАС</div>
-            <h2 style={{
+            <h2 className="cta-title" style={{
               fontFamily: 'Space Grotesk, sans-serif',
               fontSize: 52, fontWeight: 800, color: TEXT, letterSpacing: -2, marginBottom: 20, lineHeight: 1.1,
             }}>

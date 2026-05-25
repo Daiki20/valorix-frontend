@@ -119,6 +119,7 @@ export default function UploadScreen() {
             onDragLeave={() => setDragging(false)}
             onDrop={handleDrop}
             onClick={() => inputRef.current.click()}
+            className="upload-dropzone"
             style={{
               border: `2px dashed ${dragging ? '#00cfff' : 'rgba(0,180,255,0.2)'}`,
               borderRadius: 16, padding: '64px 32px',

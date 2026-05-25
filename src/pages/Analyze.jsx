@@ -820,7 +820,7 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
 function LoadingAnalysis({ match }) {
   return (
     <div className="card" style={{ padding: 48, textAlign: 'center' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginBottom: 24 }}>
+      <div className="loading-teams" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginBottom: 24 }}>
         {match.sport === 'hockey'
           ? <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{ fontWeight: 800, fontSize: 18, color: '#dde4ee' }}>{match.home}</div>
