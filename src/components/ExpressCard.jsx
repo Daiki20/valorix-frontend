@@ -514,30 +514,53 @@ export default function ExpressCard({ onAuthRequired }) {
     </div>
   )
 
-  if (error || (!standard && !high)) return (
-    <div style={{ marginBottom: 24 }}>
-      <style>{RESPONSIVE_STYLES}</style>
-      <SportTabs />
-      <div style={{
-        textAlign: 'center', padding: '40px 24px',
-        background: BG_PICK, borderRadius: 16,
-        border: `1.5px dashed ${BORDER}`,
-      }}>
-        <div style={{ fontSize: 40, marginBottom: 14 }}>{sportInfo?.emoji || '📅'}</div>
-        <div style={{ fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 8 }}>
-          Экспресс ещё не готов
+  if (error || (!standard && !high)) {
+    const otherSport = SPORT_OPTIONS.find(s => s.id !== selectedSport)
+    const isNoGames = !error || error.toLowerCase().includes('нет') || error.toLowerCase().includes('not found') || error.toLowerCase().includes('no ')
+    const noGamesMsg = selectedSport === 'football'
+      ? 'На завтра нет футбольных матчей, в которых AI достаточно уверен для сборки экспресса — возможно, вас заинтересует экспресс на хоккей 🏒'
+      : 'На завтра нет хоккейных матчей, в которых AI достаточно уверен для сборки экспресса — возможно, вас заинтересует футбольный экспресс ⚽'
+
+    return (
+      <div style={{ marginBottom: 24 }}>
+        <style>{RESPONSIVE_STYLES}</style>
+        <SportTabs />
+        <div style={{
+          textAlign: 'center', padding: '40px 24px',
+          background: BG_PICK, borderRadius: 16,
+          border: `1.5px dashed ${BORDER}`,
+        }}>
+          <div style={{ fontSize: 40, marginBottom: 14 }}>{sportInfo?.emoji || '📅'}</div>
+          <div style={{ fontWeight: 800, fontSize: 16, color: TEXT, marginBottom: 10 }}>
+            {isNoGames ? 'Экспресс недоступен' : 'Экспресс ещё не готов'}
+          </div>
+          <div style={{ fontSize: 13, color: MUTED, maxWidth: 340, margin: '0 auto', lineHeight: 1.65 }}>
+            {isNoGames ? noGamesMsg : (error || 'Генерация запланирована. Попробуйте позже.')}
+          </div>
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 18, flexWrap: 'wrap' }}>
+            <button onClick={() => loadSport(selectedSport)} style={{
+              padding: '8px 18px', borderRadius: 10,
+              background: 'rgba(255,255,255,0.04)',
+              color: MUTED, border: `1.5px solid ${BORDER}`,
+              fontWeight: 600, fontSize: 13, cursor: 'pointer',
+            }}>Обновить</button>
+            {isNoGames && otherSport && (
+              <button onClick={() => loadSport(otherSport.id)} style={{
+                padding: '8px 20px', borderRadius: 10,
+                background: otherSport.grad,
+                color: '#030b18', border: 'none',
+                fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 6,
+              }}>
+                <span>{otherSport.emoji}</span>
+                Экспресс на {otherSport.label}
+              </button>
+            )}
+          </div>
         </div>
-        <div style={{ fontSize: 13, color: MUTED, maxWidth: 320, margin: '0 auto' }}>
-          {error || 'Генерация запланирована. Попробуйте позже.'}
-        </div>
-        <button onClick={() => loadSport(selectedSport)} style={{
-          marginTop: 16, padding: '8px 20px', borderRadius: 10,
-          background: sportInfo?.grad || 'linear-gradient(135deg, #00cfff, #7b5ea7)',
-          color: '#030b18', border: 'none', fontWeight: 700, fontSize: 13, cursor: 'pointer',
-        }}>Обновить</button>
       </div>
-    </div>
-  )
+    )
+  }
 
   const isHockey = selectedSport === 'hockey'
 
