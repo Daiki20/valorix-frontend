@@ -304,7 +304,7 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
           </div>
         ) : (
           <div style={{ fontWeight: 900, fontSize: 24, color: cfg.oddsColor, letterSpacing: -1, flexShrink: 0 }}>
-            {sport === 'hockey' ? '>×2.33' : `×${data.total_odds?.toFixed(2) || '—'}`}
+            {`×${data.total_odds?.toFixed(2) || '—'}`}
           </div>
         )}
       </div>
@@ -338,9 +338,7 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
                 {isPurchased ? (
                   <>
                     <div style={{ fontWeight: 800, fontSize: 12, color: cfg.oddsColor, wordBreak: 'break-word' }}>{pick.prediction}</div>
-                    {sport !== 'hockey' && (
-                      <div style={{ fontSize: 12, color: '#22c55e', fontWeight: 700 }}>× {pick.odds}</div>
-                    )}
+                    <div style={{ fontSize: 12, color: '#22c55e', fontWeight: 700 }}>× {pick.odds}</div>
                   </>
                 ) : (
                   <div style={{
@@ -349,7 +347,7 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
                     background: cfg.numberBg,
                     borderRadius: 6, padding: '2px 6px',
                   }}>
-                    {sport === 'hockey' ? 'П1' : 'П1 × 1.55'}
+                    П1 × 1.55
                   </div>
                 )}
               </div>
@@ -370,7 +368,7 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
               <div>
                 <div style={{ fontSize: 11, color: MUTED, fontWeight: 600 }}>Итоговый коэф.</div>
                 <div style={{ fontSize: 20, fontWeight: 900, color: cfg.oddsColor }}>
-                  {sport === 'hockey' ? '>×2.33' : `×${data.total_odds?.toFixed(2)}`}
+                  ×{data.total_odds?.toFixed(2)}
                 </div>
               </div>
               <button onClick={() => setShowSummary(s => !s)} style={{
