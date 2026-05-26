@@ -307,7 +307,7 @@ export default function Landing() {
                       display: 'flex', alignItems: 'center', gap: 3,
                     }}>
                       <Zap size={11} fill="currentColor" strokeWidth={0} />
-                      19
+                      28
                     </span>
                   </Link>
                   <Link to="/upload" className="btn-outline" style={{ fontSize: 15 }}>
