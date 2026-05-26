@@ -1,3 +1,13 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/auth/:path*",    "destination": "https://web-production-fefcd.up.railway.app/auth/:path*" },
+    { "source": "/coins/:path*",   "destination": "https://web-production-fefcd.up.railway.app/coins/:path*" },
+    { "source": "/admin/:path*",   "destination": "https://web-production-fefcd.up.railway.app/admin/:path*" },
+    { "source": "/analyze/:path*", "destination": "https://web-production-fefcd.up.railway.app/analyze/:path*" },
+    { "source": "/share/:path*",   "destination": "https://web-production-fefcd.up.railway.app/share/:path*" },
+    { "source": "/express/:path*", "destination": "https://web-production-fefcd.up.railway.app/express/:path*" },
+    { "source": "/matches/:path*", "destination": "https://web-production-fefcd.up.railway.app/matches/:path*" },
+    { "source": "/health",         "destination": "https://web-production-fefcd.up.railway.app/health" },
+    { "source": "/(.*)",           "destination": "/index.html" }
+  ]
 }
