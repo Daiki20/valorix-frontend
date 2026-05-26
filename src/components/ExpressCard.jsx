@@ -257,26 +257,26 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
             {cfg.icon}
           </div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <div style={{ fontWeight: 900, fontSize: 14, color: TEXT, letterSpacing: -0.3 }}>
-                {cfg.label}
-              </div>
-              {cfg.discount && (
-                <div style={{
-                  fontSize: 10, fontWeight: 800, color: '#22c55e',
-                  background: 'rgba(34,197,94,0.12)',
-                  border: '1px solid rgba(34,197,94,0.25)',
-                  borderRadius: 20, padding: '1px 7px',
-                  whiteSpace: 'nowrap',
-                }}>−{cfg.discount}%</div>
-              )}
+            <div style={{ fontWeight: 900, fontSize: 14, color: TEXT, letterSpacing: -0.3 }}>
+              {cfg.label}
             </div>
-            <div style={{ fontSize: 11, color: cfg.numberColor, fontWeight: 700 }}>
-              {cfg.sublabel}
-              {data.generated_at && (
-                <span style={{ color: MUTED, fontWeight: 500, marginLeft: 6 }}>
-                  · {new Date(data.generated_at + 'Z').toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Moscow' })} мск
-                </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 11, color: cfg.numberColor, fontWeight: 700 }}>
+                {cfg.sublabel}
+                {data.generated_at && (
+                  <span style={{ color: MUTED, fontWeight: 500, marginLeft: 6 }}>
+                    · {new Date(data.generated_at + 'Z').toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Moscow' })} мск
+                  </span>
+                )}
+              </span>
+              {cfg.discount && (
+                <span style={{
+                  fontSize: 11, fontWeight: 800, color: '#22c55e',
+                  background: 'rgba(34,197,94,0.15)',
+                  border: '1px solid rgba(34,197,94,0.35)',
+                  borderRadius: 20, padding: '1px 8px',
+                  whiteSpace: 'nowrap', flexShrink: 0,
+                }}>−{cfg.discount}%</span>
               )}
             </div>
             {data.date && (() => {
