@@ -140,198 +140,6 @@ export async function getUpcomingHockeyMatches() {
   } catch { return [] }
 }
 
-// Get upcoming hockey matches from Fonbet (КХЛ, НХЛ, ВХЛ, МХЛ — with odds)
-export async function getUpcomingHockeyMatchesFonbet(limit = 100) {
-  try {
-    const res = await fetch(`${API_BASE}/matches/hockey-fonbet`)
-    if (!res.ok) return []
-    const { data } = await res.json()
-    return resolveMatchImgs(data)
-  } catch { return [] }
-}
-
-// Get upcoming football matches from Fonbet (replaces sstats.net)
-export async function getUpcomingFootballMatchesFonbet(limit = 100) {
-  try {
-    const res = await fetch(`${API_BASE}/matches/football`)
-    if (!res.ok) return MOCK_MATCHES
-    const { data } = await res.json()
-    return resolveMatchImgs(data).slice(0, limit)
-  } catch { return MOCK_MATCHES }
-}
-
-// Resolve relative image paths (backend proxy) to full URLs
-function resolveMatchImgs(matches) {
-  return (matches || []).map(m => ({
-    ...m,
-    homeImg: resolveImg(m.homeImg),
-    awayImg: resolveImg(m.awayImg),
-  }))
-}
-
-// Get upcoming basketball matches from Fonbet
-export async function getUpcomingBasketballMatches(limit = 60) {
-  try {
-    const res = await fetch(`${API_BASE}/matches/basketball-fonbet`)
-    if (!res.ok) return []
-    const { data } = await res.json()
-    return resolveMatchImgs(data)
-  } catch { return [] }
-}
-
-// Get upcoming esports matches from Fonbet
-export async function getUpcomingEsportsMatches(limit = 80) {
-  try {
-    const res = await fetch(`${API_BASE}/matches/esports`)
-    if (!res.ok) return []
-    const { data } = await res.json()
-    return resolveMatchImgs(data)
-  } catch { return [] }
-}
-
-// Get upcoming tennis matches from Fonbet
-export async function getUpcomingTennisMatches(limit = 60) {
-  try {
-    const res = await fetch(`${API_BASE}/matches/tennis`)
-    if (!res.ok) return []
-    const { data } = await res.json()
-    return resolveMatchImgs(data)
-  } catch { return [] }
-}
-
-// Get ALL live matches from Fonbet (football, hockey, basketball, esports, tennis)
-export async function getAllLiveMatches() {
-  try {
-    const res = await fetch(`${API_BASE}/matches/live-all`)
-    if (!res.ok) return []
-    const { data } = await res.json()
-    return resolveMatchImgs(data)
-  } catch { return [] }
-}
-
-// Team logo lookup via backend proxy (TheSportsDB, cached per session)
-const _logoCache = new Map()
-export async function fetchTeamLogo(name) {
-  if (!name) return null
-  const key = name.toLowerCase().trim()
-  if (_logoCache.has(key)) {
-    const v = _logoCache.get(key)
-    // if promise is still pending, return it; if resolved value, return it
-    return v
-  }
-  const promise = fetch(`${API_BASE}/matches/team-logo?name=${encodeURIComponent(name)}`)
-    .then(r => r.ok ? r.json() : { url: null })
-    .then(d => {
-      const url = d?.url || null
-      _logoCache.set(key, url)
-      return url
-    })
-    .catch(() => { _logoCache.set(key, null); return null })
-  _logoCache.set(key, promise)
-  return promise
-}
-
-// ── NBA team name translation: Fonbet Russian names → English for BallDontLie lookup ──
-const NBA_TEAMS_RU = {
-  'атланта': 'Atlanta Hawks',       'хоукс': 'Atlanta Hawks',
-  'бостон': 'Boston Celtics',       'селтикс': 'Boston Celtics',
-  'бруклин': 'Brooklyn Nets',       'нетс': 'Brooklyn Nets',
-  'шарлотт': 'Charlotte Hornets',   'хорнетс': 'Charlotte Hornets',
-  'чикаго': 'Chicago Bulls',        'буллс': 'Chicago Bulls',
-  'кливленд': 'Cleveland Cavaliers','кавальерс': 'Cleveland Cavaliers', 'кавс': 'Cleveland Cavaliers',
-  'даллас': 'Dallas Mavericks',     'маверикс': 'Dallas Mavericks',
-  'денвер': 'Denver Nuggets',       'наггетс': 'Denver Nuggets',
-  'детройт': 'Detroit Pistons',     'пистонс': 'Detroit Pistons',
-  'голден стейт': 'Golden State Warriors', 'уорриорс': 'Golden State Warriors',
-  'хьюстон': 'Houston Rockets',     'рокетс': 'Houston Rockets',
-  'индиана': 'Indiana Pacers',      'пейсерс': 'Indiana Pacers',
-  'лос-анджелес клипперс': 'Los Angeles Clippers', 'клипперс': 'Los Angeles Clippers',
-  'лос-анджелес лейкерс': 'Los Angeles Lakers',    'лейкерс': 'Los Angeles Lakers',
-  'мемфис': 'Memphis Grizzlies',    'гриззлис': 'Memphis Grizzlies',
-  'майами': 'Miami Heat',           'хит': 'Miami Heat',
-  'милуоки': 'Milwaukee Bucks',     'бакс': 'Milwaukee Bucks',
-  'миннесота': 'Minnesota Timberwolves', 'тимбервулвс': 'Minnesota Timberwolves',
-  'нью-орлеан': 'New Orleans Pelicans',  'пеликанс': 'New Orleans Pelicans',
-  'нью-йорк': 'New York Knicks',    'никс': 'New York Knicks',
-  'оклахома': 'Oklahoma City Thunder', 'тандер': 'Oklahoma City Thunder',
-  'орландо': 'Orlando Magic',       'мэджик': 'Orlando Magic',
-  'филадельфия': 'Philadelphia 76ers', '76ers': 'Philadelphia 76ers',
-  'финикс': 'Phoenix Suns',         'санс': 'Phoenix Suns',
-  'портленд': 'Portland Trail Blazers', 'блейзерс': 'Portland Trail Blazers',
-  'сакраменто': 'Sacramento Kings', 'кингс': 'Sacramento Kings',
-  'сан-антонио': 'San Antonio Spurs', 'спёрс': 'San Antonio Spurs', 'спурс': 'San Antonio Spurs',
-  'торонто': 'Toronto Raptors',     'рэпторс': 'Toronto Raptors',
-  'юта': 'Utah Jazz',               'джаз': 'Utah Jazz',
-  'вашингтон': 'Washington Wizards','уизардс': 'Washington Wizards',
-}
-function translateNBATeam(name) {
-  const key = (name || '').toLowerCase().trim()
-  // exact match
-  if (NBA_TEAMS_RU[key]) return NBA_TEAMS_RU[key]
-  // partial match — first word
-  const firstWord = key.split(/\s+/)[0]
-  if (NBA_TEAMS_RU[firstWord]) return NBA_TEAMS_RU[firstWord]
-  return name   // already English or unknown
-}
-
-// Detect WNBA / women's basketball — don't use NBA translation for these
-function isWNBATeam(name, league) {
-  return /\(ж\)|женщ|wnba/i.test((name || '') + ' ' + (league || ''))
-}
-
-// Analyze basketball match (Fonbet match → enrichBasketball)
-export async function analyzeBasketballMatch(match) {
-  const wnba = isWNBATeam(match.home, match.league) || isWNBATeam(match.away, match.league)
-  // For WNBA: don't translate through NBA map — BallDontLie only has NBA
-  const homeEn = wnba ? null : translateNBATeam(match.home)
-  const awayEn = wnba ? null : translateNBATeam(match.away)
-  const matchInfo = {
-    home: match.home,          // display name (Russian for UI)
-    homeEn,                    // English for BallDontLie lookup (null for WNBA)
-    away: match.away,
-    awayEn,
-    league: match.league || 'Баскетбол',
-    isWNBA: wnba,
-    score: match.score || null,
-    minute: match.minute || null,
-    odds1: match.odds1x2?.home || null,
-    oddsX: match.odds1x2?.draw || null,
-    odds2: match.odds1x2?.away || null,
-  }
-  return enrichBasketball(matchInfo)
-}
-
-// Analyze esports match (Fonbet match → enrichWithBDL)
-export async function analyzeEsportsMatch(match) {
-  const game = match.sport || 'cs2'
-  const matchInfo = {
-    home: match.home,
-    away: match.away,
-    league: match.league || game,
-    score: match.score || null,
-    minute: match.minute || null,
-    odds1: match.odds1x2?.home || null,
-    oddsX: match.odds1x2?.draw || null,
-    odds2: match.odds1x2?.away || null,
-  }
-  return enrichWithBDL(matchInfo, game)
-}
-
-// Analyze tennis match (Fonbet match → enrichWithBDL)
-export async function analyzeTennisMatch(match) {
-  const matchInfo = {
-    home: match.home,
-    away: match.away,
-    league: match.league || 'Теннис',
-    score: match.score || null,
-    minute: match.minute || null,
-    odds1: match.odds1x2?.home || null,
-    oddsX: null,
-    odds2: match.odds1x2?.away || null,
-  }
-  return enrichWithBDL(matchInfo, 'tennis')
-}
-
 // Get live matches — via backend proxy (avoids browser rate-limiting sstats)
 export async function getLiveMatches() {
   try {
@@ -718,20 +526,10 @@ async function enrichBasketball(matchInfo) {
     if (res.ok) formData = await res.json()
   } catch { /* optional */ }
 
-  // ── Guard: no real data → refuse to fabricate ─────────────────────────────
-  const hasRealData = !!(formData.homeForm || formData.awayForm || formData.homeStanding || formData.h2h?.length)
-  if (!hasRealData) {
-    throw new Error(
-      `Статистика по матчу ${matchInfo.home} — ${matchInfo.away} недоступна в базе данных BallDontLie. ` +
-      `Анализ без реальных данных отключён, чтобы исключить недостоверные прогнозы.`
-    )
-  }
-
   const match = {
     home: matchInfo.home,
     away: matchInfo.away,
     league: matchInfo.league || 'НБА',
-    isWNBA: matchInfo.isWNBA || false,
     date: matchInfo.score ? `Лайв · ${matchInfo.minute}'` : 'Предстоящий матч',
     score: matchInfo.score,
     minute: matchInfo.minute,
@@ -1011,21 +809,12 @@ ${oddsBlock}
 
 ══ ПРАВИЛА РАБОТЫ С ДАННЫМИ ══
 ${hasRealData
-  ? `• ИСПОЛЬЗУЙ только цифры из блоков выше — они из реальной базы данных
-• СТРОГО ЗАПРЕЩЕНО придумывать статистику которой нет в блоках выше
+  ? `• ИСПОЛЬЗУЙ цифры из блоков выше — они из реальной базы данных
+• ЗАПРЕЩЕНО придумывать статистику которой нет в блоках
 • Ссылайся конкретно: "набирает X очков дома", "выиграл X из Y выездных"
 • Знаниями о ключевых игроках дополняй (если знаешь актуальный состав), но НЕ статистику`
-  : match.isWNBA
-    ? `• Это матч WNBA (женская лига). У нас НЕТ базы данных по WNBA.
-• КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО выдумывать конкретные числа (очки, победы, поражения)
-• НЕ пиши "набирает X очков" или "выиграла Y из Z" — ты не знаешь этих цифр точно
-• Пиши общими словами: "Атланта (ж) традиционно сильна в гостях", "Миннесота (ж) известна своей обороной"
-• В summary обязательно упомяни: "Точных данных по WNBA нет, анализ основан на общих знаниях"
-• В reasons пиши без конкретных цифр`
-    : `• Данных из базы нет — опирайся на свои знания об этих командах
-• ЗАПРЕЩЕНО выдумывать конкретные числа (очки, победы, поражения за матч)
-• Не пиши "набирает X.X очков" или "выиграл X из Y" если у тебя нет этих данных
-• Пиши "по общим данным", "исторически", "как правило"
+  : `• Данных из базы нет — опирайся на свои знания об этих командах
+• НЕ выдумывай конкретные цифры — пиши "по общим данным"
 • В reasons укажи что это оценка без свежей статистики`}
 
 ${isLive
@@ -1534,12 +1323,11 @@ ${dataAvailable
 • ЗАПРЕЩЕНО придумывать статистику которой нет в данных выше
 • Если какой-то статистики нет — пиши "данных нет", не выдумывай
 • Своими знаниями о командах дополняй контекст (стиль, тренер, история), но НЕ факты и цифры`
-    : `• Реальная статистика из базы НЕДОСТУПНА для этого матча
-• СТРОГО ЗАПРЕЩЕНО придумывать конкретные цифры: "не проигрывал 5 матчей", "3 поражения из 5", "набирает X голов"
-• СТРОГО ЗАПРЕЩЕНО называть конкретных игроков по имени — составы могут быть устаревшими в твоих данных
-• Пиши ТОЛЬКО общими словами: "традиционно сильны дома", "известны атакующим стилем", "исторически хорошо играют в еврокубках"
-• В reasons НЕ используй конкретные числа — только общие наблюдения
-• Честно укажи в summary что точных данных нет и анализ основан на общих знаниях о командах`}
+    : `• Статистика из базы недоступна — делай анализ на основе своих знаний об этих командах
+• КРИТИЧЕСКИ ВАЖНО: НЕ ОГРАНИЧИВАЙСЯ только пересчётом коэффициентов — это примитивно и бесполезно
+• ОБЯЗАТЕЛЬНО анализируй: форму команд в последних 5-10 матчах, очные встречи (h2h), состав и потери, стиль игры, тренер и тактика, турнирная мотивация, домашнее/гостевое преимущество
+• В reasons давай КОНКРЕТНЫЕ факты: например "Arsenal не проигрывал дома 8 матчей подряд", "City без Холанда забивает на 40% меньше", "h2h: 3 победы из 5 за хозяев"
+• Коэффициенты используй ТОЛЬКО как ориентир — не выдавай их пересчёт за анализ`}
 
 ${isLive ? (() => {
     const minute = match.minute != null ? Number(match.minute) : null
