@@ -131,18 +131,42 @@ function resolveImg(url) {
 }
 
 // Get upcoming hockey matches (NHL free API + ИИХФ/КХЛ via AllSportsApi2)
+// Enriches with Fonbet odds1x2 where available (non-blocking)
 export async function getUpcomingHockeyMatches() {
   try {
     const res = await fetch(`${API_BASE}/matches/hockey`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return (data || [])
+    const matches = (data || [])
       .map(g => ({
         ...g,
         homeImg: resolveImg(g.homeImg),
         awayImg: resolveImg(g.awayImg),
       }))
       .sort((a, b) => new Date(a.rawDate || 0) - new Date(b.rawDate || 0))
+
+    // Enrich with Fonbet odds (optional — won't break if endpoint fails)
+    try {
+      const fonbetRes = await fetch(`${API_BASE}/matches/hockey-fonbet`)
+      if (fonbetRes.ok) {
+        const { data: fonbet } = await fonbetRes.json()
+        if (Array.isArray(fonbet) && fonbet.length) {
+          const norm = s => (s || '').toLowerCase().replace(/[^a-zа-яё0-9]/gi, '')
+          return matches.map(m => {
+            const mh = norm(m.home)
+            const ma = norm(m.away)
+            const found = fonbet.find(f => {
+              const fh = norm(f.home)
+              const fa = norm(f.away)
+              return (fh.includes(mh) || mh.includes(fh)) && (fa.includes(ma) || ma.includes(fa))
+            })
+            return (found?.odds1x2) ? { ...m, odds1x2: found.odds1x2 } : m
+          })
+        }
+      }
+    } catch { /* odds are optional */ }
+
+    return matches
   } catch { return [] }
 }
 

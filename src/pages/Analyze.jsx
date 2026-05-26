@@ -690,6 +690,19 @@ function HockeyMatchRow({ match, onClick }) {
           </div>
         )}
 
+        {match.odds1x2 && !isLive && (
+          <div className="match-row-odds" style={{ display: 'flex', gap: 4 }}>
+            {[{ label: '1', val: match.odds1x2.home }, { label: 'X', val: match.odds1x2.draw }, { label: '2', val: match.odds1x2.away }].map(o => (
+              <div key={o.label} style={{
+                textAlign: 'center', background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '4px 7px', minWidth: 40,
+              }}>
+                <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600 }}>{o.label}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#dde4ee' }}>{o.val}</div>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="match-row-btn" style={{
           background: hovered ? 'rgba(14,165,233,0.15)' : 'rgba(0,25,60,0.5)',
