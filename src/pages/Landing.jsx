@@ -546,7 +546,7 @@ export default function Landing() {
               {[
                 { q: 'Насколько точен AI-анализ?', a: 'AI анализирует сотни факторов и показывает индекс доверия. Мы не гарантируем результат — это аналитический инструмент для принятия решений.' },
                 { q: 'Что значит "загрузить скрин"?', a: 'Сделай скриншот линии у букмекера и загрузи его. AI прочитает коэффициенты и проанализирует где есть Value.' },
-                { q: 'Сколько стоит один анализ?', a: 'Один анализ стоит 19 монет. Монеты можно пополнить в любое время через раздел "Пополнить".' },
+                { q: 'Сколько стоит один анализ?', a: 'Один анализ стоит 28 монет. Монеты можно пополнить в любое время через раздел "Пополнить".' },
                 { q: 'Какие виды спорта поддерживаются?', a: 'Сейчас поддерживается футбол и хоккей. В ближайшее время добавим теннис и баскетбол.' },
               ].map((item, i) => (
                 <FaqItem key={i} q={item.q} a={item.a} />
@@ -582,7 +582,7 @@ export default function Landing() {
             </h2>
             <p style={{ fontSize: 16, color: MUTED, marginBottom: 40, lineHeight: 1.8, fontFamily: 'Outfit, sans-serif' }}>
               Зарегистрируйся и получи{' '}
-              <strong style={{ color: A }}>38 монет бесплатно</strong>{' '}
+              <strong style={{ color: A }}>28 монет бесплатно</strong>{' '}
               для первого анализа
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -596,7 +596,7 @@ export default function Landing() {
             </div>
             {/* Trust indicators */}
             <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 28, flexWrap: 'wrap' }}>
-              {['✓ Регистрация бесплатна', '✓ 38 монет в подарок', '✓ Анализ за 15 секунд'].map((t, i) => (
+              {['✓ Регистрация бесплатна', '✓ 28 монет в подарок', '✓ Анализ за 15 секунд'].map((t, i) => (
                 <span key={i} style={{ fontSize: 13, color: MUTED, fontFamily: 'Outfit, sans-serif' }}>{t}</span>
               ))}
             </div>

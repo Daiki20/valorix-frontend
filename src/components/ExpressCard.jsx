@@ -14,7 +14,8 @@ const BG_PICK = 'rgba(0,15,35,0.7)'
 
 const CONFIG = {
   standard: {
-    cost: 39,
+    cost: 52,
+    discount: 38, // % скидка vs 3 анализа по 28 = 84
     label: 'Экспресс дня',
     sublabel: 'Надёжный',
     icon: <Star size={14} color="#030b18" fill="#030b18" />,
@@ -27,7 +28,8 @@ const CONFIG = {
     oddsColor: ACCENT,
   },
   high: {
-    cost: 49,
+    cost: 72,
+    discount: 36, // % скидка vs 4 анализа по 28 = 112
     label: 'Экспресс дня',
     sublabel: 'Высокодоходный',
     icon: <Flame size={14} color="#030b18" fill="#030b18" />,
@@ -255,8 +257,19 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
             {cfg.icon}
           </div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 900, fontSize: 14, color: TEXT, letterSpacing: -0.3 }}>
-              {cfg.label}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ fontWeight: 900, fontSize: 14, color: TEXT, letterSpacing: -0.3 }}>
+                {cfg.label}
+              </div>
+              {cfg.discount && (
+                <div style={{
+                  fontSize: 10, fontWeight: 800, color: '#22c55e',
+                  background: 'rgba(34,197,94,0.12)',
+                  border: '1px solid rgba(34,197,94,0.25)',
+                  borderRadius: 20, padding: '1px 7px',
+                  whiteSpace: 'nowrap',
+                }}>−{cfg.discount}%</div>
+              )}
             </div>
             <div style={{ fontSize: 11, color: cfg.numberColor, fontWeight: 700 }}>
               {cfg.sublabel}
