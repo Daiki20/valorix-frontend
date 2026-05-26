@@ -587,8 +587,8 @@ export default function ExpressCard({ onAuthRequired }) {
       <style>{RESPONSIVE_STYLES}</style>
       <SportTabs />
 
-      {isHockey ? (
-        <div style={{ maxWidth: 760, margin: '0 auto' }}>
+      <div className="express-grid">
+        <div className="express-col">
           <ExpressLabel
             text={`AI ЭКСПРЕСС ${sportInfo?.emoji || ''} · LITE`}
             color1={lc.color1} color2={lc.color2} border={lc.border} bg={lc.bg}
@@ -598,31 +598,18 @@ export default function ExpressCard({ onAuthRequired }) {
             onAuthRequired={onAuthRequired} onUpdate={handleUpdate}
           />
         </div>
-      ) : (
-        <div className="express-grid">
-          <div className="express-col">
-            <ExpressLabel
-              text={`AI ЭКСПРЕСС ${sportInfo?.emoji || ''} · LITE`}
-              color1={lc.color1} color2={lc.color2} border={lc.border} bg={lc.bg}
-            />
-            <SingleExpressCard
-              data={standard} type="standard" sport={selectedSport}
-              onAuthRequired={onAuthRequired} onUpdate={handleUpdate}
-            />
-          </div>
-          <div className="express-col">
-            <ExpressLabel
-              text={`AI ЭКСПРЕСС ${sportInfo?.emoji || ''} · HARD`}
-              color1="#f97316" color2="#ef4444"
-              border="rgba(249,115,22,0.3)" bg="rgba(249,115,22,0.06)"
-            />
-            <SingleExpressCard
-              data={high} type="high" sport={selectedSport}
-              onAuthRequired={onAuthRequired} onUpdate={handleUpdate}
-            />
-          </div>
+        <div className="express-col">
+          <ExpressLabel
+            text={`AI ЭКСПРЕСС ${sportInfo?.emoji || ''} · HARD`}
+            color1="#f97316" color2="#ef4444"
+            border="rgba(249,115,22,0.3)" bg="rgba(249,115,22,0.06)"
+          />
+          <SingleExpressCard
+            data={high} type="high" sport={selectedSport}
+            onAuthRequired={onAuthRequired} onUpdate={handleUpdate}
+          />
         </div>
-      )}
+      </div>
     </div>
   )
 }
