@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_URL ?? ''
+const BASE = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL ?? '')
 
 function getToken() {
   return localStorage.getItem('valorix_token')
