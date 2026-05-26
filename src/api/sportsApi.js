@@ -65,6 +65,12 @@ function normalize(s) {
   return s.toLowerCase().replace(/[^a-z0-9]/g, '')
 }
 
+// Detect neutral-venue matches (cup finals, super cups) — no home advantage
+function isNeutralVenue(match) {
+  const text = ((match.league || '') + ' ' + (match.tournamentName || '')).toLowerCase()
+  return /\bфинал\b|\bfinal\b|grand\s+final|\bсуперкубок\b|super\s+cup/.test(text)
+}
+
 function fuzzyMatch(a, b) {
   if (a === b) return true
   if (a.includes(b) || b.includes(a)) return true
@@ -601,6 +607,7 @@ function buildSportPrompt(sport, match, formData = {}) {
     formData.player1Form || formData.player2Form ||
     (formData.h2h && formData.h2h.length > 0)
   )
+  const neutral = !isIndividual && isNeutralVenue(match)
 
   // Sport metadata: display name + terminology block
   const SPORT_META = {
@@ -669,13 +676,15 @@ ${player2Name || match.away} — последние ${player2Form?.gamesCount ||
   } else {
     const { homeForm, awayForm, homeStanding, awayStanding, season } = formData
     if (homeForm || awayForm) {
+      const homeLabel = neutral ? 'домашних матчей в сезоне' : 'матчей ДОМА'
+      const awayLabel = neutral ? 'выездных матчей в сезоне' : 'матчей В ГОСТЯХ'
       statsBlock = `
 ── СТАТИСТИКА (BallDontLie, сезон ${season || new Date().getFullYear()}) ──
-${match.home} — ${homeForm?.gamesCount || '?'} матчей ДОМА:
+${neutral ? '⚠️ НЕЙТРАЛЬНОЕ ПОЛЕ — статистика дома/выезд для справки, домашнего преимущества НЕТ\n' : ''}${match.home} — ${homeForm?.gamesCount || '?'} ${homeLabel}:
   Форма: ${homeForm?.wins ?? '?'}П / ${homeForm?.losses ?? '?'}П
   Счёт: ${homeForm?.avgScore ?? '?'} забито / ${homeForm?.avgConceded ?? '?'} пропущено за матч
 
-${match.away} — ${awayForm?.gamesCount || '?'} матчей В ГОСТЯХ:
+${match.away} — ${awayForm?.gamesCount || '?'} ${awayLabel}:
   Форма: ${awayForm?.wins ?? '?'}П / ${awayForm?.losses ?? '?'}П
   Счёт: ${awayForm?.avgScore ?? '?'} забито / ${awayForm?.avgConceded ?? '?'} пропущено за матч`
     }
@@ -716,7 +725,7 @@ ${oddsBlock}
 ${meta.terms}
 
 ══ ПРАВИЛА РАБОТЫ С ДАННЫМИ ══
-${hasRealData
+${neutral ? '🏟️ НЕЙТРАЛЬНОЕ ПОЛЕ (финал/суперкубок): СТРОГО ЗАПРЕЩЕНО упоминать "домашнее преимущество" или "поддержка трибун" — поле нейтральное, обе команды в равных условиях.\n' : ''}${hasRealData
   ? `• ИСПОЛЬЗУЙ цифры из блоков выше — они из реальной базы данных
 • ЗАПРЕЩЕНО придумывать статистику которой нет в блоках
 • Ссылайся конкретно: "выиграл X из Y", "забивает X за матч"
@@ -851,17 +860,20 @@ function buildFullScreenPrompt(match, formData = {}, glicko = null) {
   const isLive = !!match.score
   const { homeForm, awayForm, h2h = [] } = formData
   const hasRealData = !!(homeForm && awayForm) || h2h.length > 0
+  const neutral = isNeutralVenue(match)
 
   // ── Form stats block ──────────────────────────────────────────────────────
   let statsBlock = ''
   if (homeForm && awayForm) {
+    const homeLabel = neutral ? 'домашних матчей в сезоне' : 'матчей ДОМА'
+    const awayLabel = neutral ? 'выездных матчей в сезоне' : 'матчей В ГОСТЯХ'
     statsBlock = `
 ── СТАТИСТИКА (реальные данные из базы) ──
-${match.home} — последние ${homeForm.gamesCount} матчей ДОМА:
+${neutral ? '⚠️ НЕЙТРАЛЬНОЕ ПОЛЕ — статистика дома/выезд приведена для справки, домашнего преимущества НЕТ\n' : ''}${match.home} — последние ${homeForm.gamesCount} ${homeLabel}:
   Форма: ${homeForm.wins}П / ${homeForm.draws}Н / ${homeForm.loses}П
   Голы: ${homeForm.avgScore.toFixed(2)} забито / ${homeForm.avgConceded.toFixed(2)} пропущено за матч
 
-${match.away} — последние ${awayForm.gamesCount} матчей В ГОСТЯХ:
+${match.away} — последние ${awayForm.gamesCount} ${awayLabel}:
   Форма: ${awayForm.wins}П / ${awayForm.draws}Н / ${awayForm.loses}П
   Голы: ${awayForm.avgScore.toFixed(2)} забито / ${awayForm.avgConceded.toFixed(2)} пропущено за матч`
   }
@@ -904,10 +916,10 @@ ${h2hBlock}
 ${oddsBlock}
 
 ══ ПРАВИЛА РАБОТЫ С ДАННЫМИ ══
-${hasRealData
+${neutral ? '🏟️ НЕЙТРАЛЬНОЕ ПОЛЕ (финал/суперкубок): СТРОГО ЗАПРЕЩЕНО упоминать "домашнее преимущество" или "поддержка трибун" — поле нейтральное, оба клуба в равных условиях.\n' : ''}${hasRealData
   ? `• ИСПОЛЬЗУЙ цифры из блоков выше — они из реальной базы данных
 • ЗАПРЕЩЕНО придумывать статистику которой нет в блоках выше
-• Ссылайся на конкретные цифры: "выиграл X из Y домашних", "забивает X.XX голов/игру", "H2H: X из Y в пользу..."
+• Ссылайся на конкретные цифры: "выиграл X из Y", "забивает X.XX голов/игру", "H2H: X из Y в пользу..."
 • Своими знаниями о командах дополняй контекст (состав, тренер, стиль), но НЕ выдумывай цифры`
   : `• Данных из базы нет — опирайся на свои знания об этих командах
 • НЕ выдумывай конкретные цифры — пиши "по общим данным" или "предположительно"
@@ -978,6 +990,7 @@ export async function analyzeHockeyMatch(matchInput) {
 function buildHockeyPrompt(match, realStats = {}) {
   const { homeForm = [], awayForm = [], standings = [], homeSeasonStats = null, awaySeasonStats = null } = realStats
   const hasRealData = homeForm.length > 0 || awayForm.length > 0 || standings.length > 0 || !!homeSeasonStats || !!awaySeasonStats
+  const neutral = isNeutralVenue(match)
 
   const isKHL  = match.league?.toLowerCase().includes('кхл') || match.league?.toLowerCase().includes('khl')
   const isNHL  = match.league?.toLowerCase().includes('нхл') || match.league?.toLowerCase().includes('nhl')
@@ -1067,15 +1080,18 @@ ${h2hMatches.map(e => {
 ${[homeSeasonFmt, awaySeasonFmt].filter(Boolean).join('\n\n')}` : ''
 
   // ── Rules block ──────────────────────────────────────────────────────────
+  const neutralNote = neutral
+    ? '🏟️ НЕЙТРАЛЬНЫЙ ЛЁД (финал/суперкубок): СТРОГО ЗАПРЕЩЕНО упоминать "домашнее преимущество" или "поддержка своих болельщиков" — лёд нейтральный, обе команды в равных условиях.\n'
+    : ''
   const dataRules = hasRealData
     ? `══ ПРАВИЛА РАБОТЫ С ДАННЫМИ ══
-• ИСПОЛЬЗУЙ цифры из блоков выше — они из реальной базы данных
+${neutralNote}• ИСПОЛЬЗУЙ цифры из блоков выше — они из реальной базы данных
 • ЗАПРЕЩЕНО придумывать статистику которой нет в блоках выше
 • Про вратарей, PP%, PK% — пиши только если знаешь точно (это текущий сезон), иначе НЕ упоминай
 • В reasons ОБЯЗАТЕЛЬНО ссылайся на конкретные матчи из данных выше (счёт, серия побед/поражений)
 • Своими знаниями о командах дополняй контекст (стиль игры, ключевые игроки), но НЕ статистику`
     : `══ ПРАВИЛА ══
-• Реальных данных из базы нет — опирайся на свои знания об этих командах
+${neutralNote}• Реальных данных из базы нет — опирайся на свои знания об этих командах
 • В dataWarning ОБЯЗАТЕЛЬНО укажи что это оценка на основе общих знаний, не свежей статистики
 • НЕ выдумывай конкретные цифры — пиши "по общим данным" или "предположительно"`
 
