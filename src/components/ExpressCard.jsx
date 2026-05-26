@@ -260,23 +260,12 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
             <div style={{ fontWeight: 900, fontSize: 14, color: TEXT, letterSpacing: -0.3 }}>
               {cfg.label}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 11, color: cfg.numberColor, fontWeight: 700 }}>
-                {cfg.sublabel}
-                {data.generated_at && (
-                  <span style={{ color: MUTED, fontWeight: 500, marginLeft: 6 }}>
-                    · {new Date(data.generated_at + 'Z').toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Moscow' })} мск
-                  </span>
-                )}
-              </span>
-              {cfg.discount && (
-                <span style={{
-                  fontSize: 11, fontWeight: 800, color: '#22c55e',
-                  background: 'rgba(34,197,94,0.15)',
-                  border: '1px solid rgba(34,197,94,0.35)',
-                  borderRadius: 20, padding: '1px 8px',
-                  whiteSpace: 'nowrap', flexShrink: 0,
-                }}>−{cfg.discount}%</span>
+            <div style={{ fontSize: 11, color: cfg.numberColor, fontWeight: 700, marginTop: 2 }}>
+              {cfg.sublabel}
+              {data.generated_at && (
+                <span style={{ color: MUTED, fontWeight: 500, marginLeft: 6 }}>
+                  · {new Date(data.generated_at + 'Z').toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Moscow' })} мск
+                </span>
               )}
             </div>
             {data.date && (() => {
@@ -400,6 +389,23 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
             </div>
           </div>
         ) : (
+          <>
+            {cfg.discount && (
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                marginBottom: 8,
+              }}>
+                <span style={{ fontSize: 12, color: MUTED, textDecoration: 'line-through' }}>
+                  {Math.round(cfg.cost / (1 - cfg.discount / 100))} монет
+                </span>
+                <span style={{
+                  fontSize: 12, fontWeight: 800, color: '#22c55e',
+                  background: 'rgba(34,197,94,0.15)',
+                  border: '1px solid rgba(34,197,94,0.35)',
+                  borderRadius: 20, padding: '2px 10px',
+                }}>−{cfg.discount}% скидка</span>
+              </div>
+            )}
           <button
             onClick={handleBuy}
             disabled={buying}
@@ -427,6 +433,7 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
               </>
             )}
           </button>
+          </>
         )}
       </div>
 
