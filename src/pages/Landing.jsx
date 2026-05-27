@@ -118,8 +118,7 @@ function CosmicOrb() {
           <img
             src={ballImg}
             alt="ball"
-            loading="lazy"
-            decoding="async"
+            loading="eager"
             style={{
               width: '100%', height: '100%',
               objectFit: 'cover', display: 'block',

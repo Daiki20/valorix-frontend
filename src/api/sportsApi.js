@@ -355,11 +355,13 @@ const WORKER_URL = `${API_BASE}/analyze/ai-proxy`
 const WORKER_SECRET = 'valorix_proxy_2024'
 
 async function workerFetch(body) {
+  const token = localStorage.getItem('valorix_token')
   const res = await fetch(WORKER_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-Valorix-Token': WORKER_SECRET,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(body),
   })
@@ -372,11 +374,13 @@ async function workerFetch(body) {
 
 // Step 1: GPT-4o reads the screenshot
 async function extractFromScreenshot(base64Image) {
+  const token = localStorage.getItem('valorix_token')
   const res = await fetch(WORKER_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'X-Valorix-Token': WORKER_SECRET,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({
       model: 'gpt-4o',
