@@ -127,7 +127,7 @@ function CosmicOrb() {
               // contrast  — сохраняем объём и детали панелей
               // saturate  — золото и синие швы становятся ярче
               // hue-rotate — лёгкий сдвиг в сторону cyan сайта
-              filter: 'brightness(0.72) contrast(1.18) saturate(1.4) hue-rotate(-8deg)',
+              filter: 'brightness(0.9) contrast(1.1) saturate(1.3) hue-rotate(-8deg)',
             }}
           />
           {/* Cyan ambient light — имитирует основной источник света сайта */}
