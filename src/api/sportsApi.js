@@ -350,7 +350,8 @@ export async function analyzeScreenshot(base64Image) {
   }
 }
 
-const WORKER_URL = 'https://valorix-ai-proxy.andrey-pishev2020.workers.dev'
+// Route OpenAI calls through backend (Railway) to avoid Russian blocks on Cloudflare
+const WORKER_URL = `${API_BASE}/analyze/ai-proxy`
 const WORKER_SECRET = 'valorix_proxy_2024'
 
 async function workerFetch(body) {
