@@ -1,4 +1,4 @@
-const BASE = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL || 'http://localhost:3001')
+const BASE = import.meta.env.PROD ? 'https://web-production-fefcd.up.railway.app' : (import.meta.env.VITE_API_URL || 'http://localhost:3001')
 
 function headers() {
   const token = localStorage.getItem('valorix_token')

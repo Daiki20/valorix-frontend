@@ -1,6 +1,6 @@
 const SSTATS_KEY = import.meta.env.VITE_SSTATS_API_KEY
 // In production, always use relative URLs (Vercel rewrites proxy to Railway)
-const API_BASE = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL || '')
+const API_BASE = import.meta.env.PROD ? 'https://web-production-fefcd.up.railway.app' : (import.meta.env.VITE_API_URL || '')
 const BASE = 'https://api.sstats.net'
 
 import { translateTeam } from './teamNames.js'
