@@ -178,7 +178,6 @@ export async function getLiveMatches() {
     if (!res.ok) return []
     const { data } = await res.json()
     const raw = data || []
-    if (raw.length > 0) console.log('[sstats live rawData sample]', JSON.stringify(raw[0], null, 2))
     return raw.map(g => ({ ...normalizeGame(g), isLive: true }))
   } catch { return [] }
 }

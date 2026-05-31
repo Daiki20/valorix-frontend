@@ -5,7 +5,7 @@ import { useToast } from '../context/ToastContext'
 import Navbar from '../components/Navbar'
 import { getStats, getUsers, getTransactions, addCoins, setAdmin, setBlocked } from '../api/adminApi'
 import { Users, Zap, BarChart3, RefreshCw, Shield, Ban, Plus, Minus, Search, ChevronLeft, ChevronRight, Star } from 'lucide-react'
-const API_BASE = import.meta.env.VITE_API_URL || ''
+const API_BASE = import.meta.env.PROD ? 'https://web-production-fefcd.up.railway.app' : (import.meta.env.VITE_API_URL || '')
 
 const TABS = ['Дашборд', 'Пользователи', 'Транзакции']
 
