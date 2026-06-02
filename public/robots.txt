@@ -2,8 +2,10 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /history
-Disallow: /analyze
-Disallow: /upload
 Disallow: /payment-return
 
-Sitemap: https://valorix.ai/sitemap.xml
+# Sitemap for Google & Yandex
+Sitemap: https://web-production-fefcd.up.railway.app/sitemap.xml
+
+# Yandex Turbo RSS
+# https://web-production-fefcd.up.railway.app/rss.xml
