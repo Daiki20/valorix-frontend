@@ -1,6 +1,68 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ── Article content styles ─────────────────────────────────────────── */
+.article-body h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 2rem 0 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.article-body h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin: 1.5rem 0 0.5rem;
+}
+.article-body p {
+  color: #94a3b8;
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+.article-body ul, .article-body ol {
+  color: #94a3b8;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+.article-body li {
+  margin-bottom: 0.35rem;
+  line-height: 1.7;
+}
+.article-body strong {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+.article-body em {
+  color: #a78bfa;
+  font-style: italic;
+}
+.article-body blockquote {
+  border-left: 3px solid #7c3aed;
+  padding: 0.75rem 1rem;
+  margin: 1.5rem 0;
+  background: rgba(124,58,237,0.08);
+  border-radius: 0 8px 8px 0;
+  color: #94a3b8;
+}
+.article-body a {
+  color: #a78bfa;
+  text-decoration: none;
+}
+.article-body a:hover {
+  text-decoration: underline;
+}
+/* Valorix AI prediction block */
+.article-body .valorix-prediction {
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1));
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+}
 
 :root {
   --bg:          #030b18;
