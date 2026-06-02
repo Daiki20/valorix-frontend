@@ -1394,8 +1394,9 @@ function BlogTab({ toast }) {
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {matches.map((m, i) => {
-                  const home = m.home || m.homeTeam || '?'
-                  const away = m.away || m.awayTeam || '?'
+                  const home = String(m.home || m.homeTeam || '?')
+                  const away = String(m.away || m.awayTeam || '?')
+                  const league = String(m.league || m.tournamentName || m.leagueName || '')
                   const rawDate = String(m.rawDate || m.date || '').slice(0, 10)
                   const matchKey = `${sportTab}_${home}_${away}_${rawDate}`
                   const done = matchKeys.has(matchKey)
@@ -1406,7 +1407,7 @@ function BlogTab({ toast }) {
                         <span style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{home}</span>
                         <span style={{ color: '#64748b', margin: '0 8px' }}>—</span>
                         <span style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{away}</span>
-                        {m.league && <span style={{ color: '#475569', fontSize: 12, marginLeft: 10 }}>{m.league}</span>}
+                        {league && <span style={{ color: '#475569', fontSize: 12, marginLeft: 10 }}>{league}</span>}
                       </div>
                       {done ? (
                         <span style={{ ...pillStyle('#22c55e'), fontSize: 11, padding: '4px 10px' }}>✓ Статья написана</span>
