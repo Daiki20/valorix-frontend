@@ -1240,21 +1240,26 @@ function BlogTab({ toast }) {
 
   useEffect(() => { load(sportTab) }, [sportTab])
 
+  // Helper: extract team name whether it's a string or sstats object {id, name}
+  const teamName = (t) => typeof t === 'object' && t !== null ? (t.name || '') : (t || '')
+
   const generateArticle = async (match) => {
-    const matchKey = `${sportTab}_${match.home || match.homeTeam}_${match.away || match.awayTeam}_${String(match.rawDate || match.date || '').slice(0,10)}`
+    const home = teamName(match.home || match.homeTeam)
+    const away = teamName(match.away || match.awayTeam)
+    const league = match.league || match.season?.league?.name || match.tournamentName || ''
+    const homeId = match.homeId || match.homeTeam?.id
+    const awayId = match.awayId || match.awayTeam?.id
+    const date = String(match.rawDate || match.date || '').slice(0, 10)
+    const matchKey = `${sportTab}_${home}_${away}_${date}`
     setGeneratingKey(matchKey)
     try {
       const r = await fetch(`${API_BASE}/blog/generate-from-match`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` },
         body: JSON.stringify({
-          home: match.home || match.homeTeam,
-          away: match.away || match.awayTeam,
-          league: match.league || match.tournamentName || '',
-          date: match.rawDate || match.date || '',
+          home, away, league, date,
           matchId: match.id,
-          homeId: match.homeId,
-          awayId: match.awayId,
+          homeId, awayId,
           sport: sportTab,
         }),
       })
@@ -1394,9 +1399,9 @@ function BlogTab({ toast }) {
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {matches.map((m, i) => {
-                  const home = String(m.home || m.homeTeam || '?')
-                  const away = String(m.away || m.awayTeam || '?')
-                  const league = String(m.league || m.tournamentName || m.leagueName || '')
+                  const home = teamName(m.home || m.homeTeam) || '?'
+                  const away = teamName(m.away || m.awayTeam) || '?'
+                  const league = String(m.league || m.season?.league?.name || m.tournamentName || '')
                   const rawDate = String(m.rawDate || m.date || '').slice(0, 10)
                   const matchKey = `${sportTab}_${home}_${away}_${rawDate}`
                   const done = matchKeys.has(matchKey)
