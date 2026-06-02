@@ -20,8 +20,11 @@ function get(url) {
 async function main() {
   // Static pages
   const staticPages = [
-    { loc: BASE,         priority: '1.0', changefreq: 'weekly' },
-    { loc: `${BASE}/blog`, priority: '0.8', changefreq: 'weekly' },
+    { loc: BASE,               priority: '1.0', changefreq: 'weekly'  },
+    { loc: `${BASE}/blog`,     priority: '0.8', changefreq: 'weekly'  },
+    { loc: `${BASE}/analyze`,  priority: '0.7', changefreq: 'monthly' },
+    { loc: `${BASE}/privacy`,  priority: '0.3', changefreq: 'monthly' },
+    { loc: `${BASE}/support`,  priority: '0.4', changefreq: 'monthly' },
   ]
 
   // Fetch published articles from Railway
