@@ -3,11 +3,13 @@ import { Link, useParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import ReactMarkdown from 'react-markdown'
 import Navbar from '../components/Navbar'
-import { Calendar, Eye, ArrowLeft } from 'lucide-react'
+import { Calendar, Eye, ArrowLeft, Zap } from 'lucide-react'
 
 const API_BASE = import.meta.env.PROD
   ? 'https://web-production-fefcd.up.railway.app'
   : (import.meta.env.VITE_API_URL || '')
+
+const ACCENT = '#00cfff'
 
 function formatDate(str) {
   if (!str) return ''
@@ -16,53 +18,136 @@ function formatDate(str) {
   } catch { return str }
 }
 
-// Custom renderers for ReactMarkdown
+// ── Custom markdown renderers ─────────────────────────────────────────────────
 const components = {
   h2: ({ children }) => (
-    <h2 className="text-2xl font-bold text-white mt-10 mb-4 pb-3 border-b border-white/10">{children}</h2>
+    <h2 style={{
+      fontSize: '1.6rem', fontWeight: 800, color: '#fff',
+      margin: '2.5rem 0 1rem', paddingBottom: '0.6rem',
+      borderBottom: `2px solid rgba(0,207,255,0.2)`,
+      letterSpacing: '-0.02em',
+    }}>
+      <span style={{ color: ACCENT, marginRight: 8 }}>—</span>{children}
+    </h2>
   ),
   h3: ({ children }) => (
-    <h3 className="text-xl font-semibold text-slate-200 mt-8 mb-3">{children}</h3>
+    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#e2e8f0', margin: '2rem 0 0.6rem' }}>
+      {children}
+    </h3>
   ),
   p: ({ children }) => {
-    // Detect Valorix AI prediction block
-    const text = String(children)
-    if (text.includes('🤖') && text.includes('Valorix AI прогнозирует')) {
+    const text = typeof children === 'string' ? children : ''
+    const hasRobot = text.includes('🤖') || (Array.isArray(children) && children.some(c => typeof c === 'string' && c.includes('🤖')))
+
+    if (hasRobot) {
+      // Extract lines from the prediction block
+      const allText = Array.isArray(children)
+        ? children.map(c => typeof c === 'string' ? c : (c?.props?.children || '')).join('')
+        : text
+      const lines = allText.split('\n').filter(l => l.trim())
+
       return (
-        <div className="my-6 rounded-2xl overflow-hidden border border-purple-500/30"
-          style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.08))' }}>
-          <div className="flex items-center gap-2 px-5 py-3 border-b border-purple-500/20"
-            style={{ background: 'rgba(99,102,241,0.15)' }}>
-            <span className="text-lg">🤖</span>
-            <span className="font-bold text-white text-sm tracking-wide">Valorix AI прогнозирует</span>
+        <div style={{
+          margin: '2rem 0',
+          borderRadius: 20,
+          overflow: 'hidden',
+          border: '1px solid rgba(0,207,255,0.25)',
+          background: 'linear-gradient(135deg, rgba(0,207,255,0.06) 0%, rgba(99,102,241,0.08) 100%)',
+        }}>
+          {/* Header */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '14px 20px',
+            background: 'rgba(0,207,255,0.08)',
+            borderBottom: '1px solid rgba(0,207,255,0.15)',
+          }}>
+            <span style={{ fontSize: 20 }}>🤖</span>
+            <span style={{ fontWeight: 800, color: '#fff', fontSize: 15, letterSpacing: '-0.01em' }}>
+              Valorix AI прогнозирует
+            </span>
+            <span style={{
+              marginLeft: 'auto', fontSize: 11, fontWeight: 700,
+              background: 'rgba(0,207,255,0.15)', color: ACCENT,
+              padding: '2px 10px', borderRadius: 20,
+            }}>AI</span>
           </div>
-          <div className="px-5 py-4 space-y-2 text-sm">
-            {text.split('\n').filter(l => l.trim() && !l.includes('🤖')).map((line, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <span className="mt-0.5 flex-shrink-0">{line.startsWith('✅') ? '✅' : '🔒'}</span>
-                <span className={line.startsWith('✅') ? 'text-green-300 font-medium' : 'text-slate-400'}>
-                  {line.replace(/^[✅🔒]\s*/, '')}
-                </span>
-              </div>
-            ))}
+          {/* Predictions */}
+          <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {lines.filter(l => !l.includes('🤖') && !l.includes('прогнозирует')).map((line, i) => {
+              const isGood = line.startsWith('✅')
+              const isLocked = line.startsWith('🔒')
+              const content = line.replace(/^[✅🔒]\s*/, '').trim()
+              return (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 12,
+                  padding: '10px 14px', borderRadius: 12,
+                  background: isGood ? 'rgba(34,197,94,0.08)' : 'rgba(255,255,255,0.03)',
+                  border: `1px solid ${isGood ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.06)'}`,
+                }}>
+                  <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{isGood ? '✅' : '🔒'}</span>
+                  <span style={{
+                    fontSize: 14, lineHeight: 1.5,
+                    color: isGood ? '#4ade80' : '#64748b',
+                    fontWeight: isGood ? 600 : 400,
+                  }}>
+                    {isGood
+                      ? <><span style={{ color: '#94a3b8', marginRight: 4 }}></span>{content}</>
+                      : content
+                    }
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+          <div style={{ padding: '10px 20px 14px', textAlign: 'center' }}>
+            <Link to="/analyze" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              fontSize: 13, fontWeight: 700, color: ACCENT,
+              textDecoration: 'none', opacity: 0.85,
+            }}>
+              <Zap size={13} />
+              Получить полный анализ с коэффициентами
+            </Link>
           </div>
         </div>
       )
     }
-    return <p className="text-slate-400 leading-relaxed mb-4">{children}</p>
+
+    return (
+      <p style={{ color: '#94a3b8', lineHeight: 1.85, marginBottom: '1.1rem', fontSize: '1rem' }}>
+        {children}
+      </p>
+    )
   },
-  ul: ({ children }) => <ul className="list-disc list-inside space-y-1 mb-4 text-slate-400">{children}</ul>,
-  ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 mb-4 text-slate-400">{children}</ol>,
-  li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-  strong: ({ children }) => <strong className="text-slate-200 font-semibold">{children}</strong>,
-  em: ({ children }) => <em className="text-purple-400 italic">{children}</em>,
+  ul: ({ children }) => (
+    <ul style={{ color: '#94a3b8', paddingLeft: '1.5rem', marginBottom: '1rem', lineHeight: 1.8 }}>
+      {children}
+    </ul>
+  ),
+  ol: ({ children }) => (
+    <ol style={{ color: '#94a3b8', paddingLeft: '1.5rem', marginBottom: '1rem', lineHeight: 1.8 }}>
+      {children}
+    </ol>
+  ),
+  li: ({ children }) => <li style={{ marginBottom: '0.3rem' }}>{children}</li>,
+  strong: ({ children }) => (
+    <strong style={{ color: ACCENT, fontWeight: 700 }}>{children}</strong>
+  ),
+  em: ({ children }) => <em style={{ color: '#a78bfa', fontStyle: 'italic' }}>{children}</em>,
   blockquote: ({ children }) => (
-    <blockquote className="border-l-4 border-purple-500 pl-4 py-2 my-4 bg-purple-500/5 rounded-r-xl text-slate-400 italic">
+    <blockquote style={{
+      borderLeft: `3px solid ${ACCENT}`, paddingLeft: '1rem', margin: '1.5rem 0',
+      background: 'rgba(0,207,255,0.05)', borderRadius: '0 12px 12px 0',
+      padding: '0.75rem 1rem', color: '#94a3b8',
+    }}>
       {children}
     </blockquote>
   ),
   a: ({ href, children }) => (
-    <a href={href} target="_blank" rel="noreferrer" className="text-purple-400 hover:text-purple-300 hover:underline transition-colors">
+    <a href={href} target="_blank" rel="noreferrer"
+      style={{ color: ACCENT, textDecoration: 'none', fontWeight: 500 }}
+      onMouseOver={e => e.target.style.textDecoration = 'underline'}
+      onMouseOut={e => e.target.style.textDecoration = 'none'}>
       {children}
     </a>
   ),
@@ -75,30 +160,26 @@ export default function Article() {
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
-    setLoading(true)
-    setNotFound(false)
+    setLoading(true); setNotFound(false)
     fetch(`${API_BASE}/blog/${slug}`)
-      .then(r => {
-        if (r.status === 404) { setNotFound(true); return null }
-        return r.json()
-      })
+      .then(r => { if (r.status === 404) { setNotFound(true); return null } return r.json() })
       .then(data => { if (data) setArticle(data) })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
   }, [slug])
 
   if (notFound) return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
+    <div style={{ minHeight: '100vh', background: '#030b18', color: '#fff', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
-      <div className="flex-1 flex flex-col items-center justify-center gap-4">
-        <p className="text-2xl font-semibold">Статья не найдена</p>
-        <Link to="/blog" className="text-purple-400 hover:underline">← Все статьи</Link>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <p style={{ fontSize: '1.5rem', fontWeight: 700 }}>Статья не найдена</p>
+        <Link to="/blog" style={{ color: ACCENT }}>← Все статьи</Link>
       </div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
+    <div style={{ minHeight: '100vh', background: '#030b18', color: '#fff', position: 'relative', overflow: 'hidden' }}>
       {article && (
         <Helmet>
           <title>{article.meta_title || article.title} — Valorix AI</title>
@@ -109,68 +190,108 @@ export default function Article() {
           {article.cover_url && <meta property="og:image" content={article.cover_url} />}
           <link rel="canonical" href={`https://valorix.ru/blog/${article.slug}`} />
           <script type="application/ld+json">{JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Article',
-            headline: article.title,
-            description: article.excerpt || '',
-            image: article.cover_url || '',
-            datePublished: article.created_at,
+            '@context': 'https://schema.org', '@type': 'Article',
+            headline: article.title, description: article.excerpt || '',
+            image: article.cover_url || '', datePublished: article.created_at,
             dateModified: article.updated_at,
             publisher: { '@type': 'Organization', name: 'Valorix AI', url: 'https://valorix.ru' },
           })}</script>
         </Helmet>
       )}
 
+      {/* ── Atmospheric background glows ────────────────────────────── */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 0 }}>
+        <div style={{ position: 'absolute', top: '-10%', left: '50%', transform: 'translateX(-50%)', width: 900, height: 500, background: 'radial-gradient(ellipse, rgba(0,207,255,0.07) 0%, transparent 65%)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', top: '30%', right: '-15%', width: 600, height: 600, background: 'radial-gradient(circle, rgba(123,94,167,0.08) 0%, transparent 65%)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', bottom: '10%', left: '-10%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(0,207,255,0.05) 0%, transparent 65%)', borderRadius: '50%' }} />
+      </div>
+
       <Navbar />
 
-      <div className="max-w-3xl mx-auto px-4 py-10">
-        <Link to="/blog" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8 text-sm">
-          <ArrowLeft size={16} /> Все статьи
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: 760, margin: '0 auto', padding: '2.5rem 1.5rem 5rem' }}>
+
+        {/* Back link */}
+        <Link to="/blog" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          color: '#475569', fontSize: 14, textDecoration: 'none', marginBottom: 32,
+          transition: 'color 0.2s',
+        }}>
+          <ArrowLeft size={15} /> Все статьи
         </Link>
 
         {loading ? (
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-[#141420] rounded w-3/4" />
-            <div className="h-4 bg-[#141420] rounded w-1/2" />
-            <div className="h-64 bg-[#141420] rounded-2xl mt-6" />
+          <div>
+            {[1, 2, 3].map(i => (
+              <div key={i} style={{ height: i === 1 ? 40 : 16, background: 'rgba(255,255,255,0.05)', borderRadius: 8, marginBottom: 16, width: i === 1 ? '70%' : '100%', animation: 'pulse 1.5s infinite' }} />
+            ))}
           </div>
         ) : article ? (
           <>
+            {/* Sport badge */}
+            {article.sport && article.sport !== 'other' && (
+              <div style={{ marginBottom: 16 }}>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '4px 14px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+                  background: article.sport === 'football' ? 'rgba(34,197,94,0.1)' : 'rgba(0,207,255,0.1)',
+                  color: article.sport === 'football' ? '#4ade80' : ACCENT,
+                  border: `1px solid ${article.sport === 'football' ? 'rgba(34,197,94,0.2)' : 'rgba(0,207,255,0.2)'}`,
+                }}>
+                  {article.sport === 'football' ? '⚽ Футбол' : article.sport === 'hockey' ? '🏒 Хоккей' : article.sport}
+                </span>
+              </div>
+            )}
+
+            {/* Cover image */}
             {article.cover_url && (
               <img src={article.cover_url} alt={article.title}
-                className="w-full h-64 object-cover rounded-2xl mb-8 opacity-90"
+                style={{ width: '100%', height: 280, objectFit: 'cover', borderRadius: 20, marginBottom: 28, opacity: 0.9 }}
                 onError={e => { e.target.style.display = 'none' }} />
             )}
 
-            {/* Sport badge */}
-            {article.sport && article.sport !== 'other' && (
-              <span className="inline-block mb-4 px-3 py-1 rounded-full text-xs font-semibold"
-                style={{ background: article.sport === 'football' ? 'rgba(34,197,94,0.15)' : 'rgba(99,102,241,0.15)',
-                         color: article.sport === 'football' ? '#4ade80' : '#a78bfa' }}>
-                {article.sport === 'football' ? '⚽ Футбол' : article.sport === 'hockey' ? '🏒 Хоккей' : article.sport}
+            {/* Title */}
+            <h1 style={{
+              fontSize: 'clamp(1.7rem, 4vw, 2.4rem)',
+              fontWeight: 900, lineHeight: 1.2,
+              letterSpacing: '-0.03em',
+              marginBottom: 20, color: '#fff',
+            }}>
+              {article.title}
+            </h1>
+
+            {/* Meta */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 36, paddingBottom: 24, borderBottom: '1px solid rgba(255,255,255,0.07)', color: '#475569', fontSize: 13 }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Calendar size={13} style={{ color: ACCENT }} />{formatDate(article.created_at)}
               </span>
-            )}
-
-            <h1 className="text-3xl font-bold leading-tight mb-4">{article.title}</h1>
-
-            <div className="flex items-center gap-4 text-sm text-slate-500 mb-8 pb-6 border-b border-white/10">
-              <span className="flex items-center gap-1"><Calendar size={14} />{formatDate(article.created_at)}</span>
-              <span className="flex items-center gap-1"><Eye size={14} />{article.views} просмотров</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Eye size={13} style={{ color: ACCENT }} />{article.views} просмотров
+              </span>
             </div>
 
             {/* Article content */}
-            <div className="article-body">
+            <div>
               <ReactMarkdown components={components}>{article.content}</ReactMarkdown>
             </div>
 
             {/* CTA */}
-            <div className="mt-12 p-6 rounded-2xl text-center"
-              style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1))', border: '1px solid rgba(99,102,241,0.25)' }}>
-              <p className="text-lg font-bold mb-1">Хочешь AI-анализ любого матча?</p>
-              <p className="text-slate-400 text-sm mb-4">Valorix анализирует статистику, H2H, коэффициенты и находит Value ставки</p>
-              <Link to="/analyze"
-                className="inline-block font-bold px-6 py-3 rounded-xl transition-colors text-white"
-                style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
+            <div style={{
+              marginTop: 48, padding: '28px 32px', borderRadius: 24, textAlign: 'center',
+              background: 'linear-gradient(135deg, rgba(0,207,255,0.08) 0%, rgba(99,102,241,0.1) 100%)',
+              border: '1px solid rgba(0,207,255,0.2)',
+            }}>
+              <div style={{ fontSize: 22, marginBottom: 8 }}>⚡</div>
+              <p style={{ fontSize: '1.15rem', fontWeight: 800, color: '#fff', marginBottom: 8 }}>
+                Хочешь <span style={{ color: ACCENT }}>полный AI-анализ</span> любого матча?
+              </p>
+              <p style={{ color: '#475569', fontSize: 14, marginBottom: 20 }}>
+                Статистика, H2H, коэффициенты, Value ставки — всё в одном месте
+              </p>
+              <Link to="/analyze" style={{
+                display: 'inline-block', padding: '12px 28px', borderRadius: 14,
+                background: 'linear-gradient(135deg, #00cfff, #6366f1)',
+                color: '#000', fontWeight: 800, fontSize: 15, textDecoration: 'none',
+              }}>
                 Попробовать бесплатно →
               </Link>
             </div>
