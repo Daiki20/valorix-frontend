@@ -32,6 +32,7 @@ jobs:
 
       - name: Generate sitemap.xml (fetches articles from Railway)
         run: node scripts/generate-sitemap.js
+        continue-on-error: true
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
