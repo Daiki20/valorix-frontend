@@ -1200,22 +1200,73 @@ const pillStyle = (color) => ({
 /* ─── Blog Tab ─── */
 function BlogTab({ toast }) {
   const token = () => localStorage.getItem('valorix_token')
+  const [sportTab, setSportTab] = useState('football') // football | hockey | all
   const [articles, setArticles] = useState([])
+  const [matches, setMatches] = useState([])
+  const [matchKeys, setMatchKeys] = useState(new Set())
+  const [generatingKey, setGeneratingKey] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [editing, setEditing] = useState(null) // null = list, {} = new, {id,...} = edit
+  const [editing, setEditing] = useState(null)
   const [saving, setSaving] = useState(false)
 
-  const load = async () => {
+  const load = async (sport) => {
     setLoading(true)
     try {
-      const r = await fetch(`${API_BASE}/blog/admin/list`, { headers: { Authorization: `Bearer ${token()}` } })
-      const d = await r.json()
-      setArticles(d.items || [])
+      const sportParam = sport !== 'all' ? `?sport=${sport}` : ''
+      const [artRes, keysRes] = await Promise.all([
+        fetch(`${API_BASE}/blog/admin/list${sportParam}`, { headers: { Authorization: `Bearer ${token()}` } }),
+        fetch(`${API_BASE}/blog/admin/match-keys`, { headers: { Authorization: `Bearer ${token()}` } }),
+      ])
+      const artData = await artRes.json()
+      const keysData = await keysRes.json()
+      setArticles(artData.items || [])
+      setMatchKeys(new Set(keysData.keys || []))
+
+      // Load upcoming matches for football/hockey tabs
+      if (sport === 'football') {
+        const mRes = await fetch(`${API_BASE}/matches/upcoming`, { headers: { Authorization: `Bearer ${token()}` } })
+        const mData = await mRes.json()
+        setMatches((mData.data || []).slice(0, 20))
+      } else if (sport === 'hockey') {
+        const mRes = await fetch(`${API_BASE}/matches/hockey`, { headers: { Authorization: `Bearer ${token()}` } })
+        const mData = await mRes.json()
+        setMatches((mData.data || []).slice(0, 20))
+      } else {
+        setMatches([])
+      }
     } catch { toast.error('Ошибка загрузки') }
     setLoading(false)
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load(sportTab) }, [sportTab])
+
+  const generateArticle = async (match) => {
+    const matchKey = `${sportTab}_${match.home || match.homeTeam}_${match.away || match.awayTeam}_${(match.rawDate || match.date || '').slice(0,10)}`
+    setGeneratingKey(matchKey)
+    try {
+      const r = await fetch(`${API_BASE}/blog/generate-from-match`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({
+          home: match.home || match.homeTeam,
+          away: match.away || match.awayTeam,
+          league: match.league || match.tournamentName || '',
+          date: match.rawDate || match.date || '',
+          matchId: match.id,
+          homeId: match.homeId,
+          awayId: match.awayId,
+          sport: sportTab,
+        }),
+      })
+      const d = await r.json()
+      if (!r.ok) throw new Error(d.error)
+      if (d.already) { toast.success('Статья уже написана'); return }
+      setMatchKeys(prev => new Set([...prev, matchKey]))
+      toast.success('Статья написана! Можешь отредактировать и опубликовать.')
+      load(sportTab)
+    } catch(e) { toast.error(e.message) }
+    setGeneratingKey(null)
+  }
 
   const save = async () => {
     if (!editing.title?.trim()) return toast.error('Введи заголовок')
@@ -1305,56 +1356,122 @@ function BlogTab({ toast }) {
     </div>
   )
 
+  const SPORT_TABS = [
+    { key: 'football', label: '⚽ Футбол' },
+    { key: 'hockey',   label: '🏒 Хоккей' },
+    { key: 'all',      label: '📋 Все статьи' },
+  ]
+
   return (
     <div style={{ padding: 24 }}>
+      {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <h2 style={{ color: '#fff', fontSize: 20, fontWeight: 700, margin: 0 }}>Статьи блога</h2>
-        <button onClick={() => setEditing({ title: '', content: '', excerpt: '', published: false })}
+        <h2 style={{ color: '#fff', fontSize: 20, fontWeight: 700, margin: 0 }}>Блог</h2>
+        <button onClick={() => setEditing({ title: '', content: '', excerpt: '', published: false, sport: sportTab !== 'all' ? sportTab : 'other' })}
           style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', borderRadius: 10, padding: '9px 20px', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
           + Новая статья
         </button>
       </div>
 
-      {loading ? <p style={{ color: '#64748b' }}>Загрузка...</p> : articles.length === 0 ? (
-        <p style={{ color: '#64748b' }}>Статей пока нет. Создай первую!</p>
-      ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-              {['Заголовок', 'Статус', 'Просмотры', 'Дата', ''].map(h => (
-                <th key={h} style={{ ...tdStyle, textAlign: 'left', color: '#64748b', fontSize: 12, fontWeight: 600 }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {articles.map(a => (
-              <tr key={a.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                <td style={tdStyle}>
-                  <div style={{ color: '#fff', fontWeight: 600, fontSize: 14 }}>{a.title}</div>
-                  <div style={{ color: '#64748b', fontSize: 12 }}>/{a.slug}</div>
-                </td>
-                <td style={tdStyle}>
-                  <span style={pillStyle(a.published ? '#22c55e' : '#94a3b8')}>{a.published ? 'Опубликовано' : 'Черновик'}</span>
-                </td>
-                <td style={{ ...tdStyle, color: '#94a3b8', fontSize: 13 }}>{a.views}</td>
-                <td style={{ ...tdStyle, color: '#64748b', fontSize: 12 }}>{(a.created_at || '').slice(0, 10)}</td>
-                <td style={{ ...tdStyle }}>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={() => fetch(`${API_BASE}/blog/admin/${a.id}`, { headers: { Authorization: `Bearer ${token()}` } }).then(r => r.json()).then(d => setEditing(d))}
-                      style={{ ...pageBtn, color: '#a78bfa', fontSize: 12, padding: '4px 10px' }}>Редакт.</button>
-                    <button onClick={() => togglePublish(a)}
-                      style={{ ...pageBtn, color: a.published ? '#f59e0b' : '#22c55e', fontSize: 12, padding: '4px 10px' }}>
-                      {a.published ? 'Снять' : 'Публ.'}
-                    </button>
-                    <a href={`https://valorix.ru/blog/${a.slug}`} target="_blank" rel="noreferrer"
-                      style={{ ...pageBtn, color: '#64748b', fontSize: 12, padding: '4px 10px', textDecoration: 'none' }}>↗</a>
-                    <button onClick={() => del(a.id)} style={{ ...pageBtn, color: '#ef4444', fontSize: 12, padding: '4px 10px' }}>✕</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Sport sub-tabs */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 24, borderBottom: '1px solid rgba(255,255,255,0.07)', paddingBottom: 16 }}>
+        {SPORT_TABS.map(t => (
+          <button key={t.key} onClick={() => setSportTab(t.key)} style={{
+            padding: '7px 16px', borderRadius: 8, border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            background: sportTab === t.key ? 'linear-gradient(135deg,#6366f1,#8b5cf6)' : 'rgba(255,255,255,0.05)',
+            color: sportTab === t.key ? '#fff' : '#94a3b8', transition: 'all 0.2s',
+          }}>{t.label}</button>
+        ))}
+      </div>
+
+      {loading ? <p style={{ color: '#64748b' }}>Загрузка...</p> : (
+        <>
+          {/* Upcoming matches with generate button */}
+          {(sportTab === 'football' || sportTab === 'hockey') && matches.length > 0 && (
+            <div style={{ marginBottom: 28 }}>
+              <p style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 }}>
+                Ближайшие матчи
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {matches.map((m, i) => {
+                  const home = m.home || m.homeTeam || '?'
+                  const away = m.away || m.awayTeam || '?'
+                  const matchKey = `${sportTab}_${home}_${away}_${(m.rawDate || m.date || '').slice(0,10)}`
+                  const done = matchKeys.has(matchKey)
+                  const generating = generatingKey === matchKey
+                  return (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px' }}>
+                      <div style={{ flex: 1 }}>
+                        <span style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{home}</span>
+                        <span style={{ color: '#64748b', margin: '0 8px' }}>—</span>
+                        <span style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{away}</span>
+                        {m.league && <span style={{ color: '#475569', fontSize: 12, marginLeft: 10 }}>{m.league}</span>}
+                      </div>
+                      {done ? (
+                        <span style={{ ...pillStyle('#22c55e'), fontSize: 11, padding: '4px 10px' }}>✓ Статья написана</span>
+                      ) : (
+                        <button
+                          onClick={() => generateArticle(m)}
+                          disabled={!!generating}
+                          style={{ background: generating ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 8, padding: '5px 14px', color: '#a78bfa', fontSize: 12, fontWeight: 600, cursor: generating ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}>
+                          {generating ? '⏳ Пишу...' : '✍️ Статья'}
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Articles list */}
+          <p style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 }}>
+            {articles.length > 0 ? `Статьи (${articles.length})` : 'Статей пока нет'}
+          </p>
+          {articles.length === 0 ? (
+            <p style={{ color: '#475569', fontSize: 14 }}>
+              {sportTab !== 'all' ? 'Нажми "✍️ Статья" на любом матче выше' : 'Создай первую статью'}
+            </p>
+          ) : (
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+                  {['Заголовок', 'Статус', 'Просмотры', 'Дата', ''].map(h => (
+                    <th key={h} style={{ ...tdStyle, textAlign: 'left', color: '#64748b', fontSize: 12, fontWeight: 600 }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {articles.map(a => (
+                  <tr key={a.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    <td style={tdStyle}>
+                      <div style={{ color: '#fff', fontWeight: 600, fontSize: 14 }}>{a.title}</div>
+                      <div style={{ color: '#64748b', fontSize: 12 }}>/{a.slug}</div>
+                    </td>
+                    <td style={tdStyle}>
+                      <span style={pillStyle(a.published ? '#22c55e' : '#94a3b8')}>{a.published ? 'Опубл.' : 'Черновик'}</span>
+                    </td>
+                    <td style={{ ...tdStyle, color: '#94a3b8', fontSize: 13 }}>{a.views}</td>
+                    <td style={{ ...tdStyle, color: '#64748b', fontSize: 12 }}>{(a.created_at || '').slice(0, 10)}</td>
+                    <td style={{ ...tdStyle }}>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button onClick={() => fetch(`${API_BASE}/blog/admin/${a.id}`, { headers: { Authorization: `Bearer ${token()}` } }).then(r => r.json()).then(d => setEditing(d))}
+                          style={{ ...pageBtn, color: '#a78bfa', fontSize: 12, padding: '4px 10px' }}>Редакт.</button>
+                        <button onClick={() => togglePublish(a)}
+                          style={{ ...pageBtn, color: a.published ? '#f59e0b' : '#22c55e', fontSize: 12, padding: '4px 10px' }}>
+                          {a.published ? 'Снять' : 'Публ.'}
+                        </button>
+                        <a href={`https://valorix.ru/blog/${a.slug}`} target="_blank" rel="noreferrer"
+                          style={{ ...pageBtn, color: '#64748b', fontSize: 12, padding: '4px 10px', textDecoration: 'none' }}>↗</a>
+                        <button onClick={() => del(a.id)} style={{ ...pageBtn, color: '#ef4444', fontSize: 12, padding: '4px 10px' }}>✕</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </>
       )}
     </div>
   )
