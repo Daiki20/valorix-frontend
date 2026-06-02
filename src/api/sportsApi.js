@@ -1,17 +1,19 @@
-const SSTATS_KEY = import.meta.env.VITE_SSTATS_API_KEY
 // In production, always use relative URLs (Vercel rewrites proxy to Railway)
 const API_BASE = import.meta.env.PROD ? 'https://web-production-fefcd.up.railway.app' : (import.meta.env.VITE_API_URL || '')
-const BASE = 'https://api.sstats.net'
 
 import { translateTeam } from './teamNames.js'
 
-function sstatsUrl(path, params = {}) {
-  const q = new URLSearchParams({ ...params, apikey: SSTATS_KEY })
-  return `${BASE}${path}?${q}`
-}
-
+// All sstats calls go through Railway backend — API key never exposed in browser
 async function sstatsGet(path, params = {}) {
-  const res = await fetch(sstatsUrl(path, params))
+  const token = localStorage.getItem('valorix_token')
+  const res = await fetch(`${API_BASE}/analyze/sstats`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ path, params }),
+  })
   if (!res.ok) throw new Error(`sstats ${path} error: ${res.status}`)
   return res.json()
 }
@@ -35,7 +37,7 @@ const SSTATS_TO_PARI_LEAGUE = {
 // Fetch Pari.ru 1X2 odds for a match by searching the league
 async function getPariOdds(match) {
   const pariLeagueId = SSTATS_TO_PARI_LEAGUE[match.leagueId]
-  if (!pariLeagueId || !SSTATS_KEY) return null
+  if (!pariLeagueId) return null
 
   try {
     const data = await sstatsGet('/Pari/matches', { leagueId: pariLeagueId, includeOdds: true })
@@ -88,7 +90,7 @@ function fuzzyMatch(a, b) {
 
 // Search teams by name, return upcoming matches
 export async function searchMatches(query) {
-  if (!SSTATS_KEY) return null
+  if (!API_BASE) return null
 
   // Step 1: find team IDs
   const teamsData = await sstatsGet('/Teams/list', { name: query, limit: 5 })
@@ -263,7 +265,7 @@ export async function analyzeMatch(matchInput) {
   let liveStats = null
   let h2h = []
 
-  if (SSTATS_KEY && match.id) {
+  if (match.id) {
     const apiCalls = [
       sstatsGet('/Games/last-games-stats', { gameId: match.id }),
       sstatsGet(`/Games/glicko/${match.id}`),
@@ -468,7 +470,7 @@ async function enrichAndAnalyze(matchInfo, game = 'football') {
   let formData = { homeForm: null, awayForm: null, h2h: [] }
   let glicko = null, realOdds = []
 
-  if (SSTATS_KEY) {
+  if (true) {
     // Step 1: find team IDs (English name first, fallback to original)
     const [homeTeams, awayTeams] = await Promise.all([
       sstatsGet('/Teams/list', { name: matchInfo.homeEn || matchInfo.home, limit: 3 }).catch(() => ({ data: [] })),
