@@ -7,7 +7,7 @@ import { getStats, getUsers, getTransactions, addCoins, setAdmin, setBlocked } f
 import { Users, Zap, BarChart3, RefreshCw, Shield, Ban, Plus, Minus, Search, ChevronLeft, ChevronRight, Star } from 'lucide-react'
 const API_BASE = import.meta.env.PROD ? 'https://web-production-fefcd.up.railway.app' : (import.meta.env.VITE_API_URL || '')
 
-const TABS = ['Дашборд', 'Пользователи', 'Транзакции']
+const TABS = ['Дашборд', 'Пользователи', 'Транзакции', 'Блог']
 
 export default function Admin() {
   const { user } = useAuth()
@@ -49,6 +49,7 @@ export default function Admin() {
         {tab === 0 && <DashboardTab toast={toast} />}
         {tab === 1 && <UsersTab toast={toast} />}
         {tab === 2 && <TransactionsTab />}
+        {tab === 3 && <BlogTab toast={toast} />}
       </div>
     </div>
   )
@@ -1195,3 +1196,166 @@ const pillStyle = (color) => ({
   background: `${color}15`, color, borderRadius: 20, padding: '2px 8px',
   fontSize: 11, fontWeight: 700, display: 'inline-block', whiteSpace: 'nowrap',
 })
+
+/* ─── Blog Tab ─── */
+function BlogTab({ toast }) {
+  const token = () => localStorage.getItem('valorix_token')
+  const [articles, setArticles] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [editing, setEditing] = useState(null) // null = list, {} = new, {id,...} = edit
+  const [saving, setSaving] = useState(false)
+
+  const load = async () => {
+    setLoading(true)
+    try {
+      const r = await fetch(`${API_BASE}/blog/admin/list`, { headers: { Authorization: `Bearer ${token()}` } })
+      const d = await r.json()
+      setArticles(d.items || [])
+    } catch { toast.error('Ошибка загрузки') }
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [])
+
+  const save = async () => {
+    if (!editing.title?.trim()) return toast.error('Введи заголовок')
+    if (!editing.content?.trim()) return toast.error('Введи текст статьи')
+    setSaving(true)
+    try {
+      const method = editing.id ? 'PUT' : 'POST'
+      const url = editing.id ? `${API_BASE}/blog/${editing.id}` : `${API_BASE}/blog`
+      const r = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` },
+        body: JSON.stringify(editing),
+      })
+      if (!r.ok) throw new Error((await r.json()).error)
+      toast.success(editing.id ? 'Статья обновлена' : 'Статья создана')
+      setEditing(null)
+      load()
+    } catch (e) { toast.error(e.message) }
+    setSaving(false)
+  }
+
+  const del = async (id) => {
+    if (!confirm('Удалить статью?')) return
+    await fetch(`${API_BASE}/blog/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token()}` } })
+    toast.success('Удалено')
+    load()
+  }
+
+  const togglePublish = async (article) => {
+    await fetch(`${API_BASE}/blog/${article.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` },
+      body: JSON.stringify({ published: !article.published }),
+    })
+    load()
+  }
+
+  const inp = { background: '#0c0f18', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 14px', color: '#fff', width: '100%', fontSize: 14, outline: 'none', boxSizing: 'border-box' }
+
+  if (editing) return (
+    <div style={{ padding: 24, maxWidth: 860 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+        <button onClick={() => setEditing(null)} style={{ ...pageBtn, color: '#94a3b8', fontSize: 13 }}>← Назад</button>
+        <h2 style={{ color: '#fff', fontSize: 20, fontWeight: 700, margin: 0 }}>
+          {editing.id ? 'Редактировать статью' : 'Новая статья'}
+        </h2>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div>
+          <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 6, display: 'block' }}>Заголовок *</label>
+          <input style={inp} placeholder="Как правильно анализировать матч" value={editing.title || ''} onChange={e => setEditing(p => ({ ...p, title: e.target.value }))} />
+        </div>
+        <div>
+          <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 6, display: 'block' }}>Краткое описание (для карточки и Google)</label>
+          <input style={inp} placeholder="2-3 предложения о чём статья" value={editing.excerpt || ''} onChange={e => setEditing(p => ({ ...p, excerpt: e.target.value }))} />
+        </div>
+        <div>
+          <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 6, display: 'block' }}>URL статьи (slug) — оставь пустым для авто</label>
+          <input style={inp} placeholder="kak-analizirovat-matchi" value={editing.slug || ''} onChange={e => setEditing(p => ({ ...p, slug: e.target.value }))} />
+        </div>
+        <div>
+          <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 6, display: 'block' }}>URL обложки (картинка)</label>
+          <input style={inp} placeholder="https://..." value={editing.cover_url || ''} onChange={e => setEditing(p => ({ ...p, cover_url: e.target.value }))} />
+        </div>
+        <div>
+          <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 6, display: 'block' }}>
+            Текст статьи * <span style={{ color: '#64748b' }}>(поддерживает Markdown: **жирный**, ## Заголовок, - список)</span>
+          </label>
+          <textarea
+            style={{ ...inp, height: 420, resize: 'vertical', fontFamily: 'monospace', lineHeight: 1.6 }}
+            placeholder={'## Введение\n\nНапиши текст статьи здесь...\n\n## Как это работает\n\nИспользуй **жирный** текст, *курсив*, списки:\n\n- Пункт 1\n- Пункт 2\n\n## Вывод\n\nЗаключение статьи.'}
+            value={editing.content || ''}
+            onChange={e => setEditing(p => ({ ...p, content: e.target.value }))}
+          />
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', color: '#94a3b8', fontSize: 14 }}>
+            <input type="checkbox" checked={!!editing.published} onChange={e => setEditing(p => ({ ...p, published: e.target.checked }))} />
+            Опубликовать сразу
+          </label>
+          <button onClick={save} disabled={saving} style={{ marginLeft: 'auto', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', borderRadius: 10, padding: '10px 28px', color: '#fff', fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1 }}>
+            {saving ? 'Сохраняю...' : (editing.id ? 'Сохранить' : 'Создать статью')}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+
+  return (
+    <div style={{ padding: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+        <h2 style={{ color: '#fff', fontSize: 20, fontWeight: 700, margin: 0 }}>Статьи блога</h2>
+        <button onClick={() => setEditing({ title: '', content: '', excerpt: '', published: false })}
+          style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', borderRadius: 10, padding: '9px 20px', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
+          + Новая статья
+        </button>
+      </div>
+
+      {loading ? <p style={{ color: '#64748b' }}>Загрузка...</p> : articles.length === 0 ? (
+        <p style={{ color: '#64748b' }}>Статей пока нет. Создай первую!</p>
+      ) : (
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+              {['Заголовок', 'Статус', 'Просмотры', 'Дата', ''].map(h => (
+                <th key={h} style={{ ...tdStyle, textAlign: 'left', color: '#64748b', fontSize: 12, fontWeight: 600 }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {articles.map(a => (
+              <tr key={a.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <td style={tdStyle}>
+                  <div style={{ color: '#fff', fontWeight: 600, fontSize: 14 }}>{a.title}</div>
+                  <div style={{ color: '#64748b', fontSize: 12 }}>/{a.slug}</div>
+                </td>
+                <td style={tdStyle}>
+                  <span style={pillStyle(a.published ? '#22c55e' : '#94a3b8')}>{a.published ? 'Опубликовано' : 'Черновик'}</span>
+                </td>
+                <td style={{ ...tdStyle, color: '#94a3b8', fontSize: 13 }}>{a.views}</td>
+                <td style={{ ...tdStyle, color: '#64748b', fontSize: 12 }}>{(a.created_at || '').slice(0, 10)}</td>
+                <td style={{ ...tdStyle }}>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button onClick={() => fetch(`${API_BASE}/blog/admin/${a.id}`, { headers: { Authorization: `Bearer ${token()}` } }).then(r => r.json()).then(d => setEditing(d))}
+                      style={{ ...pageBtn, color: '#a78bfa', fontSize: 12, padding: '4px 10px' }}>Редакт.</button>
+                    <button onClick={() => togglePublish(a)}
+                      style={{ ...pageBtn, color: a.published ? '#f59e0b' : '#22c55e', fontSize: 12, padding: '4px 10px' }}>
+                      {a.published ? 'Снять' : 'Публ.'}
+                    </button>
+                    <a href={`https://valorix.ru/blog/${a.slug}`} target="_blank" rel="noreferrer"
+                      style={{ ...pageBtn, color: '#64748b', fontSize: 12, padding: '4px 10px', textDecoration: 'none' }}>↗</a>
+                    <button onClick={() => del(a.id)} style={{ ...pageBtn, color: '#ef4444', fontSize: 12, padding: '4px 10px' }}>✕</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  )
+}

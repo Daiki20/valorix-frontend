@@ -13,6 +13,8 @@ import Support from './pages/Support'
 import ResetPassword from './pages/ResetPassword'
 import NotFound from './pages/NotFound'
 import SharePage from './pages/SharePage'
+import Blog from './pages/Blog'
+import Article from './pages/Article'
 
 export default function App() {
   return (
@@ -31,6 +33,8 @@ export default function App() {
             <Route path="/support" element={<Support />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/share/:token" element={<SharePage />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<Article />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
