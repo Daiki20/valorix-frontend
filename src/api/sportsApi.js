@@ -255,6 +255,23 @@ function formatLiveStats(liveStats, home, away) {
   return lines.length ? lines.join('\n') : null
 }
 
+// Fetch enrichment from TheSportsDB (logos) + API-Football (injuries/lineups)
+async function fetchFootballEnrich(match) {
+  const token = localStorage.getItem('valorix_token')
+  const homeEn = match.rawData?.homeTeam?.name || match.home
+  const awayEn = match.rawData?.awayTeam?.name || match.away
+  const date   = match.rawData?.date?.slice(0, 10) || null
+  try {
+    const res = await fetch(`${API_BASE}/analyze/football-enrich`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({ homeEn, awayEn, date, leagueId: match.leagueId }),
+    })
+    if (!res.ok) return {}
+    return res.json()
+  } catch { return {} }
+}
+
 // Main AI analysis for a match
 export async function analyzeMatch(matchInput) {
   let match = { ...matchInput }
@@ -265,6 +282,11 @@ export async function analyzeMatch(matchInput) {
   let liveStats = null
   let h2h = []
 
+  // Run sstats calls + enrichment in parallel
+  const [enrichData] = await Promise.all([
+    fetchFootballEnrich(match).catch(() => ({})),
+  ])
+
   if (match.id) {
     const apiCalls = [
       sstatsGet('/Games/last-games-stats', { gameId: match.id }),
@@ -272,14 +294,12 @@ export async function analyzeMatch(matchInput) {
       sstatsGet(`/Odds/${match.id}`),
       getPariOdds(match),
     ]
-    // h2h — fetch last 5 meetings between the two teams
     if (match.homeId && match.awayId) {
       apiCalls.push(
         sstatsGet('/Games/list', { ended: true, bothTeams: `${match.homeId},${match.awayId}`, limit: 5 })
           .catch(() => null)
       )
     }
-    // For live matches — also fetch current score + in-game stats
     if (isLive) {
       apiCalls.push(fetchLiveScore(match.id))
       apiCalls.push(fetchLiveStats(match.id))
@@ -292,13 +312,11 @@ export async function analyzeMatch(matchInput) {
     if (glickoRes.status === 'fulfilled') glicko = glickoRes.value?.data?.glicko
     if (oddsRes.status === 'fulfilled') realOdds = extractBookmakerOdds(oddsRes.value?.data || [])
 
-    // h2h is 5th result (index 4) when homeId/awayId present
     const h2hIdx = (match.homeId && match.awayId) ? 0 : -1
     if (h2hIdx >= 0 && rest[h2hIdx]?.status === 'fulfilled' && rest[h2hIdx]?.value?.data) {
       h2h = rest[h2hIdx].value.data.slice(0, 5)
     }
 
-    // Live stats/score come after h2h
     if (isLive) {
       const liveOffset = (match.homeId && match.awayId) ? 1 : 0
       const liveScoreRes = rest[liveOffset]
@@ -314,10 +332,27 @@ export async function analyzeMatch(matchInput) {
     if (pariOdds) realOdds = [pariOdds, ...realOdds]
   }
 
+  // Merge enrichment into context (TheSportsDB logos + API-Football lineups/injuries)
   const context = await getMatchContext(match.home, match.away, match.leagueId).catch(() => ({}))
-  const prompt = buildPrompt(match, stats, glicko, context, liveStats, h2h)
+  const enrichedContext = {
+    ...context,
+    // Lineups: prefer existing context, fallback to API-Football
+    homeLineup: context.homeLineup?.length ? context.homeLineup : (enrichData.lineups?.home?.startXI || []),
+    awayLineup: context.awayLineup?.length ? context.awayLineup : (enrichData.lineups?.away?.startXI || []),
+    formation: context.formation?.home ? context.formation : {
+      home: enrichData.lineups?.home?.formation,
+      away: enrichData.lineups?.away?.formation,
+    },
+    // Injuries from API-Football
+    homeInjuries: enrichData.injuries?.home || [],
+    awayInjuries: enrichData.injuries?.away || [],
+    // Logos from TheSportsDB (used in analysis result for UI)
+    homeLogoTSDB: enrichData.homeLogoTSDB || null,
+    awayLogoTSDB: enrichData.awayLogoTSDB || null,
+  }
 
-  // Live matches — no cache (stats change every minute)
+  const prompt = buildPrompt(match, stats, glicko, enrichedContext, liveStats, h2h)
+
   const cacheKey = isLive ? null :
     `m_${(match.home||'').toLowerCase().replace(/\s/g,'')}_${(match.away||'').toLowerCase().replace(/\s/g,'')}`
 
@@ -325,6 +360,9 @@ export async function analyzeMatch(matchInput) {
   const analysis = parseAnalysis(jsonStr, match)
 
   if (realOdds.length > 0) analysis.bestOdds = realOdds
+  // Attach logos to result for UI display
+  if (enrichData.homeLogoTSDB) analysis.homeLogoTSDB = enrichData.homeLogoTSDB
+  if (enrichData.awayLogoTSDB) analysis.awayLogoTSDB = enrichData.awayLogoTSDB
 
   return analysis
 }
@@ -1323,13 +1361,22 @@ ${match.away} — последние ${awayStats.gamesCount} матчей В Г�
   Счёт: ${match.score} | Минута: ${match.minute != null ? match.minute + "'" : '?'}
 ${liveStatsFormatted ? `  Статистика матча прямо сейчас:\n${liveStatsFormatted}` : '  Детальная статистика матча недоступна — используй счёт и исторические данные'}` : ''
 
-  // Lineups (from RapidAPI)
+  // Lineups (context or API-Football)
   const homeLineup = ctx.homeLineup || []
   const awayLineup = ctx.awayLineup || []
   const lineupsBlock = (homeLineup.length || awayLineup.length)
-    ? `── СТАРТОВЫЕ СОСТАВЫ ──
+    ? `── СТАРТОВЫЕ СОСТАВЫ (API-Football) ──
 ${homeLineup.length ? `${match.home}${ctx.formation?.home ? ` [${ctx.formation.home}]` : ''}: ${homeLineup.join(', ')}` : `${match.home}: состав неизвестен`}
 ${awayLineup.length ? `${match.away}${ctx.formation?.away ? ` [${ctx.formation.away}]` : ''}: ${awayLineup.join(', ')}` : `${match.away}: состав неизвестен`}`
+    : ''
+
+  // Injuries / suspensions (from API-Football)
+  const homeInjuries = ctx.homeInjuries || []
+  const awayInjuries = ctx.awayInjuries || []
+  const injuriesBlock = (homeInjuries.length || awayInjuries.length)
+    ? `── ТРАВМЫ / ДИСКВАЛИФИКАЦИИ (API-Football) ──
+${homeInjuries.length ? `${match.home}: ${homeInjuries.map(i => `${i.player} (${i.reason})`).join(', ')}` : `${match.home}: нет данных`}
+${awayInjuries.length ? `${match.away}: ${awayInjuries.map(i => `${i.player} (${i.reason})`).join(', ')}` : `${match.away}: нет данных`}`
     : ''
 
   // Standings
@@ -1354,7 +1401,7 @@ ${as_ ? `${match.away}: ${as_.rank || as_.position} место | ${as_.points} �
     }
   }
 
-  const dataAvailable = hasStats || !!glicko || !!ctx.homeLineup?.length
+  const dataAvailable = hasStats || !!glicko || !!ctx.homeLineup?.length || homeInjuries.length > 0
 
   return `Ты профессиональный спортивный аналитик. Отвечай СТРОГО по-русски.
 
@@ -1365,6 +1412,7 @@ ${statsBlock}
 ${h2hBlock}
 ${glickoBlock}
 ${standingsBlock}
+${injuriesBlock}
 ${lineupsBlock}
 ${oddsBlock}
 ${valueHint}
