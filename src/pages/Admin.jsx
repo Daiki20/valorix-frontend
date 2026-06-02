@@ -1241,7 +1241,7 @@ function BlogTab({ toast }) {
   useEffect(() => { load(sportTab) }, [sportTab])
 
   const generateArticle = async (match) => {
-    const matchKey = `${sportTab}_${match.home || match.homeTeam}_${match.away || match.awayTeam}_${(match.rawDate || match.date || '').slice(0,10)}`
+    const matchKey = `${sportTab}_${match.home || match.homeTeam}_${match.away || match.awayTeam}_${String(match.rawDate || match.date || '').slice(0,10)}`
     setGeneratingKey(matchKey)
     try {
       const r = await fetch(`${API_BASE}/blog/generate-from-match`, {
@@ -1396,7 +1396,8 @@ function BlogTab({ toast }) {
                 {matches.map((m, i) => {
                   const home = m.home || m.homeTeam || '?'
                   const away = m.away || m.awayTeam || '?'
-                  const matchKey = `${sportTab}_${home}_${away}_${(m.rawDate || m.date || '').slice(0,10)}`
+                  const rawDate = String(m.rawDate || m.date || '').slice(0, 10)
+                  const matchKey = `${sportTab}_${home}_${away}_${rawDate}`
                   const done = matchKeys.has(matchKey)
                   const generating = generatingKey === matchKey
                   return (
