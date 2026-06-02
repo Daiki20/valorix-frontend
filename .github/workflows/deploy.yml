@@ -30,6 +30,9 @@ jobs:
       - name: Copy index.html to 404.html (SPA routing fix)
         run: cp dist/index.html dist/404.html
 
+      - name: Generate sitemap.xml (fetches articles from Railway)
+        run: node scripts/generate-sitemap.js
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
