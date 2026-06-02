@@ -454,7 +454,12 @@ async function extractFromScreenshot(base64Image) {
   }
   const data = await res.json()
   const raw = data.choices?.[0]?.message?.content || ''
-  return JSON.parse(raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim())
+  try {
+    return JSON.parse(raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/i, '').trim())
+  } catch {
+    // AI returned plain text instead of JSON (e.g. refusal or unrecognized image)
+    throw new Error('AI не смог распознать матч на скриншоте. Загрузите скриншот с линией букмекера (коэффициенты, название команд).')
+  }
 }
 
 // Step 2: find teams in sstats, get stats, run full analysis
