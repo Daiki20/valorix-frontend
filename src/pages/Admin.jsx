@@ -1231,6 +1231,35 @@ function BlogTab({ toast }) {
   const [editing, setEditing] = useState(null)
   const [saving, setSaving] = useState(false)
   const [sortBy, setSortBy] = useState('date') // 'date' | 'views'
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef(null)
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) { toast.error('Файл слишком большой (макс. 5 МБ)'); return }
+    setUploading(true)
+    const reader = new FileReader()
+    reader.onload = async (ev) => {
+      try {
+        const res = await fetch(`${API_BASE}/upload/image`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` },
+          body: JSON.stringify({ data: ev.target.result, filename: file.name }),
+        })
+        const data = await res.json()
+        if (data.url) {
+          const fullUrl = `https://web-production-fefcd.up.railway.app${data.url}`
+          setEditing(p => ({ ...p, cover_url: fullUrl }))
+          toast.success('Картинка загружена!')
+        } else {
+          toast.error(data.error || 'Ошибка загрузки')
+        }
+      } catch { toast.error('Ошибка загрузки') }
+      finally { setUploading(false); e.target.value = '' }
+    }
+    reader.readAsDataURL(file)
+  }
   const textareaRef = useRef(null)
 
   const insertAtCursor = (before, after = '', placeholder = 'текст') => {
@@ -1392,7 +1421,37 @@ function BlogTab({ toast }) {
         <input style={{ ...inp, flex: '2 1 200px' }} placeholder="Заголовок статьи *" value={editing.title || ''} onChange={e => setEditing(p => ({ ...p, title: e.target.value }))} />
         <input style={{ ...inp, flex: '3 1 250px' }} placeholder="Краткое описание (для Google и карточки в блоге)" value={editing.excerpt || ''} onChange={e => setEditing(p => ({ ...p, excerpt: e.target.value }))} />
         <input style={{ ...inp, flex: '1 1 140px' }} placeholder="URL (slug, авто)" value={editing.slug || ''} onChange={e => setEditing(p => ({ ...p, slug: e.target.value }))} />
-        <input style={{ ...inp, flex: '1 1 140px' }} placeholder="URL обложки" value={editing.cover_url || ''} onChange={e => setEditing(p => ({ ...p, cover_url: e.target.value }))} />
+        <div style={{ flex: '1 1 140px', display: 'flex', gap: 6, alignItems: 'center' }}>
+          <input
+            style={{ ...inp, flex: 1, fontSize: 12 }}
+            placeholder="URL обложки"
+            value={editing.cover_url || ''}
+            onChange={e => setEditing(p => ({ ...p, cover_url: e.target.value }))}
+          />
+          <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageUpload} />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            title="Загрузить картинку с компьютера"
+            style={{
+              flexShrink: 0, padding: '8px 12px', borderRadius: 10, border: '1px solid rgba(0,207,255,0.3)',
+              background: uploading ? 'rgba(0,207,255,0.05)' : 'rgba(0,207,255,0.1)',
+              color: uploading ? '#475569' : '#00cfff', cursor: uploading ? 'not-allowed' : 'pointer',
+              fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap',
+            }}
+          >
+            {uploading ? '⏳' : '📁 Загрузить'}
+          </button>
+          {editing.cover_url && (
+            <img
+              src={editing.cover_url}
+              alt=""
+              style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', flexShrink: 0 }}
+              onError={e => { e.target.style.display = 'none' }}
+            />
+          )}
+        </div>
       </div>
 
       {/* ── Toolbar ── */}
