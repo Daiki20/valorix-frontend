@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import AnalysisResult from '../components/AnalysisResult'
 import AuthModal from '../components/AuthModal'
-import { searchMatches, analyzeMatch, analyzeHockeyMatch, getUpcomingMatches, getLiveMatches, getUpcomingHockeyMatches } from '../api/sportsApi'
+import { searchMatches, analyzeMatch, analyzeHockeyMatch, getUpcomingMatches, getLiveMatches, getUpcomingHockeyMatches, getUpcomingCS2Matches, getUpcomingDota2Matches } from '../api/sportsApi'
 import { coinsApi } from '../api/authApi'
 import ExpressCard from '../components/ExpressCard'
 import { useAuth } from '../context/AuthContext'
@@ -32,6 +32,10 @@ export default function Analyze() {
   const [liveMatches, setLiveMatches] = useState([])
   const [hockeyMatches, setHockeyMatches] = useState([])
   const [hockeyLoading, setHockeyLoading] = useState(false)
+  const [cs2Matches, setCs2Matches] = useState([])
+  const [cs2Loading, setCs2Loading] = useState(false)
+  const [dota2Matches, setDota2Matches] = useState([])
+  const [dota2Loading, setDota2Loading] = useState(false)
   const [showHockeyForm, setShowHockeyForm] = useState(false)
   const [hockeyHome, setHockeyHome] = useState('')
   const [hockeyAway, setHockeyAway] = useState('')
@@ -64,6 +68,24 @@ export default function Analyze() {
       .finally(() => setHockeyLoading(false))
   }, [activeTab])
 
+  useEffect(() => {
+    if (activeTab !== 'cs2' || cs2Matches.length > 0) return
+    setCs2Loading(true)
+    getUpcomingCS2Matches()
+      .then(setCs2Matches)
+      .catch(() => {})
+      .finally(() => setCs2Loading(false))
+  }, [activeTab])
+
+  useEffect(() => {
+    if (activeTab !== 'dota2' || dota2Matches.length > 0) return
+    setDota2Loading(true)
+    getUpcomingDota2Matches()
+      .then(setDota2Matches)
+      .catch(() => {})
+      .finally(() => setDota2Loading(false))
+  }, [activeTab])
+
   const filtered = matches.filter(m =>
     m.home.toLowerCase().includes(query.toLowerCase()) ||
     m.away.toLowerCase().includes(query.toLowerCase()) ||
@@ -91,8 +113,7 @@ export default function Analyze() {
     setAnalysisLoading(true)
     setError(null)
     try {
-      const isHockey = match.sport === 'hockey'
-      const result = isHockey ? await analyzeHockeyMatch(match) : await analyzeMatch(match)
+      const result = await analyzeMatch(match)
       pendingResult.current = result
       setLocked(true)
     } catch (err) {
@@ -221,8 +242,10 @@ export default function Analyze() {
         <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
           {[
             { id: 'football', label: '⚽ Футбол' },
-            { id: 'hockey', label: '🏒 Хоккей' },
-            { id: 'live', label: '🔴 Лайв' },
+            { id: 'hockey',   label: '🏒 Хоккей' },
+            { id: 'cs2',      label: '🔫 CS2' },
+            { id: 'dota2',    label: '🎮 Dota 2' },
+            { id: 'live',     label: '🔴 Лайв' },
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
               padding: '8px 20px', borderRadius: 10, fontWeight: 700, fontSize: 14,
@@ -304,6 +327,36 @@ export default function Analyze() {
             )}
           </>
         )}
+
+        {(activeTab === 'cs2' || activeTab === 'dota2') && (() => {
+          const esportsMatches = activeTab === 'cs2' ? cs2Matches : dota2Matches
+          const esportsLoading = activeTab === 'cs2' ? cs2Loading : dota2Loading
+          const label = activeTab === 'cs2' ? 'CS2' : 'Dota 2'
+          return esportsLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[1,2,3,4].map(i => (
+                <div key={i} className="card" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <div className="skeleton" style={{ width: 32, height: 32, borderRadius: '50%', flexShrink: 0 }} />
+                  <div className="skeleton" style={{ height: 15, flex: 1, maxWidth: 140 }} />
+                  <div className="skeleton" style={{ height: 15, width: 60 }} />
+                  <div className="skeleton" style={{ height: 15, flex: 1, maxWidth: 140 }} />
+                  <div className="skeleton" style={{ width: 32, height: 32, borderRadius: '50%', flexShrink: 0 }} />
+                </div>
+              ))}
+            </div>
+          ) : esportsMatches.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {esportsMatches.map(match => (
+                <MatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} />
+              ))}
+            </div>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8' }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>{activeTab === 'cs2' ? '🔫' : '🎮'}</div>
+              <p>Нет доступных матчей {label}. Попробуйте позже.</p>
+            </div>
+          )
+        })()}
 
         {activeTab === 'football' && (loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
