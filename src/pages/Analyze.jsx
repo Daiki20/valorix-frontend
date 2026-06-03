@@ -388,30 +388,34 @@ export default function Analyze() {
         ))}
 
         {activeTab === 'live' && (() => {
-          const LIVE_SPORT_TABS = [
-            { id: 'all',      label: '🌐 Все',     emoji: '🌐' },
-            { id: 'football', label: '⚽ Футбол',  emoji: '⚽' },
-            { id: 'hockey',   label: '🏒 Хоккей',  emoji: '🏒' },
-            { id: 'cs2',      label: '🔫 CS2',     emoji: '🔫' },
-            { id: 'dota2',    label: '🎮 Dota 2',  emoji: '🎮' },
-          ]
+          const SPORT_META = {
+            football:   { label: '⚽ Футбол',    emoji: '⚽' },
+            hockey:     { label: '🏒 Хоккей',    emoji: '🏒' },
+            basketball: { label: '🏀 Баскетбол', emoji: '🏀' },
+            tennis:     { label: '🎾 Теннис',    emoji: '🎾' },
+            cs2:        { label: '🔫 CS2',        emoji: '🔫' },
+            dota2:      { label: '🎮 Dota 2',     emoji: '🎮' },
+            lol:        { label: '🎮 LoL',        emoji: '🎮' },
+            valorant:   { label: '🎯 Valorant',   emoji: '🎯' },
+          }
 
-          const SPORT_LABEL = { football: '⚽', hockey: '🏒', cs2: '🔫', dota2: '🎮', cs: '🔫', lol: '🎮', valorant: '🎮' }
-
-          const filtered_ = liveFilter === 'all'
-            ? liveMatches
-            : liveMatches.filter(m => m.sport === liveFilter)
+          // Build sport filters dynamically from actual live data
+          const sportsInLive = ['all', ...Object.keys(SPORT_META).filter(s =>
+            liveMatches.some(m => m.sport === s)
+          )]
 
           const countFor = id => id === 'all' ? liveMatches.length : liveMatches.filter(m => m.sport === id).length
+          const filtered_ = liveFilter === 'all' ? liveMatches : liveMatches.filter(m => m.sport === liveFilter)
 
           return (
             <>
               <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
-                {LIVE_SPORT_TABS.map(t => {
-                  const cnt = countFor(t.id)
-                  const isActive = liveFilter === t.id
+                {sportsInLive.map(id => {
+                  const cnt = countFor(id)
+                  const label = id === 'all' ? `🌐 Все` : (SPORT_META[id]?.label || id)
+                  const isActive = liveFilter === id
                   return (
-                    <button key={t.id} onClick={() => setLiveFilter(t.id)} style={{
+                    <button key={id} onClick={() => setLiveFilter(id)} style={{
                       padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
                       border: `1.5px solid ${isActive ? '#ef4444' : 'rgba(0,180,255,0.15)'}`,
                       background: isActive ? 'rgba(239,68,68,0.12)' : 'rgba(0,25,60,0.4)',
@@ -419,14 +423,12 @@ export default function Analyze() {
                       cursor: 'pointer', transition: 'all 0.15s',
                       display: 'flex', alignItems: 'center', gap: 5,
                     }}>
-                      {t.label}
-                      {cnt > 0 && (
-                        <span style={{
-                          background: isActive ? '#ef4444' : 'rgba(0,180,255,0.15)',
-                          color: isActive ? '#fff' : '#4a6a8a',
-                          borderRadius: 10, padding: '1px 6px', fontSize: 10, fontWeight: 800,
-                        }}>{cnt}</span>
-                      )}
+                      {label}
+                      <span style={{
+                        background: isActive ? '#ef4444' : 'rgba(0,180,255,0.15)',
+                        color: isActive ? '#fff' : '#4a6a8a',
+                        borderRadius: 10, padding: '1px 6px', fontSize: 10, fontWeight: 800,
+                      }}>{cnt}</span>
                     </button>
                   )
                 })}
@@ -437,7 +439,7 @@ export default function Analyze() {
                   ? filtered_.map(match => (
                       <MatchRow
                         key={match.id}
-                        match={{ ...match, home: `${SPORT_LABEL[match.sport] || ''} ${match.home}`.trim() }}
+                        match={{ ...match, home: `${SPORT_META[match.sport]?.emoji || '🔴'} ${match.home}`.trim() }}
                         onClick={() => handleSelectMatch(match)}
                         isLiveTab
                       />
@@ -445,7 +447,7 @@ export default function Analyze() {
                   : (
                     <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8' }}>
                       <div style={{ fontSize: 40, marginBottom: 12 }}>🔴</div>
-                      <p>Нет лайв матчей{liveFilter !== 'all' ? ` — ${LIVE_SPORT_TABS.find(t => t.id === liveFilter)?.label}` : ''}</p>
+                      <p>Нет лайв матчей</p>
                     </div>
                   )
                 }
