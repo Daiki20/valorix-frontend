@@ -187,36 +187,11 @@ export async function getLiveMatches() {
 // Get upcoming matches — via backend proxy (cached 15 min, avoids 35 parallel browser requests)
 export async function getUpcomingMatches(limit = 50) {
   try {
-    const [sstatsRes, fonbetRes] = await Promise.allSettled([
-      fetch(`${API_BASE}/matches/upcoming`),
-      fetch(`${API_BASE}/matches/football`),
-    ])
-
-    const sstatsGames = sstatsRes.status === 'fulfilled' && sstatsRes.value.ok
-      ? ((await sstatsRes.value.json()).data || []).map(normalizeGame).filter(m => m.odds1x2)
-      : []
-
-    const fonbetGames = fonbetRes.status === 'fulfilled' && fonbetRes.value.ok
-      ? ((await fonbetRes.value.json()).data || [])
-      : []
-
-    const norm = s => (s || '').toLowerCase().replace(/[^a-zа-яё0-9]/gi, '')
-    const seen = new Set(sstatsGames.map(m => `${norm(m.home)}_${norm(m.away)}`))
-    const merged = [...sstatsGames]
-    for (const m of fonbetGames) {
-      const key = `${norm(m.home)}_${norm(m.away)}`
-      if (!seen.has(key)) { seen.add(key); merged.push(m) }
-    }
-
-    return merged
-      .sort((a, b) => {
-        const pa = LEAGUE_PRIORITY[a.leagueId] || 0
-        const pb = LEAGUE_PRIORITY[b.leagueId] || 0
-        if (pa !== pb) return pb - pa
-        return new Date(a.rawData?.date || a.rawDate || 0) - new Date(b.rawData?.date || b.rawDate || 0)
-      })
-      .slice(0, limit)
-  } catch { return MOCK_MATCHES }
+    const res = await fetch(`${API_BASE}/matches/football`)
+    if (!res.ok) return []
+    const { data } = await res.json()
+    return (data || []).slice(0, limit)
+  } catch { return [] }
 }
 
 // Fetch live in-game statistics (shots, possession, corners, cards)
@@ -295,31 +270,32 @@ async function fetchFootballEnrich(match) {
 export async function analyzeMatch(matchInput) {
   let match = { ...matchInput }
   const isLive = !!(match.isLive || match.score)
-  const isFonbet = !!(match.id && String(match.id).startsWith('fonbet_'))
   const token = localStorage.getItem('valorix_token')
 
-  // Fonbet matches: use web search (gpt-4o-search-preview) for real-time data
-  if (isFonbet && !isLive) {
-    try {
-      const res = await fetch(`${API_BASE}/analyze/match-with-search`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({
-          home: match.home,
-          away: match.away,
-          league: match.league || '',
-          date: match.rawDate ? match.rawDate.slice(0, 10) : match.date || '',
-          odds1x2: match.odds1x2 || null,
-          sport: match.sport || 'football',
-        }),
-      })
-      if (res.ok) {
-        const analysis = await res.json()
-        if (analysis.verdict) return analysis
-      }
-    } catch { /* fallback to regular analysis */ }
-  }
+  // All matches (pre-match + live): use gpt-4o-search-preview
+  try {
+    const res = await fetch(`${API_BASE}/analyze/match-with-search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({
+        home: match.home,
+        away: match.away,
+        league: match.league || '',
+        date: match.rawDate ? match.rawDate.slice(0, 10) : match.date || '',
+        odds1x2: match.odds1x2 || null,
+        sport: match.sport || 'football',
+        score: match.score || null,
+        minute: match.minute || null,
+        isLive,
+      }),
+    })
+    if (res.ok) {
+      const analysis = await res.json()
+      if (analysis.verdict) return analysis
+    }
+  } catch { /* fallback to regular analysis below */ }
 
+  // Fallback: use sstats data
   let stats = null
   let glicko = null
   let realOdds = []
@@ -551,6 +527,35 @@ async function enrichAndAnalyze(matchInfo, game = 'football') {
   // ── All other BDL sports: NHL, NFL, MLB, CS2, Dota2, LoL, Valorant, Tennis, MMA ──
   const BDL_SPORTS = ['hockey', 'cs2', 'dota2', 'lol', 'valorant', 'tennis', 'mma', 'nfl', 'baseball']
   if (BDL_SPORTS.includes(game)) return enrichWithBDL(matchInfo, game)
+
+  // ── Football: use gpt-4o-search-preview for real-time web data ──
+  try {
+    const token = localStorage.getItem('valorix_token')
+    const res = await fetch(`${API_BASE}/analyze/match-with-search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({
+        home: matchInfo.home,
+        away: matchInfo.away,
+        league: matchInfo.league || '',
+        date: '',
+        odds1x2: matchInfo.odds1 ? { home: matchInfo.odds1, draw: matchInfo.oddsX, away: matchInfo.odds2 } : null,
+        sport: 'football',
+        score: matchInfo.score || null,
+        minute: matchInfo.minute || null,
+        isLive: !!(matchInfo.score),
+      }),
+    })
+    if (res.ok) {
+      const analysis = await res.json()
+      if (analysis.verdict) return {
+        home: matchInfo.home, away: matchInfo.away,
+        league: matchInfo.league, score: matchInfo.score, minute: matchInfo.minute,
+        odds: matchInfo.odds1, oddsX: matchInfo.oddsX, odds2: matchInfo.odds2,
+        ...analysis,
+      }
+    }
+  } catch { /* fallback below */ }
 
   let homeId = null, awayId = null
   let formData = { homeForm: null, awayForm: null, h2h: [] }
