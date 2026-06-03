@@ -133,54 +133,53 @@ function resolveImg(url) {
   return `${API_BASE}${url}`                       // relative → proxy via backend
 }
 
-// Get upcoming hockey matches — Fonbet only (first 20, with odds)
+// Get upcoming hockey matches — Fonbet only, pre-match only (no live)
 export async function getUpcomingHockeyMatches() {
   try {
     const res = await fetch(`${API_BASE}/matches/hockey-fonbet`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return (data || []).slice(0, 20)
+    return (data || []).filter(m => !m.isLive).slice(0, 20)
   } catch { return [] }
 }
 
-// Get upcoming CS2 matches from Fonbet esports
+// Get upcoming CS2 matches — pre-match only
 export async function getUpcomingCS2Matches() {
   try {
     const res = await fetch(`${API_BASE}/matches/esports`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return (data || []).filter(m => m.sport === 'cs2').slice(0, 20)
+    return (data || []).filter(m => m.sport === 'cs2' && !m.isLive).slice(0, 20)
   } catch { return [] }
 }
 
-// Get upcoming Dota2 matches from Fonbet esports
+// Get upcoming Dota2 matches — pre-match only
 export async function getUpcomingDota2Matches() {
   try {
     const res = await fetch(`${API_BASE}/matches/esports`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return (data || []).filter(m => m.sport === 'dota2').slice(0, 20)
+    return (data || []).filter(m => m.sport === 'dota2' && !m.isLive).slice(0, 20)
   } catch { return [] }
 }
 
-// Get live matches — via backend proxy (avoids browser rate-limiting sstats)
+// Get ALL live matches across all sports from Fonbet
 export async function getLiveMatches() {
   try {
-    const res = await fetch(`${API_BASE}/matches/live`)
+    const res = await fetch(`${API_BASE}/matches/live-all`)
     if (!res.ok) return []
     const { data } = await res.json()
-    const raw = data || []
-    return raw.map(g => ({ ...normalizeGame(g), isLive: true }))
+    return (data || []).map(m => ({ ...m, isLive: true }))
   } catch { return [] }
 }
 
-// Get upcoming matches — via backend proxy (cached 15 min, avoids 35 parallel browser requests)
+// Get upcoming football matches — pre-match only
 export async function getUpcomingMatches(limit = 50) {
   try {
     const res = await fetch(`${API_BASE}/matches/football`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return (data || []).slice(0, limit)
+    return (data || []).filter(m => !m.isLive).slice(0, limit)
   } catch { return [] }
 }
 

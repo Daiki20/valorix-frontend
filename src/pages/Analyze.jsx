@@ -388,42 +388,42 @@ export default function Analyze() {
         ))}
 
         {activeTab === 'live' && (() => {
-          const LIVE_TABS = [
-            { id: 'football', label: '⚽ Футбол' },
-            { id: 'hockey',   label: '🏒 Хоккей' },
+          const LIVE_SPORT_TABS = [
+            { id: 'all',      label: '🌐 Все',     emoji: '🌐' },
+            { id: 'football', label: '⚽ Футбол',  emoji: '⚽' },
+            { id: 'hockey',   label: '🏒 Хоккей',  emoji: '🏒' },
+            { id: 'cs2',      label: '🔫 CS2',     emoji: '🔫' },
+            { id: 'dota2',    label: '🎮 Dota 2',  emoji: '🎮' },
           ]
-          const liveHockey = hockeyMatches.filter(m => m.isLive)
 
-          const countFor = id => {
-            if (id === 'football') return liveMatches.length
-            if (id === 'hockey')   return liveHockey.length
-            return 0
-          }
+          const SPORT_LABEL = { football: '⚽', hockey: '🏒', cs2: '🔫', dota2: '🎮', cs: '🔫', lol: '🎮', valorant: '🎮' }
 
-          const currentMatches = liveFilter === 'hockey' ? liveHockey : liveMatches
+          const filtered_ = liveFilter === 'all'
+            ? liveMatches
+            : liveMatches.filter(m => m.sport === liveFilter)
+
+          const countFor = id => id === 'all' ? liveMatches.length : liveMatches.filter(m => m.sport === id).length
 
           return (
             <>
-              {/* Live sport sub-tabs */}
               <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
-                {LIVE_TABS.map(t => {
+                {LIVE_SPORT_TABS.map(t => {
                   const cnt = countFor(t.id)
                   const isActive = liveFilter === t.id
-                  const accentColor = t.id === 'hockey' ? '#0ea5e9' : '#ef4444'
                   return (
                     <button key={t.id} onClick={() => setLiveFilter(t.id)} style={{
                       padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
-                      border: `1.5px solid ${isActive ? accentColor : 'rgba(0,180,255,0.15)'}`,
-                      background: isActive ? `${accentColor}1a` : 'rgba(0,25,60,0.4)',
-                      color: isActive ? accentColor : '#4a6a8a',
+                      border: `1.5px solid ${isActive ? '#ef4444' : 'rgba(0,180,255,0.15)'}`,
+                      background: isActive ? 'rgba(239,68,68,0.12)' : 'rgba(0,25,60,0.4)',
+                      color: isActive ? '#ef4444' : '#4a6a8a',
                       cursor: 'pointer', transition: 'all 0.15s',
                       display: 'flex', alignItems: 'center', gap: 5,
                     }}>
                       {t.label}
                       {cnt > 0 && (
                         <span style={{
-                          background: isActive ? accentColor : 'rgba(0,180,255,0.15)',
-                          color: isActive ? '#030b18' : '#4a6a8a',
+                          background: isActive ? '#ef4444' : 'rgba(0,180,255,0.15)',
+                          color: isActive ? '#fff' : '#4a6a8a',
                           borderRadius: 10, padding: '1px 6px', fontSize: 10, fontWeight: 800,
                         }}>{cnt}</span>
                       )}
@@ -432,18 +432,20 @@ export default function Analyze() {
                 })}
               </div>
 
-              {/* Live match list */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {currentMatches.length > 0
-                  ? currentMatches.map(match =>
-                      liveFilter === 'hockey'
-                        ? <HockeyMatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} />
-                        : <MatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} isLiveTab />
-                    )
+                {filtered_.length > 0
+                  ? filtered_.map(match => (
+                      <MatchRow
+                        key={match.id}
+                        match={{ ...match, home: `${SPORT_LABEL[match.sport] || ''} ${match.home}`.trim() }}
+                        onClick={() => handleSelectMatch(match)}
+                        isLiveTab
+                      />
+                    ))
                   : (
                     <div style={{ textAlign: 'center', padding: '48px 0', color: '#94a3b8' }}>
                       <div style={{ fontSize: 40, marginBottom: 12 }}>🔴</div>
-                      <p>Нет лайв матчей{liveFilter !== 'football' ? ` по ${LIVE_TABS.find(t => t.id === liveFilter)?.label || liveFilter}` : ''}</p>
+                      <p>Нет лайв матчей{liveFilter !== 'all' ? ` — ${LIVE_SPORT_TABS.find(t => t.id === liveFilter)?.label}` : ''}</p>
                     </div>
                   )
                 }
