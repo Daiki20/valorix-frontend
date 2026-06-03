@@ -389,23 +389,17 @@ export default function Analyze() {
 
         {activeTab === 'live' && (() => {
           const SPORT_META = {
-            football:   { label: '⚽ Футбол',    emoji: '⚽' },
-            hockey:     { label: '🏒 Хоккей',    emoji: '🏒' },
-            basketball: { label: '🏀 Баскетбол', emoji: '🏀' },
-            tennis:     { label: '🎾 Теннис',    emoji: '🎾' },
-            cs2:        { label: '🔫 CS2',        emoji: '🔫' },
-            dota2:      { label: '🎮 Dota 2',     emoji: '🎮' },
-            lol:        { label: '🎮 LoL',        emoji: '🎮' },
-            valorant:   { label: '🎯 Valorant',   emoji: '🎯' },
+            football: { label: '⚽ Футбол', emoji: '⚽' },
+            hockey:   { label: '🏒 Хоккей', emoji: '🏒' },
+            cs2:      { label: '🔫 CS2',     emoji: '🔫' },
+            dota2:    { label: '🎮 Dota 2',  emoji: '🎮' },
           }
+          const ALLOWED = new Set(['football', 'hockey', 'cs2', 'dota2'])
 
-          // Build sport filters dynamically from actual live data
-          const sportsInLive = ['all', ...Object.keys(SPORT_META).filter(s =>
-            liveMatches.some(m => m.sport === s)
-          )]
-
-          const countFor = id => id === 'all' ? liveMatches.length : liveMatches.filter(m => m.sport === id).length
-          const filtered_ = liveFilter === 'all' ? liveMatches : liveMatches.filter(m => m.sport === liveFilter)
+          const allLive = liveMatches.filter(m => ALLOWED.has(m.sport))
+          const countFor = id => id === 'all' ? allLive.length : allLive.filter(m => m.sport === id).length
+          const filtered_ = liveFilter === 'all' ? allLive : allLive.filter(m => m.sport === liveFilter)
+          const sportsInLive = ['all', ...Object.keys(SPORT_META).filter(s => allLive.some(m => m.sport === s))]
 
           return (
             <>
