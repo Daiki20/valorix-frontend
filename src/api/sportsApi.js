@@ -296,34 +296,39 @@ export async function analyzeMatch(matchInput) {
   let match = { ...matchInput }
   const isLive = !!(match.isLive || match.score)
   const isFonbet = !!(match.id && String(match.id).startsWith('fonbet_'))
+  const token = localStorage.getItem('valorix_token')
+
+  // Fonbet matches: use web search (gpt-4o-search-preview) for real-time data
+  if (isFonbet && !isLive) {
+    try {
+      const res = await fetch(`${API_BASE}/analyze/match-with-search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          home: match.home,
+          away: match.away,
+          league: match.league || '',
+          date: match.rawDate ? match.rawDate.slice(0, 10) : match.date || '',
+          odds1x2: match.odds1x2 || null,
+          sport: match.sport || 'football',
+        }),
+      })
+      if (res.ok) {
+        const analysis = await res.json()
+        if (analysis.verdict) return analysis
+      }
+    } catch { /* fallback to regular analysis */ }
+  }
+
   let stats = null
   let glicko = null
   let realOdds = []
   let liveStats = null
   let h2h = []
 
-  // Run enrichment + AllSports (for Fonbet matches) in parallel with sstats
-  const token = localStorage.getItem('valorix_token')
-  const allSportsPromise = isFonbet
-    ? fetch(`${API_BASE}/analyze/football-form-allsports`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-        body: JSON.stringify({ home: match.home, away: match.away }),
-      }).then(r => r.ok ? r.json() : {}).catch(() => ({}))
-    : Promise.resolve(null)
-
-  const [enrichData, allSportsData] = await Promise.all([
+  const [enrichData] = await Promise.all([
     fetchFootballEnrich(match).catch(() => ({})),
-    allSportsPromise,
   ])
-
-  // For Fonbet matches: use AllSports form/H2H instead of sstats
-  if (isFonbet && allSportsData) {
-    if (allSportsData.homeForm || allSportsData.awayForm) {
-      stats = { home: allSportsData.homeForm, away: allSportsData.awayForm }
-    }
-    h2h = allSportsData.h2h || []
-  }
 
   if (match.id && !isFonbet) {
     const apiCalls = [
