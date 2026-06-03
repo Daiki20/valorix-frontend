@@ -273,7 +273,7 @@ export default function Article() {
             {/* Cover image */}
             {article.cover_url && (
               <img src={article.cover_url} alt={article.title}
-                style={{ width: '100%', height: 280, objectFit: 'cover', borderRadius: 20, marginBottom: 28, opacity: 0.9 }}
+                style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', borderRadius: 20, marginBottom: 28, opacity: 0.9 }}
                 onError={e => { e.target.style.display = 'none' }} />
             )}
 
