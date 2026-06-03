@@ -187,15 +187,34 @@ export async function getLiveMatches() {
 // Get upcoming matches — via backend proxy (cached 15 min, avoids 35 parallel browser requests)
 export async function getUpcomingMatches(limit = 50) {
   try {
-    const res = await fetch(`${API_BASE}/matches/upcoming`)
-    if (!res.ok) return MOCK_MATCHES
-    const { data } = await res.json()
-    const allGames = data || []
+    const [sstatsRes, fonbetRes] = await Promise.allSettled([
+      fetch(`${API_BASE}/matches/upcoming`),
+      fetch(`${API_BASE}/matches/football`),
+    ])
 
-    return allGames
-      .map(normalizeGame)
-      .filter(m => m.odds1x2)
-      .sort((a, b) => new Date(a.rawData?.date || 0) - new Date(b.rawData?.date || 0))
+    const sstatsGames = sstatsRes.status === 'fulfilled' && sstatsRes.value.ok
+      ? ((await sstatsRes.value.json()).data || []).map(normalizeGame).filter(m => m.odds1x2)
+      : []
+
+    const fonbetGames = fonbetRes.status === 'fulfilled' && fonbetRes.value.ok
+      ? ((await fonbetRes.value.json()).data || [])
+      : []
+
+    const norm = s => (s || '').toLowerCase().replace(/[^a-zа-яё0-9]/gi, '')
+    const seen = new Set(sstatsGames.map(m => `${norm(m.home)}_${norm(m.away)}`))
+    const merged = [...sstatsGames]
+    for (const m of fonbetGames) {
+      const key = `${norm(m.home)}_${norm(m.away)}`
+      if (!seen.has(key)) { seen.add(key); merged.push(m) }
+    }
+
+    return merged
+      .sort((a, b) => {
+        const pa = LEAGUE_PRIORITY[a.leagueId] || 0
+        const pb = LEAGUE_PRIORITY[b.leagueId] || 0
+        if (pa !== pb) return pb - pa
+        return new Date(a.rawData?.date || a.rawDate || 0) - new Date(b.rawData?.date || b.rawDate || 0)
+      })
       .slice(0, limit)
   } catch { return MOCK_MATCHES }
 }
