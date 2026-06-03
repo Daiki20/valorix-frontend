@@ -1222,15 +1222,19 @@ function BlogTab({ toast }) {
       setArticles(artData.items || [])
       setMatchKeys(new Set(keysData.keys || []))
 
-      // Load upcoming matches for football/hockey tabs
+      // Load upcoming matches — same sources as Analyze page (Fonbet, pre-match only)
       if (sport === 'football') {
-        const mRes = await fetch(`${API_BASE}/matches/upcoming`, { headers: { Authorization: `Bearer ${token()}` } })
+        const mRes = await fetch(`${API_BASE}/matches/football`)
         const mData = await mRes.json()
-        setMatches((mData.data || []).slice(0, 20))
+        setMatches((mData.data || []).filter(m => !m.isLive).slice(0, 20))
       } else if (sport === 'hockey') {
-        const mRes = await fetch(`${API_BASE}/matches/hockey`, { headers: { Authorization: `Bearer ${token()}` } })
+        const mRes = await fetch(`${API_BASE}/matches/hockey-fonbet`)
         const mData = await mRes.json()
-        setMatches((mData.data || []).slice(0, 20))
+        setMatches((mData.data || []).filter(m => !m.isLive).slice(0, 20))
+      } else if (sport === 'cs2' || sport === 'dota2') {
+        const mRes = await fetch(`${API_BASE}/matches/esports`)
+        const mData = await mRes.json()
+        setMatches((mData.data || []).filter(m => m.sport === sport && !m.isLive).slice(0, 20))
       } else {
         setMatches([])
       }
@@ -1364,6 +1368,8 @@ function BlogTab({ toast }) {
   const SPORT_TABS = [
     { key: 'football', label: '⚽ Футбол' },
     { key: 'hockey',   label: '🏒 Хоккей' },
+    { key: 'cs2',      label: '🔫 CS2' },
+    { key: 'dota2',    label: '🎮 Dota 2' },
     { key: 'all',      label: '📋 Все статьи' },
   ]
 
@@ -1392,7 +1398,7 @@ function BlogTab({ toast }) {
       {loading ? <p style={{ color: '#64748b' }}>Загрузка...</p> : (
         <>
           {/* Upcoming matches with generate button */}
-          {(sportTab === 'football' || sportTab === 'hockey') && matches.length > 0 && (
+          {(['football','hockey','cs2','dota2'].includes(sportTab)) && matches.length > 0 && (
             <div style={{ marginBottom: 28 }}>
               <p style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 }}>
                 Ближайшие матчи
