@@ -129,8 +129,13 @@ const LEAGUE_PRIORITY = {
 // Resolve image URL: relative paths get API_BASE prepended, absolute URLs pass through
 function resolveImg(url) {
   if (!url) return null
-  if (url.startsWith('http')) return url          // absolute (NHL CDN etc.)
-  return `${API_BASE}${url}`                       // relative → proxy via backend
+  if (url.startsWith('http')) return url
+  return `${API_BASE}${url}`
+}
+
+// Resolve both imgs in a Fonbet match object
+function resolveMatchImgs(m) {
+  return { ...m, homeImg: resolveImg(m.homeImg), awayImg: resolveImg(m.awayImg) }
 }
 
 // Get upcoming hockey matches — Fonbet only, pre-match only (no live)
@@ -139,7 +144,7 @@ export async function getUpcomingHockeyMatches() {
     const res = await fetch(`${API_BASE}/matches/hockey-fonbet`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return (data || []).filter(m => !m.isLive).slice(0, 20)
+    return (data || []).filter(m => !m.isLive).slice(0, 20).map(resolveMatchImgs)
   } catch { return [] }
 }
 
@@ -149,7 +154,7 @@ export async function getUpcomingCS2Matches() {
     const res = await fetch(`${API_BASE}/matches/esports`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return (data || []).filter(m => m.sport === 'cs2' && !m.isLive).slice(0, 20)
+    return (data || []).filter(m => m.sport === 'cs2' && !m.isLive).slice(0, 20).map(resolveMatchImgs)
   } catch { return [] }
 }
 
@@ -159,7 +164,7 @@ export async function getUpcomingDota2Matches() {
     const res = await fetch(`${API_BASE}/matches/esports`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return (data || []).filter(m => m.sport === 'dota2' && !m.isLive).slice(0, 20)
+    return (data || []).filter(m => m.sport === 'dota2' && !m.isLive).slice(0, 20).map(resolveMatchImgs)
   } catch { return [] }
 }
 
@@ -169,7 +174,7 @@ export async function getLiveMatches() {
     const res = await fetch(`${API_BASE}/matches/live-all`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return (data || []).map(m => ({ ...m, isLive: true }))
+    return (data || []).map(m => ({ ...resolveMatchImgs(m), isLive: true }))
   } catch { return [] }
 }
 
@@ -179,7 +184,7 @@ export async function getUpcomingMatches(limit = 50) {
     const res = await fetch(`${API_BASE}/matches/football`)
     if (!res.ok) return []
     const { data } = await res.json()
-    return (data || []).filter(m => !m.isLive).slice(0, limit)
+    return (data || []).filter(m => !m.isLive).slice(0, limit).map(resolveMatchImgs)
   } catch { return [] }
 }
 

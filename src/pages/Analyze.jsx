@@ -667,14 +667,55 @@ function MatchRow({ match, onClick, isLiveTab }) {
   )
 }
 
+// Country name → ISO 2-letter code for flagcdn.com
+const COUNTRY_FLAGS = {
+  'россия':'ru','германия':'de','франция':'fr','испания':'es','англия':'gb-eng',
+  'италия':'it','португалия':'pt','нидерланды':'nl','бельгия':'be','хорватия':'hr',
+  'дания':'dk','швеция':'se','норвегия':'no','швейцария':'ch','австрия':'at',
+  'польша':'pl','чехия':'cz','сербия':'rs','греция':'gr','турция':'tr',
+  'украина':'ua','румыния':'ro','венгрия':'hu','словакия':'sk','финляндия':'fi',
+  'шотландия':'gb-sct','уэльс':'gb-wls','ирландия':'ie','северная ирландия':'gb-nir',
+  'бразилия':'br','аргентина':'ar','уругвай':'uy','чили':'cl','колумбия':'co',
+  'мексика':'mx','сша':'us','канада':'ca','япония':'jp','южная корея':'kr',
+  'австралия':'au','египет':'eg','марокко':'ma','сенегал':'sn','нигерия':'ng',
+  'камерун':'cm','гана':'gh','алжир':'dz','тунис':'tn','иран':'ir',
+  'саудовская аравия':'sa','катар':'qa','израиль':'il','албания':'al',
+  'гаити':'ht','новая зеландия':'nz','н.зеландия':'nz','гибралтар':'gi',
+  'филиппины':'ph','гуам':'gu','панама':'pa','доминиканская республика':'do',
+  'словения':'si','кипр':'cy','андорра':'ad','лихтенштейн':'li',
+  'швеция':'se','венесуэла':'ve','эквадор':'ec','перу':'pe','боливия':'bo',
+  'парагвай':'py','коста-рика':'cr','сальвадор':'sv','гондурас':'hn','куба':'cu',
+  'ямайка':'jm','конго':'cg','др конго':'cd','буркина-фасо':'bf','сирия':'sy',
+  'беларусь':'by','молдова':'md','болгария':'bg','черногория':'me',
+  'армения':'am','казахстан':'kz','таджикистан':'tj','индия':'in',
+  'таиланд':'th','кувейт':'kw','индонезия':'id','оман':'om','сингапур':'sg',
+  'китай':'cn','ирак':'iq','кот-д\'ивуар':'ci','люксембург':'lu',
+}
+
+function getFlagUrl(name, size) {
+  const key = (name || '').toLowerCase().trim()
+  const code = COUNTRY_FLAGS[key]
+  if (!code) return null
+  return `https://flagcdn.com/w${size * 2}/${code}.png`
+}
+
 function TeamLogo({ name, img, size = 44 }) {
   const [imgError, setImgError] = useState(false)
+  const [flagError, setFlagError] = useState(false)
   const colors = ['#ef4444', '#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#ec4899']
-  const color = colors[name.charCodeAt(0) % colors.length]
+  const color = colors[(name || '').charCodeAt(0) % colors.length]
+  const flagUrl = getFlagUrl(name, size)
+
   if (img && !imgError) {
     return (
       <img src={img} alt={name} onError={() => setImgError(true)}
         style={{ width: size, height: size, borderRadius: '50%', objectFit: 'contain', background: 'rgba(255,255,255,0.04)' }} />
+    )
+  }
+  if (flagUrl && !flagError) {
+    return (
+      <img src={flagUrl} alt={name} onError={() => setFlagError(true)}
+        style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', background: 'rgba(255,255,255,0.04)' }} />
     )
   }
   return (
