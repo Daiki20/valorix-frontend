@@ -151,6 +151,34 @@ const components = {
       {children}
     </a>
   ),
+  img: ({ src, alt }) => (
+    <figure style={{ margin: '2.5rem 0', textAlign: 'center' }}>
+      <img
+        src={src}
+        alt={alt || ''}
+        style={{
+          width: '100%',
+          maxWidth: 680,
+          borderRadius: 20,
+          border: '1px solid rgba(0,207,255,0.15)',
+          boxShadow: '0 8px 40px rgba(0,0,0,0.4)',
+          display: 'block',
+          margin: '0 auto',
+        }}
+        onError={e => { e.target.style.display = 'none'; e.target.nextSibling && (e.target.nextSibling.style.display = 'none') }}
+      />
+      {alt && (
+        <figcaption style={{
+          marginTop: 12,
+          fontSize: 13,
+          color: '#475569',
+          fontStyle: 'italic',
+        }}>
+          {alt}
+        </figcaption>
+      )}
+    </figure>
+  ),
 }
 
 export default function Article() {

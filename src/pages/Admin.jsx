@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -1197,6 +1198,27 @@ const pillStyle = (color) => ({
   fontSize: 11, fontWeight: 700, display: 'inline-block', whiteSpace: 'nowrap',
 })
 
+/* ─── Blog editor preview components ─── */
+const previewComponents = {
+  h2: ({ children }) => <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#fff', margin: '1.5rem 0 0.7rem', borderBottom: '1px solid rgba(0,207,255,0.15)', paddingBottom: '0.4rem' }}>{children}</h2>,
+  h3: ({ children }) => <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#e2e8f0', margin: '1.2rem 0 0.5rem' }}>{children}</h3>,
+  p: ({ children }) => <p style={{ color: '#94a3b8', lineHeight: 1.8, marginBottom: '0.85rem', fontSize: '0.93rem' }}>{children}</p>,
+  ul: ({ children }) => <ul style={{ color: '#94a3b8', paddingLeft: '1.4rem', marginBottom: '0.9rem', lineHeight: 1.7 }}>{children}</ul>,
+  ol: ({ children }) => <ol style={{ color: '#94a3b8', paddingLeft: '1.4rem', marginBottom: '0.9rem', lineHeight: 1.7 }}>{children}</ol>,
+  li: ({ children }) => <li style={{ marginBottom: '0.25rem' }}>{children}</li>,
+  strong: ({ children }) => <strong style={{ color: '#00cfff', fontWeight: 700 }}>{children}</strong>,
+  em: ({ children }) => <em style={{ color: '#a78bfa', fontStyle: 'italic' }}>{children}</em>,
+  blockquote: ({ children }) => <blockquote style={{ borderLeft: '3px solid #00cfff', margin: '1rem 0', background: 'rgba(0,207,255,0.05)', borderRadius: '0 8px 8px 0', padding: '0.6rem 1rem', color: '#94a3b8' }}>{children}</blockquote>,
+  img: ({ src, alt }) => (
+    <figure style={{ margin: '1.5rem 0', textAlign: 'center' }}>
+      <img src={src} alt={alt || ''} style={{ maxWidth: '100%', borderRadius: 12, border: '1px solid rgba(0,207,255,0.15)', boxShadow: '0 4px 20px rgba(0,0,0,0.4)' }} />
+      {alt && <figcaption style={{ fontSize: 12, color: '#475569', marginTop: 8, fontStyle: 'italic' }}>{alt}</figcaption>}
+    </figure>
+  ),
+  a: ({ href, children }) => <a href={href} style={{ color: '#00cfff', textDecoration: 'none' }}>{children}</a>,
+  code: ({ children }) => <code style={{ background: 'rgba(0,207,255,0.1)', color: '#00cfff', padding: '1px 6px', borderRadius: 4, fontSize: '0.9em', fontFamily: 'monospace' }}>{children}</code>,
+}
+
 /* ─── Blog Tab ─── */
 function BlogTab({ toast }) {
   const token = () => localStorage.getItem('valorix_token')
@@ -1209,6 +1231,24 @@ function BlogTab({ toast }) {
   const [editing, setEditing] = useState(null)
   const [saving, setSaving] = useState(false)
   const [sortBy, setSortBy] = useState('date') // 'date' | 'views'
+  const textareaRef = useRef(null)
+
+  const insertAtCursor = (before, after = '', placeholder = 'текст') => {
+    const ta = textareaRef.current
+    if (!ta) return
+    const start = ta.selectionStart
+    const end = ta.selectionEnd
+    const cur = editing?.content || ''
+    const selected = cur.substring(start, end)
+    const insertion = (placeholder === '' && !selected) ? '' : (selected || placeholder)
+    const newContent = cur.substring(0, start) + before + insertion + after + cur.substring(end)
+    setEditing(p => ({ ...p, content: newContent }))
+    setTimeout(() => {
+      ta.focus()
+      const cursor = start + before.length + insertion.length + after.length
+      ta.setSelectionRange(cursor, cursor)
+    }, 10)
+  }
 
   const load = async (sport) => {
     setLoading(true)
@@ -1316,52 +1356,90 @@ function BlogTab({ toast }) {
 
   const inp = { background: '#0c0f18', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 14px', color: '#fff', width: '100%', fontSize: 14, outline: 'none', boxSizing: 'border-box' }
 
+  const TOOLBAR = [
+    { label: 'H2',       title: 'Заголовок раздела',  action: () => insertAtCursor('\n## ', '\n', 'Заголовок раздела'),   style: { fontWeight: 800 } },
+    { label: 'H3',       title: 'Подзаголовок',        action: () => insertAtCursor('\n### ', '\n', 'Подзаголовок'),       style: { fontWeight: 700 } },
+    { label: 'Ж',        title: 'Жирный текст',        action: () => insertAtCursor('**', '**', 'жирный текст'),          style: { fontWeight: 900 } },
+    { label: 'К',        title: 'Курсив',              action: () => insertAtCursor('*', '*', 'курсив'),                  style: { fontStyle: 'italic' } },
+    { label: '— Список', title: 'Пункт списка',        action: () => insertAtCursor('\n- ', '', 'пункт списка'),          style: {} },
+    { label: '❝ Цитата', title: 'Цитата / выделение',  action: () => insertAtCursor('\n> ', '', 'текст цитаты'),          style: {} },
+    { label: '🔗 Ссылка', title: 'Вставить ссылку',    action: () => insertAtCursor('[', '](https://valorix.ru)', 'текст ссылки'), style: {} },
+    { label: '🖼 Valorix AI', title: 'Вставить картинку Valorix AI', action: () => insertAtCursor('\n![Пример AI-анализа от Valorix](/blog-assets/valorix-ai-example.jpg)\n', '', ''), style: { color: '#00cfff', borderColor: 'rgba(0,207,255,0.35)', background: 'rgba(0,207,255,0.08)' }, accent: true },
+  ]
+
   if (editing) return (
-    <div style={{ padding: 24, maxWidth: 860 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <button onClick={() => setEditing(null)} style={{ ...pageBtn, color: '#94a3b8', fontSize: 13 }}>← Назад</button>
-        <h2 style={{ color: '#fff', fontSize: 20, fontWeight: 700, margin: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 180px)', minHeight: 600 }}>
+
+      {/* ── Top bar ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.07)', flexShrink: 0 }}>
+        <button onClick={() => setEditing(null)} style={{ ...pageBtn, color: '#94a3b8', fontSize: 13, padding: '6px 14px' }}>← Назад</button>
+        <h2 style={{ color: '#fff', fontSize: 17, fontWeight: 700, margin: 0 }}>
           {editing.id ? 'Редактировать статью' : 'Новая статья'}
         </h2>
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div>
-          <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 6, display: 'block' }}>Заголовок *</label>
-          <input style={inp} placeholder="Как правильно анализировать матч" value={editing.title || ''} onChange={e => setEditing(p => ({ ...p, title: e.target.value }))} />
-        </div>
-        <div>
-          <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 6, display: 'block' }}>Краткое описание (для карточки и Google)</label>
-          <input style={inp} placeholder="2-3 предложения о чём статья" value={editing.excerpt || ''} onChange={e => setEditing(p => ({ ...p, excerpt: e.target.value }))} />
-        </div>
-        <div>
-          <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 6, display: 'block' }}>URL статьи (slug) — оставь пустым для авто</label>
-          <input style={inp} placeholder="kak-analizirovat-matchi" value={editing.slug || ''} onChange={e => setEditing(p => ({ ...p, slug: e.target.value }))} />
-        </div>
-        <div>
-          <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 6, display: 'block' }}>URL обложки (картинка)</label>
-          <input style={inp} placeholder="https://..." value={editing.cover_url || ''} onChange={e => setEditing(p => ({ ...p, cover_url: e.target.value }))} />
-        </div>
-        <div>
-          <label style={{ color: '#94a3b8', fontSize: 12, marginBottom: 6, display: 'block' }}>
-            Текст статьи * <span style={{ color: '#64748b' }}>(поддерживает Markdown: **жирный**, ## Заголовок, - список)</span>
-          </label>
-          <textarea
-            style={{ ...inp, height: 420, resize: 'vertical', fontFamily: 'monospace', lineHeight: 1.6 }}
-            placeholder={'## Введение\n\nНапиши текст статьи здесь...\n\n## Как это работает\n\nИспользуй **жирный** текст, *курсив*, списки:\n\n- Пункт 1\n- Пункт 2\n\n## Вывод\n\nЗаключение статьи.'}
-            value={editing.content || ''}
-            onChange={e => setEditing(p => ({ ...p, content: e.target.value }))}
-          />
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', color: '#94a3b8', fontSize: 14 }}>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', color: '#94a3b8', fontSize: 13, userSelect: 'none' }}>
             <input type="checkbox" checked={!!editing.published} onChange={e => setEditing(p => ({ ...p, published: e.target.checked }))} />
-            Опубликовать сразу
+            Опубликовать
           </label>
-          <button onClick={save} disabled={saving} style={{ marginLeft: 'auto', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', borderRadius: 10, padding: '10px 28px', color: '#fff', fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1 }}>
-            {saving ? 'Сохраняю...' : (editing.id ? 'Сохранить' : 'Создать статью')}
+          <button onClick={save} disabled={saving} style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', borderRadius: 10, padding: '9px 24px', color: '#fff', fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1, fontSize: 14 }}>
+            {saving ? 'Сохраняю...' : (editing.id ? 'Сохранить' : 'Создать')}
           </button>
         </div>
+      </div>
+
+      {/* ── Meta fields ── */}
+      <div style={{ display: 'flex', gap: 10, padding: '10px 20px', flexShrink: 0, borderBottom: '1px solid rgba(255,255,255,0.05)', flexWrap: 'wrap' }}>
+        <input style={{ ...inp, flex: '2 1 200px' }} placeholder="Заголовок статьи *" value={editing.title || ''} onChange={e => setEditing(p => ({ ...p, title: e.target.value }))} />
+        <input style={{ ...inp, flex: '3 1 250px' }} placeholder="Краткое описание (для Google и карточки в блоге)" value={editing.excerpt || ''} onChange={e => setEditing(p => ({ ...p, excerpt: e.target.value }))} />
+        <input style={{ ...inp, flex: '1 1 140px' }} placeholder="URL (slug, авто)" value={editing.slug || ''} onChange={e => setEditing(p => ({ ...p, slug: e.target.value }))} />
+        <input style={{ ...inp, flex: '1 1 140px' }} placeholder="URL обложки" value={editing.cover_url || ''} onChange={e => setEditing(p => ({ ...p, cover_url: e.target.value }))} />
+      </div>
+
+      {/* ── Toolbar ── */}
+      <div style={{ display: 'flex', gap: 6, padding: '8px 20px', flexShrink: 0, background: 'rgba(0,0,0,0.25)', borderBottom: '1px solid rgba(255,255,255,0.06)', flexWrap: 'wrap', alignItems: 'center' }}>
+        {TOOLBAR.map((btn, i) => (
+          <button key={i} onClick={btn.action} title={btn.title} style={{
+            padding: '5px 13px', borderRadius: 7,
+            border: `1px solid ${btn.accent ? 'rgba(0,207,255,0.3)' : 'rgba(255,255,255,0.1)'}`,
+            background: btn.accent ? 'rgba(0,207,255,0.08)' : 'rgba(255,255,255,0.05)',
+            color: btn.accent ? '#00cfff' : '#c0cde0',
+            fontSize: 13, cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap',
+            ...btn.style,
+          }}>
+            {btn.label}
+          </button>
+        ))}
+        <span style={{ marginLeft: 'auto', fontSize: 11, color: '#334155' }}>
+          {(editing.content || '').length} симв.
+        </span>
+      </div>
+
+      {/* ── Split editor ── */}
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+
+        {/* Left — Markdown textarea */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(255,255,255,0.07)', minWidth: 0 }}>
+          <div style={{ fontSize: 10, color: '#334155', padding: '5px 20px', background: 'rgba(0,0,0,0.3)', flexShrink: 0, fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase' }}>✏️ Редактор</div>
+          <textarea
+            ref={textareaRef}
+            style={{ flex: 1, resize: 'none', padding: '16px 20px', background: '#07090f', color: '#c0cde0', border: 'none', outline: 'none', fontFamily: '"Fira Code", "Cascadia Code", monospace', fontSize: 13.5, lineHeight: 1.75, overflowY: 'auto' }}
+            value={editing.content || ''}
+            onChange={e => setEditing(p => ({ ...p, content: e.target.value }))}
+            placeholder={'Нажми кнопки тулбара выше или пиши прямо здесь...\n\nH2 → вставит заголовок раздела\nЖ → выдели текст и нажми для жирного\nСписок → вставит пункт\nВалорикс AI → вставит картинку с анализом'}
+          />
+        </div>
+
+        {/* Right — Live preview */}
+        <div style={{ flex: 1, overflowY: 'auto', background: '#030b18', minWidth: 0 }}>
+          <div style={{ fontSize: 10, color: '#334155', padding: '5px 20px', background: 'rgba(0,0,0,0.3)', fontWeight: 700, letterSpacing: 1.5, textTransform: 'uppercase', position: 'sticky', top: 0, zIndex: 1 }}>👁 Предпросмотр</div>
+          <div style={{ padding: '16px 24px' }}>
+            {editing.content?.trim()
+              ? <ReactMarkdown components={previewComponents}>{editing.content}</ReactMarkdown>
+              : <p style={{ color: '#1e3a5f', fontSize: 14, marginTop: 20, textAlign: 'center' }}>Начни писать — здесь появится предпросмотр</p>
+            }
+          </div>
+        </div>
+
       </div>
     </div>
   )
