@@ -1208,6 +1208,7 @@ function BlogTab({ toast }) {
   const [loading, setLoading] = useState(false)
   const [editing, setEditing] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [sortBy, setSortBy] = useState('date') // 'date' | 'views'
 
   const load = async (sport) => {
     setLoading(true)
@@ -1438,9 +1439,25 @@ function BlogTab({ toast }) {
           )}
 
           {/* Articles list */}
-          <p style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 }}>
-            {articles.length > 0 ? `Статьи (${articles.length})` : 'Статей пока нет'}
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <p style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, margin: 0 }}>
+              {articles.length > 0 ? `Статьи (${articles.length})` : 'Статей пока нет'}
+            </p>
+            {articles.length > 0 && (
+              <div style={{ display: 'flex', gap: 6 }}>
+                {[
+                  { key: 'date',  label: '🕒 По дате' },
+                  { key: 'views', label: '🔥 По просмотрам' },
+                ].map(s => (
+                  <button key={s.key} onClick={() => setSortBy(s.key)} style={{
+                    padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none',
+                    background: sortBy === s.key ? 'rgba(99,102,241,0.25)' : 'rgba(255,255,255,0.05)',
+                    color: sortBy === s.key ? '#a78bfa' : '#64748b',
+                  }}>{s.label}</button>
+                ))}
+              </div>
+            )}
+          </div>
           {articles.length === 0 ? (
             <p style={{ color: '#475569', fontSize: 14 }}>
               {sportTab !== 'all' ? 'Нажми "✍️ Статья" на любом матче выше' : 'Создай первую статью'}
@@ -1455,7 +1472,10 @@ function BlogTab({ toast }) {
                 </tr>
               </thead>
               <tbody>
-                {articles.map(a => (
+                {[...articles].sort((a, b) => sortBy === 'views'
+                  ? (b.views || 0) - (a.views || 0)
+                  : new Date(b.created_at || 0) - new Date(a.created_at || 0)
+                ).map(a => (
                   <tr key={a.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                     <td style={tdStyle}>
                       <div style={{ color: '#fff', fontWeight: 600, fontSize: 14 }}>{a.title}</div>
