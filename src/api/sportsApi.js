@@ -276,18 +276,37 @@ async function fetchFootballEnrich(match) {
 export async function analyzeMatch(matchInput) {
   let match = { ...matchInput }
   const isLive = !!(match.isLive || match.score)
+  const isFonbet = !!(match.id && String(match.id).startsWith('fonbet_'))
   let stats = null
   let glicko = null
   let realOdds = []
   let liveStats = null
   let h2h = []
 
-  // Run sstats calls + enrichment in parallel
-  const [enrichData] = await Promise.all([
+  // Run enrichment + AllSports (for Fonbet matches) in parallel with sstats
+  const token = localStorage.getItem('valorix_token')
+  const allSportsPromise = isFonbet
+    ? fetch(`${API_BASE}/analyze/football-form-allsports`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ home: match.home, away: match.away }),
+      }).then(r => r.ok ? r.json() : {}).catch(() => ({}))
+    : Promise.resolve(null)
+
+  const [enrichData, allSportsData] = await Promise.all([
     fetchFootballEnrich(match).catch(() => ({})),
+    allSportsPromise,
   ])
 
-  if (match.id) {
+  // For Fonbet matches: use AllSports form/H2H instead of sstats
+  if (isFonbet && allSportsData) {
+    if (allSportsData.homeForm || allSportsData.awayForm) {
+      stats = { home: allSportsData.homeForm, away: allSportsData.awayForm }
+    }
+    h2h = allSportsData.h2h || []
+  }
+
+  if (match.id && !isFonbet) {
     const apiCalls = [
       sstatsGet('/Games/last-games-stats', { gameId: match.id }),
       sstatsGet(`/Games/glicko/${match.id}`),
