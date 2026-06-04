@@ -443,11 +443,15 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
 const SPORT_OPTIONS = [
   { id: 'football', label: 'Футбол', emoji: '⚽', grad: 'linear-gradient(135deg, #00cfff, #7b5ea7)', glow: 'rgba(0,207,255,0.3)' },
   { id: 'hockey',   label: 'Хоккей', emoji: '🏒', grad: 'linear-gradient(135deg, #0ea5e9, #00cfff)', glow: 'rgba(14,165,233,0.3)' },
+  { id: 'cs2',      label: 'CS2',    emoji: '🔫', grad: 'linear-gradient(135deg, #f59e0b, #ef4444)', glow: 'rgba(245,158,11,0.3)' },
+  { id: 'dota2',    label: 'Dota 2', emoji: '🎮', grad: 'linear-gradient(135deg, #a855f7, #7c3aed)', glow: 'rgba(168,85,247,0.3)' },
 ]
 
 const SPORT_LABEL_COLORS = {
-  football: { color1: ACCENT, color2: A2, border: 'rgba(0,207,255,0.3)', bg: 'rgba(0,207,255,0.06)' },
-  hockey:   { color1: '#0ea5e9', color2: ACCENT, border: 'rgba(14,165,233,0.3)', bg: 'rgba(14,165,233,0.06)' },
+  football: { color1: ACCENT,     color2: A2,        border: 'rgba(0,207,255,0.3)',   bg: 'rgba(0,207,255,0.06)' },
+  hockey:   { color1: '#0ea5e9',  color2: ACCENT,    border: 'rgba(14,165,233,0.3)',  bg: 'rgba(14,165,233,0.06)' },
+  cs2:      { color1: '#f59e0b',  color2: '#ef4444', border: 'rgba(245,158,11,0.3)',  bg: 'rgba(245,158,11,0.06)' },
+  dota2:    { color1: '#a855f7',  color2: '#7c3aed', border: 'rgba(168,85,247,0.3)',  bg: 'rgba(168,85,247,0.06)' },
 }
 
 export default function ExpressCard({ onAuthRequired }) {
