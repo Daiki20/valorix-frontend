@@ -24,7 +24,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
       <div className="card analysis-header" style={{ padding: '20px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
-            <TeamCircle name={match.home} img={match.homeImg} size={44} />
+            <TeamCircle name={match.home} img={analysis.homeLogoTSDB || match.homeImg} size={44} />
             <div style={{ minWidth: 0 }}>
               <div className="analysis-header-team" style={{ fontWeight: 700, fontSize: 16, color: TEXT, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{match.home}</div>
               <div style={{ fontSize: 11, color: MUTED }}>Хозяева</div>
@@ -40,7 +40,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
               <div className="analysis-header-team" style={{ fontWeight: 700, fontSize: 16, color: TEXT, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{match.away}</div>
               <div style={{ fontSize: 11, color: MUTED }}>Гости</div>
             </div>
-            <TeamCircle name={match.away} img={match.awayImg} size={44} />
+            <TeamCircle name={match.away} img={analysis.awayLogoTSDB || match.awayImg} size={44} />
           </div>
         </div>
       </div>
