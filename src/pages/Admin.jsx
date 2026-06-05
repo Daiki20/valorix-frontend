@@ -1410,6 +1410,16 @@ function BlogTab({ toast }) {
             <input type="checkbox" checked={!!editing.published} onChange={e => setEditing(p => ({ ...p, published: e.target.checked }))} />
             Опубликовать
           </label>
+          {editing.id && editing.slug && (
+            <a
+              href={`https://search.google.com/search-console/inspect?resource_id=https%3A%2F%2Fvalorix.ru%2F&item_url=https%3A%2F%2Fvalorix.ru%2Fblog%2F${editing.slug}`}
+              target="_blank" rel="noreferrer"
+              title="Открыть Google Search Console — нажми «Запросить индексирование»"
+              style={{ padding: '9px 14px', borderRadius: 10, border: '1px solid rgba(66,133,244,0.4)', background: 'rgba(66,133,244,0.1)', color: '#4285f4', fontWeight: 700, fontSize: 13, textDecoration: 'none', whiteSpace: 'nowrap' }}
+            >
+              🔍 Google
+            </a>
+          )}
           <button onClick={save} disabled={saving} style={{ background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', borderRadius: 10, padding: '9px 24px', color: '#fff', fontWeight: 700, cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.7 : 1, fontSize: 14 }}>
             {saving ? 'Сохраняю...' : (editing.id ? 'Сохранить' : 'Создать')}
           </button>
