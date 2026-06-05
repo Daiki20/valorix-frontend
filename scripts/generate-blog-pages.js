@@ -55,7 +55,7 @@ function mdToHtml(md) {
 function buildHtml(article) {
   const title     = esc(article.title || '')
   const desc      = esc(article.excerpt || article.meta_desc || '')
-  const canonical = `${BASE}/blog/${esc(article.slug)}`
+  const canonical = `${BASE}/blog/${esc(article.slug)}/`
   const cover     = article.cover_url ? esc(article.cover_url) : ''
   const bodyHtml  = mdToHtml(article.content || '')
   const dateStr   = article.created_at

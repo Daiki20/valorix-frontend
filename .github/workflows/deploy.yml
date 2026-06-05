@@ -38,6 +38,13 @@ jobs:
         run: node scripts/generate-blog-pages.js
         continue-on-error: true
 
+      - name: Debug generated blog pages
+        run: |
+          echo "=== dist/blog contents ==="
+          ls -la dist/blog || echo "dist/blog does not exist!"
+          echo "=== index.html files ==="
+          find dist/blog -name "index.html" | head -20 || echo "No index.html files found!"
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:

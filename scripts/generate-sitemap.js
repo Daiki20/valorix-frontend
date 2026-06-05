@@ -34,7 +34,7 @@ async function main() {
   try {
     const data = await get(`${RAILWAY_URL}/blog?limit=200`)
     articles = (data.items || []).map(a => ({
-      loc:        `${BASE}/blog/${a.slug}`,
+      loc:        `${BASE}/blog/${a.slug}/`,
       lastmod:    (a.updated_at || a.created_at || '').slice(0, 10),
       priority:   '0.7',
       changefreq: 'monthly',
