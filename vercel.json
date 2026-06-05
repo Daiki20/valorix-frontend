@@ -7,7 +7,11 @@
     { "source": "/share/:path*",   "destination": "https://web-production-fefcd.up.railway.app/share/:path*" },
     { "source": "/express/:path*", "destination": "https://web-production-fefcd.up.railway.app/express/:path*" },
     { "source": "/matches/:path*", "destination": "https://web-production-fefcd.up.railway.app/matches/:path*" },
+    { "source": "/upload/:path*",  "destination": "https://web-production-fefcd.up.railway.app/upload/:path*" },
+    { "source": "/images/:path*",  "destination": "https://web-production-fefcd.up.railway.app/images/:path*" },
     { "source": "/health",         "destination": "https://web-production-fefcd.up.railway.app/health" },
+    { "source": "/sitemap.xml",    "destination": "https://web-production-fefcd.up.railway.app/sitemap.xml" },
+    { "source": "/rss.xml",        "destination": "https://web-production-fefcd.up.railway.app/rss.xml" },
     { "source": "/(.*)",           "destination": "/index.html" }
   ]
 }

@@ -4,8 +4,4 @@ Disallow: /admin
 Disallow: /history
 Disallow: /payment-return
 
-# Sitemap for Google & Yandex
-Sitemap: https://web-production-fefcd.up.railway.app/sitemap.xml
-
-# Yandex Turbo RSS
-# https://web-production-fefcd.up.railway.app/rss.xml
+Sitemap: https://valorix.ru/sitemap.xml
