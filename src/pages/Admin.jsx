@@ -1412,7 +1412,7 @@ function BlogTab({ toast }) {
           </label>
           {editing.id && editing.slug && (
             <a
-              href={`https://search.google.com/search-console/inspect?resource_id=https%3A%2F%2Fvalorix.ru%2F&item_url=https%3A%2F%2Fvalorix.ru%2Fblog%2F${editing.slug}`}
+              href={`https://search.google.com/search-console/inspect?resource_id=https%3A%2F%2Fvalorix.ru%2F&item_url=https%3A%2F%2Fvalorix.ru%2Fblog%2F${editing.slug}%2F`}
               target="_blank" rel="noreferrer"
               title="Открыть Google Search Console — нажми «Запросить индексирование»"
               style={{ padding: '9px 14px', borderRadius: 10, border: '1px solid rgba(66,133,244,0.4)', background: 'rgba(66,133,244,0.1)', color: '#4285f4', fontWeight: 700, fontSize: 13, textDecoration: 'none', whiteSpace: 'nowrap' }}
@@ -1641,7 +1641,7 @@ function BlogTab({ toast }) {
                           style={{ ...pageBtn, color: a.published ? '#f59e0b' : '#22c55e', fontSize: 12, padding: '4px 10px' }}>
                           {a.published ? 'Снять' : 'Публ.'}
                         </button>
-                        <a href={`https://valorix.ru/blog/${a.slug}`} target="_blank" rel="noreferrer"
+                        <a href={`https://valorix.ru/blog/${a.slug}/`} target="_blank" rel="noreferrer"
                           style={{ ...pageBtn, color: '#64748b', fontSize: 12, padding: '4px 10px', textDecoration: 'none' }}>↗</a>
                         <button onClick={() => del(a.id)} style={{ ...pageBtn, color: '#ef4444', fontSize: 12, padding: '4px 10px' }}>✕</button>
                       </div>
