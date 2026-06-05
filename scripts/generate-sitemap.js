@@ -1,7 +1,9 @@
 // Runs during GitHub Actions build — generates dist/sitemap.xml on valorix.ru domain
-const https = require('https')
-const fs    = require('fs')
-const path  = require('path')
+import https from 'https'
+import fs    from 'fs'
+import path  from 'path'
+import { fileURLToPath } from 'url'
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const BASE        = 'https://valorix.ru'
 const RAILWAY_URL = process.env.RAILWAY_URL || 'https://web-production-fefcd.up.railway.app'
