@@ -16,7 +16,7 @@ const DIST_DIR    = path.join(__dirname, '..', 'dist')
 
 function get(url) {
   return new Promise((resolve) => {
-    const req = https.get(url, { timeout: 10000 }, res => {
+    const req = https.get(url, { timeout: 10000, headers: { 'X-No-Track': '1' } }, res => {
       let data = ''
       res.on('data', c => data += c)
       res.on('end', () => {
