@@ -489,7 +489,12 @@ export default function ExpressCard({ onAuthRequired }) {
   const lc = SPORT_LABEL_COLORS[selectedSport] || SPORT_LABEL_COLORS.football
 
   const SportTabs = () => (
-    <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 20 }}>
+    <div style={{
+      display: 'flex', gap: 8, marginBottom: 20,
+      overflowX: 'auto', WebkitOverflowScrolling: 'touch',
+      scrollbarWidth: 'none', msOverflowStyle: 'none',
+      padding: '4px 2px', justifyContent: 'center',
+    }}>
       {SPORT_OPTIONS.map(s => {
         const isActive = selectedSport === s.id
         return (
@@ -497,9 +502,10 @@ export default function ExpressCard({ onAuthRequired }) {
             key={s.id}
             onClick={() => loadSport(s.id)}
             style={{
-              display: 'flex', alignItems: 'center', gap: 7,
-              padding: '9px 22px', borderRadius: 50, border: 'none',
-              cursor: 'pointer', fontWeight: 700, fontSize: 14,
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '9px 16px', borderRadius: 50, border: 'none',
+              cursor: 'pointer', fontWeight: 700, fontSize: 13,
+              flexShrink: 0, whiteSpace: 'nowrap',
               background: isActive ? s.grad : 'rgba(0,25,60,0.5)',
               color: isActive ? '#030b18' : MUTED,
               boxShadow: isActive ? `0 4px 16px ${s.glow}` : 'none',
@@ -508,7 +514,7 @@ export default function ExpressCard({ onAuthRequired }) {
               border: isActive ? 'none' : `1.5px solid ${BORDER}`,
             }}
           >
-            <span style={{ fontSize: 16 }}>{s.emoji}</span>
+            <span style={{ fontSize: 15 }}>{s.emoji}</span>
             {s.label}
           </button>
         )
