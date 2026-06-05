@@ -188,6 +188,14 @@ export default function Article() {
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
+    // Используем пре-загруженные данные из SSR если slug совпадает (GitHub Pages build)
+    const preloaded = window.__PRELOADED_ARTICLE__
+    if (preloaded && preloaded.slug === slug) {
+      setArticle(preloaded)
+      setLoading(false)
+      window.__PRELOADED_ARTICLE__ = null // используем только один раз
+      return
+    }
     setLoading(true); setNotFound(false)
     fetch(`${API_BASE}/blog/${slug}`)
       .then(r => { if (r.status === 404) { setNotFound(true); return null } return r.json() })
