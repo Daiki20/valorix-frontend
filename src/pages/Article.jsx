@@ -186,6 +186,7 @@ export default function Article() {
   const [article, setArticle] = useState(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [related, setRelated] = useState([])
 
   useEffect(() => {
     // Используем пре-загруженные данные из SSR если slug совпадает (GitHub Pages build)
@@ -202,6 +203,12 @@ export default function Article() {
       .then(data => { if (data) setArticle(data) })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
+
+    // Загружаем похожие статьи
+    fetch(`${API_BASE}/blog/related/${slug}`)
+      .then(r => r.json())
+      .then(data => setRelated(data.items || []))
+      .catch(() => {})
   }, [slug])
 
   if (notFound) return (
@@ -331,6 +338,72 @@ export default function Article() {
                 Попробовать бесплатно →
               </Link>
             </div>
+
+            {/* Похожие статьи */}
+            {related.length > 0 && (
+              <div style={{ marginTop: 48 }}>
+                <h2 style={{
+                  fontSize: '1.25rem', fontWeight: 800, color: '#fff',
+                  marginBottom: 20, letterSpacing: '-0.02em',
+                }}>
+                  Читайте также
+                </h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {related.map(item => {
+                    const isFootball = item.sport === 'football'
+                    const isHockey   = item.sport === 'hockey'
+                    return (
+                      <Link
+                        key={item.id}
+                        to={`/blog/${item.slug}`}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 14,
+                          padding: '14px 18px', borderRadius: 16, textDecoration: 'none',
+                          background: 'rgba(255,255,255,0.025)',
+                          border: '1px solid rgba(255,255,255,0.06)',
+                          transition: 'all 0.2s',
+                        }}
+                        onMouseOver={e => {
+                          e.currentTarget.style.background = 'rgba(0,207,255,0.06)'
+                          e.currentTarget.style.borderColor = 'rgba(0,207,255,0.2)'
+                        }}
+                        onMouseOut={e => {
+                          e.currentTarget.style.background = 'rgba(255,255,255,0.025)'
+                          e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'
+                        }}
+                      >
+                        {item.cover_url && (
+                          <img src={item.cover_url} alt={item.title}
+                            style={{ width: 72, height: 48, objectFit: 'cover', borderRadius: 10, flexShrink: 0 }}
+                            onError={e => { e.target.style.display = 'none' }} />
+                        )}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          {(isFootball || isHockey) && (
+                            <span style={{
+                              display: 'inline-block', fontSize: 10, fontWeight: 700, marginBottom: 4,
+                              padding: '1px 8px', borderRadius: 20,
+                              color: isFootball ? '#4ade80' : ACCENT,
+                              background: isFootball ? 'rgba(34,197,94,0.1)' : 'rgba(0,207,255,0.1)',
+                              border: `1px solid ${isFootball ? 'rgba(34,197,94,0.2)' : 'rgba(0,207,255,0.2)'}`,
+                            }}>
+                              {isFootball ? '⚽ Футбол' : '🏒 Хоккей'}
+                            </span>
+                          )}
+                          <p style={{
+                            color: '#e2e8f0', fontSize: '0.9rem', fontWeight: 600,
+                            lineHeight: 1.4, margin: 0,
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          }}>
+                            {item.title}
+                          </p>
+                        </div>
+                        <ArrowRight size={14} style={{ color: ACCENT, flexShrink: 0 }} />
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
           </>
         ) : null}
       </div>
