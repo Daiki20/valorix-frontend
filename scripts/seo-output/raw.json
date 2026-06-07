@@ -1,0 +1,2112 @@
+{
+  "allData": {
+    "football": {
+      "high": [
+        {
+          "keyword": "прогнозы на футбол сегодня",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на футбольные матчи сегодня: что говорят эксперты"
+        },
+        {
+          "keyword": "ставки на футбол",
+          "intent": "commercial",
+          "difficulty": "high",
+          "title": "Как выбрать лучшие ставки на футбол: советы и стратегии"
+        },
+        {
+          "keyword": "аналитика футбольных матчей",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как проводится аналитика футбольных матчей с помощью AI"
+        },
+        {
+          "keyword": "прогнозы на Премьер-лигу",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на матчи Премьер-лиги: аналитика и советы"
+        },
+        {
+          "keyword": "прогнозы на Лигу чемпионов",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Лига чемпи��нов: прогнозы и аналитика предстоящих матчей"
+        },
+        {
+          "keyword": "прогнозы на РПЛ",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "РПЛ: прогнозы на матчи и аналитика команд"
+        },
+        {
+          "keyword": "лучшие прогнозы на футбол",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Лучшие прогнозы на футбол: как выбрать надежные источники"
+        },
+        {
+          "keyword": "ставки на Премьер-лигу",
+          "intent": "commercial",
+          "difficulty": "high",
+          "title": "Ставки на Премьер-лигу: стратегии и советы для успешной игры"
+        },
+        {
+          "keyword": "искусственный интеллект в футболе",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как искусственный интеллект меняет мир футбола"
+        },
+        {
+          "keyword": "футбольная аналитика",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Футбольная аналитика: как она помогает в прогнозах и ставках"
+        },
+        {
+          "keyword": "прогнозы на футбол от экспертов",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Прогно��ы на футбол от экспертов: кому можно доверять"
+        },
+        {
+          "keyword": "ставки на Лигу чемпионов",
+          "intent": "commercial",
+          "difficulty": "high",
+          "title": "Ставки на Лигу чемпионов: как увеличить шансы на выигрыш"
+        },
+        {
+          "keyword": "AI прогнозы на футбол",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на футбол: как технологии помогают предсказать исход"
+        },
+        {
+          "keyword": "как делать ставки на футбол",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как делать ставки на футбол: руководство для начинающих"
+        },
+        {
+          "keyword": "футбольные прогнозы на сегодня",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Футбольные прогнозы на сегодня: советы и аналитика"
+        }
+      ],
+      "medium": [
+        {
+          "keyword": "прогнозы на матчи премьер-лиги",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как делать точные прогнозы на матчи Премьер-лиги"
+        },
+        {
+          "keyword": "аналитика футбольных матчей",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Аналитика футбольных матчей: как искусственный интеллект меняет игру"
+        },
+        {
+          "keyword": "прогнозы на лигу чемпионов",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Лучшие прогнозы на Лигу чемпионов: советы и стратегии"
+        },
+        {
+          "keyword": "ставки на футбол советы",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Советы по ставкам на футбол: как увеличить шансы на успех"
+        },
+        {
+          "keyword": "искусственный интеллект в футболе",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Роль искусственного интеллекта в современном футболе"
+        },
+        {
+          "keyword": "прогнозы на рпл",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как делать точные прогнозы на матчи РПЛ"
+        },
+        {
+          "keyword": "лучшие прогнозы на футбол",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Где найти лучшие прогнозы на футбольные матчи"
+        },
+        {
+          "keyword": "аналитика матчей премьер-лиги",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как проводится аналитика матчей Премьер-лиги"
+        },
+        {
+          "keyword": "стратегии ставок на футбол",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Эффективные стратегии ставок на футбол"
+        },
+        {
+          "keyword": "искусственный интеллект прогнозы",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как искусственный интеллект помогает в прогнозах на спорт"
+        },
+        {
+          "keyword": "прогнозы на чемпионат мира по футболу",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как делать прогнозы на чемпионат мира по футболу"
+        },
+        {
+          "keyword": "аналитика матчей рпл",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Анализ матчей РПЛ: что нужно знать"
+        },
+        {
+          "keyword": "как делать ставки на футбол",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как правильно делать ставки на футбол: руководство для новичков"
+        },
+        {
+          "keyword": "искусственный интеллект в прогнозах на спорт",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Искусственный интеллект в прогнозах на спорт: преимущества и недостатки"
+        },
+        {
+          "keyword": "прогнозы на футбольные матчи сегодня",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Где найти прогнозы на футбольные матчи сегодня"
+        },
+        {
+          "keyword": "как работает аналитика футбольных матчей",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как работает аналитика футбольных матчей: от данных до прогнозов"
+        },
+        {
+          "keyword": "прогнозы на матчи лиги чемпионов",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на матчи Лиги чемпионов: что учитывать"
+        },
+        {
+          "keyword": "ставки на футбол стратегии",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Лучшие стратегии для ставок на футбол"
+        },
+        {
+          "keyword": "искусственный интеллект в спортивной аналитике",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как искусственный интеллект и��меняет спортивную аналитику"
+        },
+        {
+          "keyword": "прогнозы на матчи рпл сегодня",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Где найти прогнозы на матчи РПЛ сегодня"
+        }
+      ],
+      "low": [
+        {
+          "keyword": "как работает ai аналитика футбольных матчей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как работает AI аналитика футбольных матчей: основы и примеры"
+        },
+        {
+          "keyword": "прогнозы на премьер-лигу с помощью искусственного интеллекта",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на Премьер-лигу с помощью искусственного интеллекта: что ожидать"
+        },
+        {
+          "keyword": "лучшие ai прогнозы на лигу чемпионов",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Лучшие AI прогнозы на Лигу чемпионов: анализ и советы"
+        },
+        {
+          "keyword": "ai прогнозы на рпл",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на РПЛ: как искусственный интеллект меняет игру"
+        },
+        {
+          "keyword": "как ai помогает в ставках на футбол",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI помогает в ставках на футбол: преимущества и риски"
+        },
+        {
+          "keyword": "прогнозы на футбол с использованием ai",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на футбол с использованием AI: что нужно знать"
+        },
+        {
+          "keyword": "ai аналитика в футболе примеры",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI аналитика в футболе: примеры и кейсы"
+        },
+        {
+          "keyword": "как выбрать ai платформу для прогнозов на футбол",
+          "intent": "commercial",
+          "difficulty": "low",
+          "title": "Как выбрать AI платформу для прогнозов на футбол: советы и рекомендации"
+        },
+        {
+          "keyword": "ai прогнозы на матчи премьер-лиги",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на матчи Премьер-лиги: как это работает"
+        },
+        {
+          "keyword": "стоит ли доверять ai прогнозам на футбол",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Стоит ли доверять AI прогнозам на футбол: плюсы и минусы"
+        },
+        {
+          "keyword": "преимущества ai аналитики в футболе",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Преимущества AI аналитики в футболе: что меняется в игре"
+        },
+        {
+          "keyword": "ai прогнозы на футбольные матчи",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на футбольные матчи: как это работает"
+        },
+        {
+          "keyword": "как ai улучшает прогнозы на футбол",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI улучшает прогнозы на футбол: технологии и методы"
+        },
+        {
+          "keyword": "ai прогнозы на чемпионат мира по футбол��",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на Чемпионат мира по футболу: что ожидать"
+        },
+        {
+          "keyword": "как использовать ai для ставок на футбол",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как использовать AI для ставок на футбол: руководство для начинающих"
+        },
+        {
+          "keyword": "ai прогнозы на футбольные турниры",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на футбольные турниры: что нужно знать"
+        },
+        {
+          "keyword": "будущее ai аналитики в футболе",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Будущее AI аналитики в футболе: что нас ждет"
+        },
+        {
+          "keyword": "ai прогнозы на футбольные лиги",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на футбольные лиги: как это работает"
+        },
+        {
+          "keyword": "как ai меняет прогнозы на спорт",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI меняет прогнозы на спорт: анализ и перспективы"
+        },
+        {
+          "keyword": "ai прогнозы на футбольные чемпионаты",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на футбольные чемпионаты: что нужно знать"
+        },
+        {
+          "keyword": "как ai помогает в анализе футбольных матчей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI помогает в анализе футбольных матчей: технологии и методы"
+        },
+        {
+          "keyword": "ai прогнозы на футбольные события",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на футбольные события: как это работает"
+        },
+        {
+          "keyword": "как ai улучшает ставки на футбол",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI улучшает ставки на футбол: технологии и методы"
+        },
+        {
+          "keyword": "ai прогнозы на футбольные игры",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на футбольные игры: что нужно знать"
+        },
+        {
+          "keyword": "как ai изменяет футбольные прогнозы",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI изменяет футбольные прогнозы: анализ и перспективы"
+        },
+        {
+          "keyword": "ai прогнозы на футбольные матчи премьер-лиги",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на футбольные матчи Премьер-лиги: как это работает"
+        },
+        {
+          "keyword": "ai прогнозы на футбольные матчи лиги чемпионов",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на футбольные матчи Лиги чемпионов: что ожидать"
+        },
+        {
+          "keyword": "ai прогнозы на футбольные матчи рпл",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на футбольные матчи РПЛ: как это работает"
+        },
+        {
+          "keyword": "как ai помогает в прогнозах на футбол",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI помогает в прогнозах на футбол: технологии и методы"
+        },
+        {
+          "keyword": "ai прогнозы на футбольные матчи чемпионата мира",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на футбольные матчи Чемпионата мира: что ожидать"
+        }
+      ]
+    },
+    "hockey": {
+      "high": [
+        {
+          "keyword": "прогнозы на хоккей НХЛ",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как делать точные прогнозы на хоккей НХЛ: советы и стратегии"
+        },
+        {
+          "keyword": "аналитика хоккейных матчей",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Аналитика хоккейных матчей: как использовать данные для прогнозов"
+        },
+        {
+          "keyword": "ставки на хоккей",
+          "intent": "commercial",
+          "difficulty": "high",
+          "title": "Лучшие стратегии для ставок на хоккей: советы экспертов"
+        },
+        {
+          "keyword": "прогнозы на КХЛ",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на КХЛ: как предсказать исходы матчей"
+        },
+        {
+          "keyword": "искусственный интеллект в хоккее",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как искусственный интеллект меняет анализ хоккейных матчей"
+        },
+        {
+          "keyword": "лучшие прогнозы на хоккей",
+          "intent": "commercial",
+          "difficulty": "high",
+          "title": "Где найти лучшие прогнозы на хоккей: обзор сервисов"
+        },
+        {
+          "keyword": "статистика НХЛ",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Статистика НХЛ: как использовать данные для успешных прогнозов"
+        },
+        {
+          "keyword": "как делать ставки на хоккей",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как делать ставки на хоккей: пошаговое руководство для новичков"
+        },
+        {
+          "keyword": "прогнозы на спорт хоккей",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на спорт: как правильно прогнозировать хоккейные матчи"
+        },
+        {
+          "keyword": "прогнозы на хоккей сегодня",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на хоккей сегодня: что ожидать от текущих матчей"
+        },
+        {
+          "keyword": "аналитика НХЛ",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Аналитика НХЛ: как анализировать данные для прогнозов"
+        },
+        {
+          "keyword": "прогнозы на хоккей от экспертов",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Прогнозы на хоккей от экспертов: кому доверять?"
+        },
+        {
+          "keyword": "статистика КХЛ",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Статистика КХЛ: как использовать данные для прогнозов на матчи"
+        },
+        {
+          "keyword": "прогнозы на хоккей бесплатно",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Где найти бесплатные прогнозы на хоккей: обзор лучших ресурсов"
+        },
+        {
+          "keyword": "искусственный интеллект прогнозы на хоккей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как искусственный интеллект помогает в прогнозах на хоккей"
+        }
+      ],
+      "medium": [
+        {
+          "keyword": "прогнозы на хоккейные матчи НХЛ",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как составляются прогнозы на хоккейные матчи НХЛ?"
+        },
+        {
+          "keyword": "аналитика хоккейных матчей КХЛ",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Аналитика хоккейных матчей КХЛ: что важно учитывать?"
+        },
+        {
+          "keyword": "ставки на хоккей НХЛ",
+          "intent": "commercial",
+          "difficulty": "medium",
+          "title": "Как выбрать лучшие ставки на хоккей НХЛ?"
+        },
+        {
+          "keyword": "прогнозы на КХЛ сегодня",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на КХЛ: что ждать от сегодняшних матчей?"
+        },
+        {
+          "keyword": "лучшие прогнозы на хоккей",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Где найти лучшие прогнозы на хоккей?"
+        },
+        {
+          "keyword": "AI аналитика в хоккее",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI аналитика меняет подход к хоккейным матчам?"
+        },
+        {
+          "keyword": "прогнозы на НХЛ от экспертов",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Что говорят эксперты о прогнозах на НХЛ?"
+        },
+        {
+          "keyword": "ставки на хоккей КХЛ",
+          "intent": "commercial",
+          "difficulty": "medium",
+          "title": "Как сделать успешные ставки на хоккей КХЛ?"
+        },
+        {
+          "keyword": "искусственный интеллект в спорте",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Роль искусственного интеллекта в современном спорте"
+        },
+        {
+          "keyword": "прогнозы на хоккейные матчи сегодня",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Сегодняшние прог��озы на хоккейные матчи: что ожидать?"
+        },
+        {
+          "keyword": "аналитика матчей НХЛ",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как проводится аналитика матчей НХЛ?"
+        },
+        {
+          "keyword": "прогнозы на хоккей от профессионалов",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как профессионалы делают прогнозы на хоккей?"
+        },
+        {
+          "keyword": "ставки на хоккейные матчи",
+          "intent": "commercial",
+          "difficulty": "medium",
+          "title": "Как выбрать лучшие ставки на хоккейные матчи?"
+        },
+        {
+          "keyword": "искусственный интеллект в хоккее",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как искусственный интеллект используется в хоккее?"
+        },
+        {
+          "keyword": "прогнозы на НХЛ сегодня",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Сегодняшние прогнозы на НХЛ: что говорят эксперты?"
+        },
+        {
+          "keyword": "аналитика спортивных матчей",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как проводится аналитика спортивных матчей?"
+        },
+        {
+          "keyword": "прогнозы на КХЛ от экспертов",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Что эксперты думают о прогнозах на КХЛ?"
+        },
+        {
+          "keyword": "ставки на спорт хоккей",
+          "intent": "commercial",
+          "difficulty": "medium",
+          "title": "Как делать ставки на спорт: хоккейные матчи"
+        },
+        {
+          "keyword": "прогнозы на хоккейные матчи от экспертов",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как эксперты составляют прогнозы на хоккейные матчи?"
+        },
+        {
+          "keyword": "AI прогнозы на спорт",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как AI прогнозы меняют подход к спортивным ставкам?"
+        }
+      ],
+      "low": [
+        {
+          "keyword": "как анализировать хоккейные матчи с помощью AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI помогает анализировать хоккейные матчи"
+        },
+        {
+          "keyword": "прогнозы на матчи НХЛ с использованием AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI-прогнозы на матчи НХЛ: как это работает"
+        },
+        {
+          "keyword": "лучшие стратегии ставок на хоккей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Лучшие стратегии ставок на хоккей: советы экспертов"
+        },
+        {
+          "keyword": "AI прогнозы на КХЛ матчи",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI делает прогнозы на матчи КХЛ"
+        },
+        {
+          "keyword": "как работает AI в прогнозах на хоккей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как работает AI в прогнозах на хоккей"
+        },
+        {
+          "keyword": "статистика хоккейных матчей с AI анализом",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI-анализ статистики хоккейных матчей: что нужно знать"
+        },
+        {
+          "keyword": "прогнозы на хоккейные матчи с AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI-прогнозы на хоккейные матчи: преимущества и недостатки"
+        },
+        {
+          "keyword": "как AI помогает в ставках на хоккей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI помогает делать ставки на хоккей"
+        },
+        {
+          "keyword": "прогнозы на хоккей от AI экспертов",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на хоккей от AI экспертов: что ожидать"
+        },
+        {
+          "keyword": "анализ хоккейных матчей с помощью AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Анализ хоккейны�� матчей с помощью AI: как это работает"
+        },
+        {
+          "keyword": "AI прогнозы на хоккейные матчи",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на хоккейные матчи: как они создаются"
+        },
+        {
+          "keyword": "лучшие AI системы для прогнозов на хоккей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Лучшие AI системы для прогнозов на хоккей"
+        },
+        {
+          "keyword": "как использовать AI для анализа хоккея",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как использовать AI для анализа хоккейных матчей"
+        },
+        {
+          "keyword": "AI технологии в прогнозах на хоккей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI технологии в прогнозах на хоккей: что нового"
+        },
+        {
+          "keyword": "как AI улучшает прогнозы на хоккей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI улучшает прогнозы на хоккейные матчи"
+        },
+        {
+          "keyword": "прогнозы на хоккей с AI аналитикой",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на хоккей с AI аналитикой: как это работает"
+        },
+        {
+          "keyword": "AI анализ хоккейных матчей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI анализ хоккейных матчей: как это делается"
+        },
+        {
+          "keyword": "как AI меняет ставки на хоккей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI меняет подход к ставкам на хоккей"
+        },
+        {
+          "keyword": "AI прогнозы на матчи НХЛ",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на матчи НХЛ: что нужно знать"
+        },
+        {
+          "keyword": "как AI помогает в прогнозах на НХЛ",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI помогает в прогнозах на матчи НХЛ"
+        },
+        {
+          "keyword": "AI прогнозы на матчи КХЛ",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на матчи КХЛ: как это работает"
+        },
+        {
+          "keyword": "как AI улучшает ставки на хоккей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI улучшает ставки на хоккейные матчи"
+        },
+        {
+          "keyword": "AI технологии в ставках на хоккей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI технологии в ставках на хоккей: что нового"
+        },
+        {
+          "keyword": "как AI помогает анализировать хоккей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI помогает анализировать хоккейные матчи"
+        },
+        {
+          "keyword": "AI прогнозы на хоккейные игры",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на хоккейные игры: как они создаются"
+        },
+        {
+          "keyword": "лучшие AI инструменты для анализа хоккея",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Лучшие AI инструменты для анализа хоккейных матчей"
+        },
+        {
+          "keyword": "как AI влияет на прогнозы на хоккей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI влияет на прогнозы на хоккейные матчи"
+        },
+        {
+          "keyword": "AI прогнозы на хоккейные события",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на хоккейные события: что ожидать"
+        },
+        {
+          "keyword": "как AI улучшает анализ хоккея",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI улучшает анализ хоккейных матчей"
+        },
+        {
+          "keyword": "AI прогнозы на спортивные события",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на спортивные события: как это работает"
+        }
+      ]
+    },
+    "cs2": {
+      "high": [
+        {
+          "keyword": "прогнозы на матчи cs2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как делать точные прогнозы на матчи CS2: советы и стратегии"
+        },
+        {
+          "keyword": "искусственный интеллект для аналитики cs2",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Как искусственный интеллект помогает в аналитике матчей CS2"
+        },
+        {
+          "keyword": "esl турниры cs2 прогнозы",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на ESL турниры по CS2: что ожидать в этом сезоне"
+        },
+        {
+          "keyword": "blast турниры cs2 аналитика",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Аналитика матчей BLAST по CS2: ключевые моменты и прогнозы"
+        },
+        {
+          "keyword": "major турниры cs2 прогнозы",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на Major турниры по CS2: кто фаворит?"
+        },
+        {
+          "keyword": "лучшие команды cs2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Топ-10 лучших команд по CS2: кто они?"
+        },
+        {
+          "keyword": "статистика матчей cs2",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Где найти подробную статистику матчей CS2"
+        },
+        {
+          "keyword": "как анализировать матчи cs2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как самостоятельно анализировать матчи CS2: пошаговое руководство"
+        },
+        {
+          "keyword": "искусственный интеллект прогнозы cs2",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Как искусственный интеллект улучшает прогнозы на матчи CS2"
+        },
+        {
+          "keyword": "стратегии ставок на cs2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Эффективные стратегии ставок на матчи CS2"
+        },
+        {
+          "keyword": "где смотреть матчи cs2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Где и как смотреть матчи CS2: лучшие платформы и сервисы"
+        },
+        {
+          "keyword": "новости cs2 турниров",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Последние новости и обновления турниров по CS2"
+        },
+        {
+          "keyword": "анализ команд cs2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Анализ команд CS2: сильные и слабые стороны"
+        },
+        {
+          "keyword": "прогнозы на cs2 сегодня",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на матчи CS2 сегодня: на что обратить внимание"
+        },
+        {
+          "keyword": "лучшие игроки cs2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Топ-10 лучших игроков в CS2: кто они?"
+        }
+      ],
+      "medium": [
+        {
+          "keyword": "AI прогнозы матчей CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как AI помогает прогнозировать матчи CS2"
+        },
+        {
+          "keyword": "аналитика матчей CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Глубокая аналитика матчей CS2: что нужно знать"
+        },
+        {
+          "keyword": "прогнозы на турниры ESL CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на турниры ESL по CS2: советы и стратегии"
+        },
+        {
+          "keyword": "AI аналитика для CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "AI аналитика для CS2: как это работает"
+        },
+        {
+          "keyword": "прогнозы на турниры BLAST CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Ка�� делать прогнозы на турниры BLAST по CS2"
+        },
+        {
+          "keyword": "лучшие прогнозы на CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Лучшие прогнозы на CS2: как выбрать"
+        },
+        {
+          "keyword": "AI прогнозы на Major турниры CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "AI прогнозы на Major турниры CS2: что ожидать"
+        },
+        {
+          "keyword": "статистика матчей CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как использовать статистику матчей CS2 для прогнозов"
+        },
+        {
+          "keyword": "анализ матчей CS2 с AI",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Анализ матчей CS2 с AI: преимущества и недостатки"
+        },
+        {
+          "keyword": "прогнозы на CS2 ESL турниры",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на CS2 ESL турниры: как не ошибиться"
+        },
+        {
+          "keyword": "AI в прогнозах на CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Роль AI в прогнозах на CS2: будущее аналитики"
+        },
+        {
+          "keyword": "прогнозы на матчи CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как делать точные прогнозы на матчи CS2"
+        },
+        {
+          "keyword": "анализ турниров CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Анализ турниров CS2: что важно учитывать"
+        },
+        {
+          "keyword": "AI прогнозы на ESL турниры CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "AI прогнозы на ESL турниры CS2: как это работает"
+        },
+        {
+          "keyword": "прогнозы на CS2 Major турниры",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на CS2 Major турниры: советы экспертов"
+        },
+        {
+          "keyword": "аналитика турниров CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как проводить аналитику турниров CS2"
+        },
+        {
+          "keyword": "AI прогнозы на BLAST турниры CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "AI прогнозы на BLAST турниры CS2: что ожидать"
+        },
+        {
+          "keyword": "статистика турниров CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Использование статистики турниров CS2 для прогнозов"
+        },
+        {
+          "keyword": "анализ матчей CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как проводить анализ матчей CS2: советы и инструменты"
+        },
+        {
+          "keyword": "AI аналитика матчей CS2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "AI аналитика матчей CS2: как это меняет игру"
+        }
+      ],
+      "low": [
+        {
+          "keyword": "как работает AI аналитика матчей CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как работает AI аналитика матчей в CS2: полное руководство"
+        },
+        {
+          "keyword": "прогнозы на турниры ESL по CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на турниры ESL по CS2: советы и стратегии"
+        },
+        {
+          "keyword": "лучшие AI инструменты для прогнозов CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Лучшие AI инструменты для прогнозов матчей CS2"
+        },
+        {
+          "keyword": "как сделать прогноз на матч CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как сделать точный прогноз на матч CS2: пошаговое руководство"
+        },
+        {
+          "keyword": "аналитика матчей CS2 с помощью AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Аналитика матчей CS2 с помощью AI: что нужно знать"
+        },
+        {
+          "keyword": "прогнозы на турниры BLAST по CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на турниры BLAST по CS2: как использовать AI"
+        },
+        {
+          "keyword": "AI прогнозы на Major турниры CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на Major турниры CS2: как это работает"
+        },
+        {
+          "keyword": "статистика матчей CS2 с AI аналитикой",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Статистика матчей CS2 с AI аналитикой: как анализировать данные"
+        },
+        {
+          "keyword": "как AI помогает в прогнозах матчей CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI помогает в прогнозах матчей CS2: преимущества и возможности"
+        },
+        {
+          "keyword": "обз��р AI платформ для аналитики CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Обзор AI платформ для аналитики матчей CS2: что выбрать"
+        },
+        {
+          "keyword": "как улучшить прогнозы матчей CS2 с AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как улучшить прогнозы матчей CS2 с помощью AI: советы экспертов"
+        },
+        {
+          "keyword": "прогнозы на финалы ESL по CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на финалы ESL по CS2: как AI может помочь"
+        },
+        {
+          "keyword": "AI аналитика для ставок на CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI аналитика для ставок на CS2: как это работает"
+        },
+        {
+          "keyword": "как AI изменяет прогнозы матчей CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI изменяет прогнозы матчей CS2: новые возможности"
+        },
+        {
+          "keyword": "прогнозы н�� полуфиналы BLAST по CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на полуфиналы BLAST по CS2: роль AI"
+        },
+        {
+          "keyword": "AI прогнозы на матчи CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на матчи CS2: как это работает и что учитывать"
+        },
+        {
+          "keyword": "как использовать AI для прогнозов CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как использовать AI для прогнозов матчей CS2: пошаговое руководство"
+        },
+        {
+          "keyword": "прогнозы на четвертьфиналы Major CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на четвертьфиналы Major CS2: как AI может помочь"
+        },
+        {
+          "keyword": "AI системы для анализа матчей CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI системы для анализа матчей CS2: что выбрать"
+        },
+        {
+          "keyword": "как AI улучшает прогнозы на турниры CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI улучшает прогнозы на турниры CS2: примеры и кейсы"
+        },
+        {
+          "keyword": "прогнозы на групповой этап ESL по CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на групповой этап ESL по CS2: как AI помогает"
+        },
+        {
+          "keyword": "AI прогнозы на финалы Major CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на финалы Major CS2: что нужно знать"
+        },
+        {
+          "keyword": "как AI анализирует матчи CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI анализирует матчи CS2: технологии и методы"
+        },
+        {
+          "keyword": "прогнозы на плей-офф BLAST по CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на плей-офф BLAST по CS2: как AI может помочь"
+        },
+        {
+          "keyword": "AI аналитика для турниров CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI аналитика для турниров CS2: как это работает"
+        },
+        {
+          "keyword": "как AI помогает в анализе матчей CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI помогает в анализе матчей CS2: преимущества и примеры"
+        },
+        {
+          "keyword": "прогнозы на матчи CS2 с AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на матчи CS2 с AI: как это работает"
+        },
+        {
+          "keyword": "AI технологии для прогнозов матчей CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI технологии для прогнозов матчей CS2: что нового"
+        },
+        {
+          "keyword": "как AI улучшает аналитические прогнозы CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI улучшает аналитические прогнозы матчей CS2: советы и рекомендации"
+        },
+        {
+          "keyword": "прогнозы на турниры Major по CS2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на турниры Major по CS2: роль AI в аналитике"
+        }
+      ]
+    },
+    "dota2": {
+      "high": [
+        {
+          "keyword": "прогнозы на матчи dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как AI помогает в прогнозах на матчи Dota 2"
+        },
+        {
+          "keyword": "аналитика dota 2 турниры",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Аналитика турниров Dota 2: как искусственный интеллект меняет игру"
+        },
+        {
+          "keyword": "прогнозы на the international dota 2",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Прогнозы на The International: что ожидать от AI-аналитики"
+        },
+        {
+          "keyword": "лучшие прогнозы dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Лучшие AI-прогнозы на матчи Dota 2: как это работает"
+        },
+        {
+          "keyword": "аналитика матчей dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как AI-аналитика матчей Dota 2 улучшает прогнозы"
+        },
+        {
+          "keyword": "прогнозы на dota 2 majors",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Прогнозы на Dota 2 Majors: роль искусственного интеллекта"
+        },
+        {
+          "keyword": "ai прогнозы dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "AI-прогнозы Dota 2: как технологии меняют подход к аналитике"
+        },
+        {
+          "keyword": "статистика dota 2 турниры",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Статистика турниров Dota 2: как AI помогает анализировать данные"
+        },
+        {
+          "keyword": "аналитика the international dota 2",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Аналитика The International: как AI меняет подход к прогнозам"
+        },
+        {
+          "keyword": "прогнозы на dota 2 blast slam",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Прогнозы на Dota 2 BLAST Slam: как AI помогает предсказать исход"
+        },
+        {
+          "keyword": "искусственный интеллект в dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Роль искусственного интеллекта в аналитике Dota 2"
+        },
+        {
+          "keyword": "прогнозы на dota 2 турниры",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на турниры Dota 2: как AI улучшает точность"
+        },
+        {
+          "keyword": "dota 2 прогнозы и аналитика",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Dota 2: как AI-прогнозы и аналитика меняют игру"
+        },
+        {
+          "keyword": "прогнозы на матчи the international",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Прогнозы на матчи The International: роль AI в аналитике"
+        },
+        {
+          "keyword": "dota 2 ai аналитика",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "AI-аналитика в Dota 2: как технологии изменяют прогнозы"
+        }
+      ],
+      "medium": [
+        {
+          "keyword": "аналитика матчей dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как проводится аналитика матчей Dota 2: инструменты и методы"
+        },
+        {
+          "keyword": "прогнозы на the international dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на The International Dota 2: что говорят эксперты"
+        },
+        {
+          "keyword": "лучшие прогнозы на dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Где найти лучшие прогнозы на матчи Dota 2"
+        },
+        {
+          "keyword": "ai прогнозы на dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как искусственный интеллект делает прогнозы на Dota 2"
+        },
+        {
+          "keyword": "статистика dota 2 турниров",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Анализ статистики турниров Dota 2: что нужно знать"
+        },
+        {
+          "keyword": "прогнозы на мажоры dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на мажоры Dota 2: советы и рекомендации"
+        },
+        {
+          "keyword": "аналитика the international",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Аналитика The International: как предсказывают результаты"
+        },
+        {
+          "keyword": "прогнозы на blast slam dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на BLAST Slam Dota 2: что ожидать от турнира"
+        },
+        {
+          "keyword": "статистика игроков dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как анализировать статистику игроков в Dota 2"
+        },
+        {
+          "keyword": "искусственный интеллект в dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Роль искусственного интеллект�� в анализе матчей Dota 2"
+        },
+        {
+          "keyword": "прогнозы на турниры dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как делаются прогнозы на турниры Dota 2"
+        },
+        {
+          "keyword": "аналитика матчей на мажорах dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Аналитика матчей на мажорах Dota 2: что важно учитывать"
+        },
+        {
+          "keyword": "прогнозы на финал the international",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на финал The International: мнение экспертов"
+        },
+        {
+          "keyword": "статистика команд dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как анализировать статистику команд в Dota 2"
+        },
+        {
+          "keyword": "ai в прогнозах на dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Использование AI в прогнозах на матчи Dota 2"
+        },
+        {
+          "keyword": "прогнозы на dota 2 сего��ня",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Актуальные прогнозы на матчи Dota 2 сегодня"
+        },
+        {
+          "keyword": "аналитика dota 2 турниров",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как проводится аналитика турниров Dota 2"
+        },
+        {
+          "keyword": "прогнозы на матчи dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как делать точные прогнозы на матчи Dota 2"
+        },
+        {
+          "keyword": "статистика the international dota 2",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Анализ статистики The International Dota 2"
+        },
+        {
+          "keyword": "ai аналитика dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI помогает в аналитике матчей Dota 2"
+        }
+      ],
+      "low": [
+        {
+          "keyword": "как работает ai аналитика матчей dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как работает AI-аналитика матчей Dota 2: Полное руководство"
+        },
+        {
+          "keyword": "прогнозы на the international 2023 dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на The International 2023: Чего ожидать от турнира"
+        },
+        {
+          "keyword": "лучшие ai инструменты для анализа dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Лучшие AI-инструменты для анализа матчей Dota 2"
+        },
+        {
+          "keyword": "как сделать прогноз на матч dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как сделать точный прогноз на матч Dota 2"
+        },
+        {
+          "keyword": "статистика команд на the international 2023",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Статистика команд на The International 2023: Анализ и прогнозы"
+        },
+        {
+          "keyword": "ai прогнозы на dota 2 majors",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI-прогнозы на Dota 2 Majors: Как это работает"
+        },
+        {
+          "keyword": "как использовать ai для прогнозов dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как использовать AI для прогнозов матчей Dota 2"
+        },
+        {
+          "keyword": "аналитика dota 2 матчей с помощью ai",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Аналитика матчей Dota 2 с помощью AI: Пошаговое руководство"
+        },
+        {
+          "keyword": "прогнозы на dota 2 blast slam",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на Dota 2 BLAST Slam: Анализ и советы"
+        },
+        {
+          "keyword": "как работают ai прогнозы на dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как работают AI-прогнозы на матчи Dota 2"
+        },
+        {
+          "keyword": "статистика игроков на the international 2023",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Статистика игроков на The International 2023: Кого стоит отметить"
+        },
+        {
+          "keyword": "ai анализ dota 2 матчей",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI-анализ матчей Dota 2: Как это работает"
+        },
+        {
+          "keyword": "как улучшить прогнозы на dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как улучшить прогнозы на матчи Dota 2 с помощью AI"
+        },
+        {
+          "keyword": "статистика турниров dota 2 majors",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Статистика турниров Dota 2 Majors: Полный обзор"
+        },
+        {
+          "keyword": "ai прогнозы на the international 2023",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI-прогнозы на The International 2023: Что ожидать"
+        },
+        {
+          "keyword": "как анализировать матчи dota 2 с ai",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как анализировать матчи Dota 2 с помощью AI"
+        },
+        {
+          "keyword": "стратегии для прогнозов на dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Стратегии для прогнозов на матчи Dota 2"
+        },
+        {
+          "keyword": "прогнозы на dota 2 турниры 2023",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на турниры Dota 2 в 2023 году: Анализ и советы"
+        },
+        {
+          "keyword": "как ai помогает в прогнозах dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI помогает в прогнозах матчей Dota 2"
+        },
+        {
+          "keyword": "анализ команд на dota 2 majors",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Анализ команд на Dota 2 Majors: Кто фаворит"
+        },
+        {
+          "keyword": "ai прогнозы на dota 2 турниры",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI-прогнозы на турниры Dota 2: Как это работает"
+        },
+        {
+          "keyword": "как использовать статистику для прогнозов dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как использовать статистику для прогнозов матчей Dota 2"
+        },
+        {
+          "keyword": "анализ матчей dota 2 с помощью ai",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Анализ матчей Dota 2 с помощью AI: Пошаговое руководство"
+        },
+        {
+          "keyword": "прогнозы на dota 2 blast slam 2023",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на Dota 2 BLAST Slam 2023: Анализ и советы"
+        },
+        {
+          "keyword": "как ai улучшает прогнозы на dota 2",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI улучшает прогнозы на матчи Dota 2"
+        },
+        {
+          "keyword": "статистика матчей на the international 2023",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Статистик�� матчей на The International 2023: Полный обзор"
+        },
+        {
+          "keyword": "ai прогнозы на dota 2 турниры 2023",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI-прогнозы на турниры Dota 2 в 2023 году: Чего ожидать"
+        },
+        {
+          "keyword": "как анализировать dota 2 турниры с ai",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как анализировать турниры Dota 2 с помощью AI"
+        },
+        {
+          "keyword": "статистика команд на dota 2 majors",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Статистика команд на Dota 2 Majors: Кто в топе"
+        },
+        {
+          "keyword": "ai прогнозы на dota 2 blast slam",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI-прогнозы на Dota 2 BLAST Slam: Как это работает"
+        }
+      ]
+    },
+    "betting": {
+      "high": [
+        {
+          "keyword": "прогнозы на спорт",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Как делать точные прогнозы на спорт: советы и стратегии"
+        },
+        {
+          "keyword": "анализ ставок на спорт",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Анализ ставок на спорт: как улучшить свои результаты"
+        },
+        {
+          "keyword": "value bet в ставках",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Что такое value bet и как его использовать в ставках на спорт"
+        },
+        {
+          "keyword": "искусственный интеллект в ставках на спорт",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Как искусственный интеллект меняет ставки на спорт"
+        },
+        {
+          "keyword": "прогнозы на футбол",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Лучшие стратегии для прогнозов на футбол"
+        },
+        {
+          "keyword": "как анализировать ставки на спорт",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как правильно анализировать ставки на спорт: пошаговое руководство"
+        },
+        {
+          "keyword": "стратегии ставок на спорт",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Эффективные стратегии ставок на спорт: что нужно знать"
+        },
+        {
+          "keyword": "прогнозы на спорт от экспертов",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Стоит ли доверять прогнозам на спорт от экспертов?"
+        },
+        {
+          "keyword": "как делать ставки на спорт",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как начать делать ставки на спорт: руководство для новичков"
+        },
+        {
+          "keyword": "анализ матча по скриншоту",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как анализировать матч по скриншоту: инструменты и методы"
+        },
+        {
+          "keyword": "прогнозы на спорт бесплатно",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Где найти бесплатные прогнозы на спорт и как их использовать"
+        },
+        {
+          "keyword": "лучшие прогнозы на спорт",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Как найти лучшие прогнозы на спорт: советы и рекомендации"
+        },
+        {
+          "keyword": "прогнозы на спорт сегодня",
+          "intent": "informational",
+          "difficulty": "high",
+          "title": "Где искать актуальные прогнозы на спорт на сегодня"
+        },
+        {
+          "keyword": "как выбрать ставки на спорт",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как правильно выбрать ставки на спорт: советы экспертов"
+        },
+        {
+          "keyword": "искусственный интеллект для анализа ставок",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как использовать искусственный интеллект для анализа ставок на спорт"
+        }
+      ],
+      "medium": [
+        {
+          "keyword": "анализ ставок на спорт",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как провести анализ ставок на спорт: советы и инструменты"
+        },
+        {
+          "keyword": "value bet стратегии",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Эффективные стратегии value bet для успешных ставок"
+        },
+        {
+          "keyword": "AI для ставок на спорт",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как AI меняет подход к ставкам на спорт"
+        },
+        {
+          "keyword": "анализ матча по скриншоту",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как анализировать матч по скриншоту: пошаговое руководство"
+        },
+        {
+          "keyword": "прогнозы на спорт с AI",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Прогнозы на спорт с использованием AI: что нужно знать"
+        },
+        {
+          "keyword": "как работает value bet",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как работает value bet и почему это важно для ставок"
+        },
+        {
+          "keyword": "лучшие AI сервисы для ставок",
+          "intent": "commercial",
+          "difficulty": "medium",
+          "title": "Обзор лучших AI сервисов для ставок на спорт"
+        },
+        {
+          "keyword": "преимущества AI в ставках",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Преимущества использования AI в ставках на спорт"
+        },
+        {
+          "keyword": "как выбрать AI сервис для ставок",
+          "intent": "commercial",
+          "difficulty": "medium",
+          "title": "Как выбрать AI сервис для ставок на спорт: советы экспертов"
+        },
+        {
+          "keyword": "value bet примеры",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Примеры успешных value bet в ставках на спорт"
+        },
+        {
+          "keyword": "анализ спортивных ставок",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как проводить анализ спортивных ставок: инструменты и методы"
+        },
+        {
+          "keyword": "AI прогнозы на футбол",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "AI прогнозы на футбол: как это работает"
+        },
+        {
+          "keyword": "value bet калькулятор",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как использовать калькулятор value bet для ставок"
+        },
+        {
+          "keyword": "инструменты для анализа ставок",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Лучшие инструменты для анализа ставок на спорт"
+        },
+        {
+          "keyword": "AI в спортивной аналитике",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Роль AI в спортивной аналитике: что нужно знать"
+        },
+        {
+          "keyword": "как делать value bet",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как делать value bet: пошаговое руководство"
+        },
+        {
+          "keyword": "прогнозы на спорт с искусственным интеллектом",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как искусственный интеллект помогает в прогнозах на спорт"
+        },
+        {
+          "keyword": "анализ матчей с AI",
+          "intent": "informational",
+          "difficulty": "medium",
+          "title": "Как проводить анализ матчей с помощью AI"
+        },
+        {
+          "keyword": "value bet советы",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Советы по использованию value bet в ставках на спорт"
+        },
+        {
+          "keyword": "AI сервисы для прогнозов",
+          "intent": "commercial",
+          "difficulty": "medium",
+          "title": "Обзор AI сервисов для прогнозов на спорт"
+        }
+      ],
+      "low": [
+        {
+          "keyword": "как работает value bet в ставках",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как работает Value Bet в ставках: Полное руководство"
+        },
+        {
+          "keyword": "анализ ставок на спорт с помощью AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Анализ ставок на спорт с помощью AI: Преимущества и возможности"
+        },
+        {
+          "keyword": "программа для анализа ставок на спорт",
+          "intent": "commercial",
+          "difficulty": "low",
+          "title": "Лучшие программы для анализа ставок на спорт: Обзор и сравнение"
+        },
+        {
+          "keyword": "как сделать value bet",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как сделать Value Bet: Пошаговое руководство для начинающих"
+        },
+        {
+          "keyword": "анализ матча по скриншоту",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Анализ матча по скриншоту: Как это работает и зачем нужно"
+        },
+        {
+          "keyword": "прогнозы на спорт с использованием AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на спорт с использованием AI: Как это работает"
+        },
+        {
+          "keyword": "value bet стратегии",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Стратегии Value Bet: Как увеличить шансы на успех"
+        },
+        {
+          "keyword": "как использовать AI для ставок на спорт",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как использовать AI для ставок на спорт: Руководство для новичков"
+        },
+        {
+          "keyword": "лучшие сервисы для value bet",
+          "intent": "commercial",
+          "difficulty": "low",
+          "title": "Лучшие сервисы для Value Bet: Обзор и рекомендации"
+        },
+        {
+          "keyword": "анализ спортивных матчей с помощью AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Анализ спортивных матчей с помощью AI: Как это работает"
+        },
+        {
+          "keyword": "как найти value bet",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как найти Value Bet: Советы и рекомендации"
+        },
+        {
+          "keyword": "AI прогнозы на футбол",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "AI прогнозы на футбол: Как они работают и насколько точны"
+        },
+        {
+          "keyword": "value bet калькулятор",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Value Bet калькулятор: Как использовать и зачем нужен"
+        },
+        {
+          "keyword": "как анализировать ставки на спорт",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как анализировать ставки на спорт: Полное руководство"
+        },
+        {
+          "keyword": "прогнозы на спорт с AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на спорт с AI: Как они работают и в чем их преимущество"
+        },
+        {
+          "keyword": "value bet примеры",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Примеры Value Bet: Как они работают на практике"
+        },
+        {
+          "keyword": "как работает AI в ставках на спорт",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как работает AI в ставках на спорт: Обзор технологий"
+        },
+        {
+          "keyword": "лучшие стратегии value bet",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Лучшие стратегии Value Bet: Как выбрать и применить"
+        },
+        {
+          "keyword": "анализ ставок на спорт онлайн",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Анализ ставок на спорт онлайн: Как это работает и что нужно знать"
+        },
+        {
+          "keyword": "как использовать value bet в ставках",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как использовать Value Bet в ставках: Советы и рекомендации"
+        },
+        {
+          "keyword": "AI сервисы для ставок на спорт",
+          "intent": "commercial",
+          "difficulty": "low",
+          "title": "AI сервисы для ставок на спорт: Обзор лучших решений"
+        },
+        {
+          "keyword": "value bet что это",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Что такое Value Bet: Простое объяснение для новичков"
+        },
+        {
+          "keyword": "как анализировать матчи с AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как анализировать матчи с AI: Пошаговое руководство"
+        },
+        {
+          "keyword": "прогнозы на спорт с помощью AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на спорт с помощью AI: Как это работает и зачем нужно"
+        },
+        {
+          "keyword": "value bet советы",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Советы по Value Bet: Как увеличить шансы на успех"
+        },
+        {
+          "keyword": "как AI помогает в ставках на спорт",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Как AI помогает в ставках на спорт: Преимущества и возможности"
+        },
+        {
+          "keyword": "value bet для начинающих",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Value Bet для начинающих: С чего начать и как добиться успеха"
+        },
+        {
+          "keyword": "анализ матчей с AI",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Анализ матчей с AI: Как это работает и что нужно знать"
+        },
+        {
+          "keyword": "прогнозы на спорт с AI технологиями",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Прогнозы на спорт с AI технологиями: Как они работают"
+        },
+        {
+          "keyword": "value bet ошибки",
+          "intent": "informational",
+          "difficulty": "low",
+          "title": "Ошибки при использовании Value Bet: Как их избежать"
+        }
+      ]
+    }
+  },
+  "plan": {
+    "weeks": [
+      {
+        "week": 1,
+        "theme": "AI в футболе",
+        "articles": [
+          {
+            "day": 1,
+            "keyword": "как работает ai аналитика футбольных матчей",
+            "title": "Как работает AI аналитика футбольных матчей: основы и примеры",
+            "type": "гайд",
+            "priority": "high"
+          },
+          {
+            "day": 3,
+            "keyword": "прогнозы на премьер-лигу с помощью искусственного интеллекта",
+            "title": "Прогнозы на Премьер-лигу с помощью искусственного интеллекта: что ожидать",
+            "type": "прогноз",
+            "priority": "medium"
+          },
+          {
+            "day": 5,
+            "keyword": "лучшие ai прогнозы на лигу чемпионов",
+            "title": "Лучшие AI прогнозы на Лигу чемпионов: анализ и советы",
+            "type": "аналитика",
+            "priority": "medium"
+          }
+        ]
+      },
+      {
+        "week": 2,
+        "theme": "AI в хоккее",
+        "articles": [
+          {
+            "day": 1,
+            "keyword": "как анализировать хоккейные матчи с помощью AI",
+            "title": "Как AI помогает анализировать хоккейные матчи",
+            "type": "гайд",
+            "priority": "high"
+          },
+          {
+            "day": 3,
+            "keyword": "прогнозы на матчи НХЛ с использованием AI",
+            "title": "AI-прогнозы на матчи НХЛ: как это работает",
+            "type": "прогноз",
+            "priority": "medium"
+          },
+          {
+            "day": 5,
+            "keyword": "лучшие стратегии ставок на хоккей",
+            "title": "Лучшие стратегии ставок на хоккей: советы экспертов",
+            "type": "обзор",
+            "priority": "medium"
+          }
+        ]
+      },
+      {
+        "week": 3,
+        "theme": "AI в киберспорте: CS2",
+        "articles": [
+          {
+            "day": 1,
+            "keyword": "как работает ai аналитика матчей CS2",
+            "title": "Как работает AI аналитика матчей в CS2: полное руководство",
+            "type": "гайд",
+            "priority": "high"
+          },
+          {
+            "day": 3,
+            "keyword": "прогнозы на турниры ESL по CS2",
+            "title": "Прогнозы на турниры ESL по CS2: советы и стратегии",
+            "type": "прогноз",
+            "priority": "medium"
+          },
+          {
+            "day": 5,
+            "keyword": "лучшие AI инструменты для прогнозов CS2",
+            "title": "Лучшие AI инструменты для прогнозов матчей CS2",
+            "type": "обзор",
+            "priority": "medium"
+          }
+        ]
+      },
+      {
+        "week": 4,
+        "theme": "AI в киберспорте: Dota 2",
+        "articles": [
+          {
+            "day": 1,
+            "keyword": "как работает ai аналитика матчей dota 2",
+            "title": "Как работает AI-аналитика матчей Dota 2: Полное руководство",
+            "type": "гайд",
+            "priority": "high"
+          },
+          {
+            "day": 3,
+            "keyword": "прогнозы на the international 2023 dota 2",
+            "title": "Прогнозы на The International 2023: Чего ожидать от турнира",
+            "type": "прогноз",
+            "priority": "medium"
+          },
+          {
+            "day": 5,
+            "keyword": "лучшие ai инструменты для анализа dota 2",
+            "title": "Лучшие AI-инструменты для анализа матчей Dota 2",
+            "type": "обзор",
+            "priority": "medium"
+          }
+        ]
+      }
+    ],
+    "quick_wins": [
+      "как работает ai аналитика футбольных матчей — статья которую легко написать и быстро получить трафик",
+      "как анализировать хоккейные матчи с помощью AI — статья которую легко написать и быстро получить трафик",
+      "как работает ai аналитика матчей CS2 — статья которую легко написать и быстро получить трафик",
+      "как работает ai аналитика матчей dota 2 — статья которую легко написать и быстро получить трафик"
+    ]
+  }
+}
