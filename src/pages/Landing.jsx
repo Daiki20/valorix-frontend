@@ -281,19 +281,19 @@ export default function Landing() {
                   fontSize: 62, fontWeight: 800, lineHeight: 1.08,
                   color: TEXT, marginBottom: 28, letterSpacing: -1.5,
                 }}>
-                  Анализ матчей,<br />
-                  который{' '}
-                  <em style={{ color: A, fontStyle: 'italic', textShadow: `0 0 40px ${AGLOW}` }}>побеждает</em>
-                  <br />вместе с тобой
+                  AI анализ матча —<br />
+                  прогнозы которые{' '}
+                  <em style={{ color: A, fontStyle: 'italic', textShadow: `0 0 40px ${AGLOW}` }}>побеждают</em>
                 </h1>
 
                 <p className="hero-subtitle" style={{
                   fontSize: 15, color: MUTED, lineHeight: 1.85, marginBottom: 36,
                   maxWidth: 480, fontFamily: 'Outfit, sans-serif',
                 }}>
-                  Выбирай матч или загружай скрин линии букмекера — AI за{' '}
+                  Выбирай матч или загружай скрин линии букмекера — искусственный интеллект за{' '}
                   <span style={{ color: A, fontWeight: 600 }}>15 секунд</span>{' '}
-                  проанализирует форму команд, травмы, личные встречи и покажет где настоящая ценность.
+                  проанализирует форму команд, травмы, личные встречи и найдёт value ставки.
+                  Футбол, хоккей, CS2, Dota 2.
                 </p>
 
                 <div className="hero-buttons" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 48 }}>
