@@ -183,6 +183,18 @@ async function main() {
     const articleDir = path.join(blogDir, article.slug)
     fs.mkdirSync(articleDir, { recursive: true })
     fs.writeFileSync(path.join(articleDir, 'index.html'), buildHtml(article), 'utf8')
+
+    // 5. Create dist/blog/{slug}.html — редирект для URL без слеша
+    // Яндекс/Google иногда приходят без слеша → 301 на версию со слешем
+    const redirectHtml = `<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<link rel="canonical" href="${BASE}/blog/${article.slug}/">
+<meta http-equiv="refresh" content="0;url=${BASE}/blog/${article.slug}/">
+<script>window.location.replace("${BASE}/blog/${article.slug}/")</script>
+</head><body></body></html>`
+    fs.writeFileSync(path.join(blogDir, `${article.slug}.html`), redirectHtml, 'utf8')
+
     generated++
     console.log(`[blog-pages] ✓ ${article.slug}`)
   }
