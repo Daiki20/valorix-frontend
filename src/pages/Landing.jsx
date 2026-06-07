@@ -281,8 +281,8 @@ export default function Landing() {
                   fontSize: 62, fontWeight: 800, lineHeight: 1.08,
                   color: TEXT, marginBottom: 28, letterSpacing: -1.5,
                 }}>
-                  AI анализ матча —<br />
-                  прогнозы которые{' '}
+                  AI анализ матча<br />
+                  и прогнозы которые{' '}
                   <em style={{ color: A, fontStyle: 'italic', textShadow: `0 0 40px ${AGLOW}` }}>побеждают</em>
                 </h1>
 
