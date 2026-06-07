@@ -95,7 +95,7 @@ export default function Blog() {
               return (
                 <Link
                   key={article.id}
-                  to={`/blog/${article.slug}`}
+                  to={`/blog/${article.slug}/`}
                   style={{
                     display: 'block', textDecoration: 'none',
                     background: isFirst

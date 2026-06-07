@@ -260,7 +260,7 @@ export default function Article() {
           <meta property="og:description" content={article.meta_desc || article.excerpt || ''} />
           <meta property="og:type" content="article" />
           {article.cover_url && <meta property="og:image" content={article.cover_url} />}
-          <link rel="canonical" href={`https://valorix.ru/blog/${article.slug}`} />
+          <link rel="canonical" href={`https://valorix.ru/blog/${article.slug}/`} />
           <script type="application/ld+json">{JSON.stringify({
             '@context': 'https://schema.org', '@type': 'Article',
             headline: article.title, description: article.excerpt || '',
@@ -384,7 +384,7 @@ export default function Article() {
                     return (
                       <Link
                         key={item.id}
-                        to={`/blog/${item.slug}`}
+                        to={`/blog/${item.slug}/`}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 14,
                           padding: '14px 18px', borderRadius: 16, textDecoration: 'none',
