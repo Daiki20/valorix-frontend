@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { Helmet } from 'react-helmet-async'
 
 /* ── Хук: подписывается на ширину окна ── */
 function useWidth() {
@@ -221,6 +222,11 @@ export default function Landing() {
 
   return (
     <div style={{ minHeight: '100vh', background: BG, position: 'relative', overflow: 'hidden' }}>
+      <Helmet>
+        <title>Valorix AI — AI анализ матчей и прогнозы на спорт</title>
+        <meta name="description" content="Valorix AI — бесплатный анализ матча за 15 секунд. AI прогнозы на футбол, хоккей, CS2, Dota 2, UFC. Загрузи скриншот линии букмекера — получи разбор формы команд, травм и value ставок." />
+        <link rel="canonical" href="https://valorix.ru/" />
+      </Helmet>
 
       {/* ── Deep space background layers ── */}
       {/* Stars field */}
