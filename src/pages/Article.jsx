@@ -37,7 +37,33 @@ const components = {
   ),
   p: ({ children }) => {
     const text = typeof children === 'string' ? children : ''
-    const hasRobot = text.includes('🤖') || (Array.isArray(children) && children.some(c => typeof c === 'string' && c.includes('🤖')))
+    const flatText = Array.isArray(children)
+      ? children.map(c => typeof c === 'string' ? c : (c?.props?.children || '')).join('')
+      : text
+
+    // Отдельная строка ✅ или 🔒 — рендерим как элемент прогноза
+    const trimmed = flatText.trim()
+    if (trimmed.startsWith('✅') || trimmed.startsWith('🔒')) {
+      const isGood = trimmed.startsWith('✅')
+      const content = trimmed.replace(/^[✅🔒]\s*/, '')
+      return (
+        <div style={{
+          display: 'flex', alignItems: 'flex-start', gap: 12,
+          padding: '10px 14px', borderRadius: 12, marginBottom: 8,
+          background: isGood ? 'rgba(34,197,94,0.08)' : 'rgba(255,255,255,0.03)',
+          border: `1px solid ${isGood ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.06)'}`,
+        }}>
+          <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{isGood ? '✅' : '🔒'}</span>
+          <span style={{
+            fontSize: 14, lineHeight: 1.5,
+            color: isGood ? '#4ade80' : '#64748b',
+            fontWeight: isGood ? 600 : 400,
+          }}>{content}</span>
+        </div>
+      )
+    }
+
+    const hasRobot = flatText.includes('🤖')
 
     if (hasRobot) {
       // Extract lines from the prediction block
@@ -188,13 +214,13 @@ export default function Article() {
   const [notFound, setNotFound] = useState(false)
   const [related, setRelated] = useState([])
 
+  // Загружаем статью
   useEffect(() => {
-    // Используем пре-загруженные данные из SSR если slug совпадает (GitHub Pages build)
     const preloaded = window.__PRELOADED_ARTICLE__
     if (preloaded && preloaded.slug === slug) {
       setArticle(preloaded)
       setLoading(false)
-      window.__PRELOADED_ARTICLE__ = null // используем только один раз
+      window.__PRELOADED_ARTICLE__ = null
       return
     }
     setLoading(true); setNotFound(false)
@@ -203,8 +229,11 @@ export default function Article() {
       .then(data => { if (data) setArticle(data) })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
+  }, [slug])
 
-    // Загружаем похожие статьи
+  // Загружаем похожие статьи — отдельный эффект, всегда работает
+  useEffect(() => {
+    if (!slug) return
     fetch(`${API_BASE}/blog/related/${slug}`)
       .then(r => r.json())
       .then(data => setRelated(data.items || []))
