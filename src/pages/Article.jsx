@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import ReactMarkdown from 'react-markdown'
 import Navbar from '../components/Navbar'
-import { Calendar, Eye, ArrowLeft, Zap } from 'lucide-react'
+import { Calendar, Eye, ArrowLeft, ArrowRight, Zap } from 'lucide-react'
 
 const API_BASE = import.meta.env.PROD
   ? 'https://web-production-fefcd.up.railway.app'
