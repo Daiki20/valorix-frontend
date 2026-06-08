@@ -80,7 +80,8 @@ function DashboardTab({ toast }) {
       const data = await res.json()
       if (data.error) { toast.error(data.error); return }
       setExpressResults(p => ({ ...p, [key]: data }))
-      toast.success(`${sport === 'hockey' ? '🏒 Хоккей' : '⚽ Футбол'} · ${type === 'standard' ? 'Lite' : 'Hard'} сгенерирован!`)
+      const sportLabels = { hockey: '🏒 Хоккей', cs2: '🎮 CS2', dota2: '🗡️ Dota 2' }
+      toast.success(`${sportLabels[sport] || '⚽ Футбол'} · ${type === 'standard' ? 'Lite' : 'Hard'} сгенерирован!`)
     } catch {
       toast.error('Ошибка генерации')
     } finally {
@@ -200,10 +201,12 @@ function DashboardTab({ toast }) {
           Перегенерировать экспресс на завтра (перезапишет текущий)
         </p>
 
-        {/* Football */}
+        {/* Sports */}
         {[
-          { sport: 'football', label: '⚽ Футбол', gradL: 'linear-gradient(135deg,#00cfff,#7b5ea7)', gradH: 'linear-gradient(135deg,#f97316,#dc2626)' },
-          { sport: 'hockey',   label: '🏒 Хоккей', gradL: 'linear-gradient(135deg,#0ea5e9,#00cfff)', gradH: 'linear-gradient(135deg,#ea580c,#dc2626)' },
+          { sport: 'football', label: '⚽ Футбол',  gradL: 'linear-gradient(135deg,#00cfff,#7b5ea7)', gradH: 'linear-gradient(135deg,#f97316,#dc2626)' },
+          { sport: 'hockey',   label: '🏒 Хоккей',  gradL: 'linear-gradient(135deg,#0ea5e9,#00cfff)', gradH: 'linear-gradient(135deg,#ea580c,#dc2626)' },
+          { sport: 'cs2',      label: '🎮 CS2',      gradL: 'linear-gradient(135deg,#f97316,#eab308)', gradH: 'linear-gradient(135deg,#dc2626,#9f1239)' },
+          { sport: 'dota2',    label: '🗡️ Dota 2',  gradL: 'linear-gradient(135deg,#a855f7,#6366f1)', gradH: 'linear-gradient(135deg,#7c3aed,#4f46e5)' },
         ].map(({ sport, label, gradL, gradH }) => {
           const kL = `${sport}_standard`, kH = `${sport}_high`
           const resL = expressResults[kL], resH = expressResults[kH]
@@ -252,6 +255,12 @@ function DashboardTab({ toast }) {
 
       {/* Hockey Debug */}
       <HockeyDebugPanel toast={toast} />
+
+      {/* CS2 Debug */}
+      <EsportDebugPanel game="cs2" label="CS2" emoji="🎮" accentColor="#f97316" toast={toast} />
+
+      {/* Dota 2 Debug */}
+      <EsportDebugPanel game="dota2" label="Dota 2" emoji="🗡️" accentColor="#a855f7" toast={toast} />
 
       {/* Cache Management */}
       <CachePanel toast={toast} />
@@ -780,6 +789,188 @@ function HockeyDebugPanel({ toast }) {
                       </div>
                     ) : d?.error ? (
                       <div key={label} style={{ fontSize: 12, color: '#f87171', marginBottom: 6 }}>{label}: {d.error}</div>
+                    ) : null
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/* ─── Esport Debug Panel (CS2 / Dota2) ─── */
+function EsportDebugPanel({ game, label, emoji, accentColor, toast }) {
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState(null)
+  const [genLoading, setGenLoading] = useState({})
+  const [genResults, setGenResults] = useState({})
+
+  const getDateOffset = (days) => {
+    const d = new Date()
+    d.setDate(d.getDate() + days)
+    return d.toISOString().slice(0, 10)
+  }
+
+  const DATE_OPTIONS = [
+    { key: 'today',      label: '📅 Сегодня',    days: 0 },
+    { key: 'overmorrow', label: '📅 Послезавтра', days: 2 },
+  ]
+
+  const run = async () => {
+    setLoading(true)
+    setData(null)
+    try {
+      const token = localStorage.getItem('valorix_token')
+      const res = await fetch(`${API_BASE}/express/debug-${game}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      setData(await res.json())
+    } catch (err) {
+      setData({ error: err.message })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const generateForDate = async (dateKey, days) => {
+    const date = getDateOffset(days)
+    setGenLoading(p => ({ ...p, [dateKey]: true }))
+    setGenResults(p => ({ ...p, [dateKey]: null }))
+    try {
+      const token = localStorage.getItem('valorix_token')
+      const [resL, resH] = await Promise.all(
+        ['standard', 'high'].map(type =>
+          fetch(`${API_BASE}/express/generate`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sport: game, type, date }),
+          }).then(r => r.json())
+        )
+      )
+      if (resL.error && resH.error) {
+        toast.error(resL.error || resH.error)
+        setGenResults(p => ({ ...p, [dateKey]: { error: resL.error } }))
+      } else {
+        toast.success(`${emoji} ${label} на ${date} создан!`)
+        setGenResults(p => ({ ...p, [dateKey]: { date, standard: resL, high: resH } }))
+      }
+    } catch (err) {
+      toast.error(err.message)
+      setGenResults(p => ({ ...p, [dateKey]: { error: err.message } }))
+    } finally {
+      setGenLoading(p => ({ ...p, [dateKey]: false }))
+    }
+  }
+
+  const grad = `linear-gradient(90deg,${accentColor},${accentColor}aa)`
+
+  return (
+    <div className="card" style={{ padding: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#dde4ee', display: 'flex', alignItems: 'center', gap: 8 }}>
+          {emoji} Диагностика {label} экспресса
+        </h3>
+        <button onClick={run} disabled={loading} style={{
+          padding: '8px 18px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13,
+          background: loading ? `${accentColor}33` : grad,
+          color: loading ? 'rgba(255,255,255,0.4)' : '#030b18', cursor: loading ? 'not-allowed' : 'pointer',
+        }}>
+          {loading ? 'Проверяем...' : '🔍 Проверить'}
+        </button>
+      </div>
+      <p style={{ fontSize: 12, color: '#4a6a8a', marginBottom: data ? 16 : 0 }}>
+        Проверяет Fonbet — сколько матчей {label} найдено на завтра
+      </p>
+
+      {data && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 8 }}>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <span style={{ padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700, background: `${accentColor}1a`, color: accentColor, border: `1px solid ${accentColor}44` }}>
+              📅 {data.targetDate}
+            </span>
+            <span style={{
+              padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+              background: data.totalMatches >= 2 ? 'rgba(34,197,94,0.12)' : 'rgba(245,158,11,0.12)',
+              color: data.totalMatches >= 2 ? '#4ade80' : '#fbbf24',
+              border: `1px solid ${data.totalMatches >= 2 ? 'rgba(34,197,94,0.3)' : 'rgba(245,158,11,0.3)'}`,
+            }}>
+              {emoji} Матчей: {data.totalMatches} {data.totalMatches < 2 ? '(нужно минимум 2)' : '✓'}
+            </span>
+          </div>
+
+          {data.error && (
+            <div style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.25)', borderRadius: 10, padding: '10px 14px', fontSize: 13, color: '#fca5a5' }}>
+              ❌ {data.error}
+            </div>
+          )}
+
+          {data.matchesList?.length > 0 && (
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#4a6a8a', marginBottom: 8, letterSpacing: 1, textTransform: 'uppercase' }}>Матчи на {data.targetDate}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {data.matchesList.map((m, i) => (
+                  <div key={i} style={{ fontSize: 12, color: '#d8eeff', padding: '6px 10px', background: `${accentColor}08`, borderRadius: 6, border: `1px solid ${accentColor}15` }}>
+                    <span style={{ color: '#4a6a8a', marginRight: 6 }}>{i + 1}.</span>
+                    <b>{m.home}</b> — <b>{m.away}</b>
+                    <span style={{ color: '#4a6a8a', marginLeft: 8, fontSize: 11 }}>{m.league}</span>
+                    {m.markets?.home && (
+                      <span style={{ color: accentColor, marginLeft: 8, fontSize: 11 }}>
+                        П1={m.markets.home} П2={m.markets.away}
+                        {m.markets.tb25 ? ` ТБ2.5к=${m.markets.tb25}` : ''}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Генерация на другие даты */}
+      <div style={{ marginTop: data ? 20 : 0, paddingTop: data ? 20 : 0, borderTop: data ? `1px solid ${accentColor}1a` : 'none' }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: '#4a6a8a', marginBottom: 12, letterSpacing: 1, textTransform: 'uppercase' }}>
+          Сгенерировать на другую дату (Lite + Hard)
+        </div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          {DATE_OPTIONS.map(({ key, label: dlabel, days }) => (
+            <button key={key} onClick={() => generateForDate(key, days)} disabled={genLoading[key]} style={{
+              padding: '9px 20px', borderRadius: 10, border: 'none', fontWeight: 700, fontSize: 13,
+              background: genLoading[key] ? `${accentColor}26` : grad,
+              color: genLoading[key] ? 'rgba(255,255,255,0.35)' : '#030b18',
+              cursor: genLoading[key] ? 'not-allowed' : 'pointer', transition: 'all 0.2s',
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}>
+              {genLoading[key] ? '⏳ Генерируем...' : `${dlabel} (${getDateOffset(days)})`}
+            </button>
+          ))}
+        </div>
+
+        {DATE_OPTIONS.map(({ key }) => {
+          const r = genResults[key]
+          if (!r) return null
+          return (
+            <div key={key} style={{ marginTop: 12, borderRadius: 10, overflow: 'hidden', border: r.error ? '1px solid rgba(220,38,38,0.25)' : '1px solid rgba(34,197,94,0.25)' }}>
+              {r.error ? (
+                <div style={{ padding: '10px 14px', background: 'rgba(220,38,38,0.08)', fontSize: 13, color: '#fca5a5' }}>❌ {r.error}</div>
+              ) : (
+                <div style={{ padding: '12px 16px', background: 'rgba(34,197,94,0.06)' }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#4ade80', marginBottom: 10 }}>✓ {label} на {r.date} создан</div>
+                  {[{ lbl: '⚡ Lite', d: r.standard }, { lbl: '🔥 Hard', d: r.high }].map(({ lbl, d }) =>
+                    d && !d.error ? (
+                      <div key={lbl} style={{ marginBottom: 8 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: '#94a3b8', marginBottom: 4 }}>{lbl} · ×{d.total_odds?.toFixed(2)}</div>
+                        {d.picks?.map((p, j) => (
+                          <div key={j} style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>
+                            {j + 1}. {p.home} — {p.away} · <b style={{ color: accentColor }}>{p.prediction}</b> × {p.odds}
+                          </div>
+                        ))}
+                      </div>
+                    ) : d?.error ? (
+                      <div key={lbl} style={{ fontSize: 12, color: '#f87171', marginBottom: 6 }}>{lbl}: {d.error}</div>
                     ) : null
                   )}
                 </div>
