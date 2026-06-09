@@ -27,6 +27,8 @@ export default function PaymentReturn() {
           try { localStorage.removeItem('valorix_pending_payment') } catch {}
           setStatus('credited')
           toast.success(`Монеты зачислены! Баланс: ${data.coins}`)
+          // Яндекс Метрика — цель "Оплата совершена"
+          try { window.ym?.(109658356, 'reachGoal', 'payment_success') } catch {}
         } else {
           setStatus('failed')
         }
