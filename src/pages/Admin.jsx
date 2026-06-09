@@ -8,7 +8,7 @@ import { getStats, getUsers, getTransactions, addCoins, setAdmin, setBlocked } f
 import { Users, Zap, BarChart3, RefreshCw, Shield, Ban, Plus, Minus, Search, ChevronLeft, ChevronRight, Star } from 'lucide-react'
 const API_BASE = import.meta.env.PROD ? 'https://web-production-fefcd.up.railway.app' : (import.meta.env.VITE_API_URL || '')
 
-const TABS = ['Дашборд', 'Пользователи', 'Транзакции', 'Блог']
+const TABS = ['Дашборд', 'Пользователи', 'Транзакции', 'Блог', 'Рассылка']
 
 export default function Admin() {
   const { user } = useAuth()
@@ -51,6 +51,7 @@ export default function Admin() {
         {tab === 1 && <UsersTab toast={toast} />}
         {tab === 2 && <TransactionsTab />}
         {tab === 3 && <BlogTab toast={toast} />}
+        {tab === 4 && <NewsletterTab toast={toast} />}
       </div>
     </div>
   )
@@ -1843,6 +1844,129 @@ function BlogTab({ toast }) {
             </table>
           )}
         </>
+      )}
+    </div>
+  )
+}
+
+/* ─── Newsletter Tab ─── */
+function NewsletterTab({ toast }) {
+  const [subject, setSubject] = useState('')
+  const [text, setText] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState(null)
+
+  const send = async (e) => {
+    e.preventDefault()
+    if (!subject.trim() || !text.trim()) return
+    if (!window.confirm(`Отправить рассылку всем пользователям?\n\nТема: ${subject}`)) return
+    setLoading(true)
+    setResult(null)
+    try {
+      const token = localStorage.getItem('valorix_token')
+      const res = await fetch(`${API_BASE}/admin/newsletter`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subject, text }),
+      })
+      const data = await res.json()
+      if (data.error) { toast.error(data.error); return }
+      setResult(data)
+      toast.success(`Отправлено ${data.sent} из ${data.total} писем`)
+    } catch (err) {
+      toast.error('Ошибка отправки')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 720 }}>
+      <div className="card" style={{ padding: 28 }}>
+        <h3 style={{ fontWeight: 700, fontSize: 16, color: '#dde4ee', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+          📧 Рассылка пользователям
+        </h3>
+        <p style={{ fontSize: 13, color: '#64748b', marginBottom: 22 }}>
+          Письмо уйдёт всем незаблокированным верифицированным пользователям через Resend
+        </p>
+
+        <form onSubmit={send} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 700, color: '#64748b', display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>
+              Тема письма
+            </label>
+            <input
+              value={subject}
+              onChange={e => setSubject(e.target.value)}
+              placeholder="Например: Горячий матч сегодня — сделай анализ!"
+              style={{ ...inputStyle, width: '100%' }}
+              required
+            />
+          </div>
+
+          <div>
+            <label style={{ fontSize: 12, fontWeight: 700, color: '#64748b', display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 1 }}>
+              Текст письма
+            </label>
+            <textarea
+              value={text}
+              onChange={e => setText(e.target.value)}
+              placeholder={'Например:\nСегодня играет BetBoom против Яндекса — зайди на valorix.ru и сделай анализ матча!\n\nНе упусти шанс 🔥'}
+              rows={7}
+              style={{ ...inputStyle, width: '100%', resize: 'vertical', lineHeight: 1.6 }}
+              required
+            />
+            <p style={{ fontSize: 12, color: '#334155', marginTop: 6 }}>
+              Текст отображается как есть, переносы строк сохраняются
+            </p>
+          </div>
+
+          {/* Превью */}
+          {(subject || text) && (
+            <div style={{ border: '1px solid rgba(0,207,255,0.15)', borderRadius: 12, overflow: 'hidden' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', padding: '8px 16px', background: 'rgba(0,207,255,0.04)', letterSpacing: 1, textTransform: 'uppercase' }}>
+                Превью письма
+              </div>
+              <div style={{ padding: '16px 20px', background: '#07090f' }}>
+                <div style={{ fontSize: 13, color: '#64748b', marginBottom: 4 }}>Тема: <span style={{ color: '#dde4ee' }}>{subject || '—'}</span></div>
+                <div style={{ fontSize: 14, color: '#94a3b8', whiteSpace: 'pre-wrap', lineHeight: 1.7, marginTop: 10, padding: '12px 16px', background: 'rgba(0,25,60,0.4)', borderRadius: 8, border: '1px solid rgba(0,180,255,0.08)' }}>
+                  {text || '—'}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading || !subject.trim() || !text.trim()}
+            style={{
+              padding: '12px 28px', fontSize: 15, fontWeight: 700, border: 'none', borderRadius: 10,
+              background: loading || !subject.trim() || !text.trim() ? '#1e3a5a' : 'linear-gradient(135deg,#00cfff,#7b5ea7)',
+              color: loading || !subject.trim() || !text.trim() ? '#4a6a8a' : '#030b18',
+              cursor: loading || !subject.trim() || !text.trim() ? 'not-allowed' : 'pointer',
+              alignSelf: 'flex-start',
+            }}
+          >
+            {loading ? '⏳ Отправляем...' : '📤 Отправить рассылку'}
+          </button>
+        </form>
+      </div>
+
+      {result && (
+        <div className="card" style={{ padding: 20 }}>
+          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+            {[
+              { label: 'Всего получателей', val: result.total, color: '#00cfff' },
+              { label: 'Отправлено',        val: result.sent,  color: '#4ade80' },
+              { label: 'Ошибок',            val: result.failed, color: result.failed > 0 ? '#f87171' : '#4a6a8a' },
+            ].map((s, i) => (
+              <div key={i} style={{ textAlign: 'center', minWidth: 100 }}>
+                <div style={{ fontSize: 32, fontWeight: 800, color: s.color }}>{s.val}</div>
+                <div style={{ fontSize: 12, color: '#64748b', fontWeight: 600, marginTop: 2 }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   )
