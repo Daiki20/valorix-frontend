@@ -8,8 +8,19 @@ const MUTED   = '#4a6a8a'
 const CARD_BG = 'rgba(0,25,60,0.55)'
 const DIM     = 'rgba(255,255,255,0.04)'
 
+// Защита от объектов в строковых полях (старые форматы анализов)
+const safeStr = (v) => {
+  if (v === null || v === undefined) return ''
+  if (typeof v === 'object') return JSON.stringify(v)
+  return String(v)
+}
+const safeNum = (v, fallback = 0) => {
+  const n = parseFloat(v)
+  return isNaN(n) ? fallback : n
+}
+
 export default function AnalysisResult({ match, analysis, shareToken, isLive }) {
-  const confidence = analysis.confidence || 68
+  const confidence = safeNum(analysis.confidence, 68)
   const circumference = 2 * Math.PI * 40
   const dash = (confidence / 100) * circumference
 
@@ -56,10 +67,10 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
           <CheckCircle size={20} color="#22c55e" />
           <span style={{ fontWeight: 800, fontSize: 17, color: '#5eff9e' }}>
-            Вердикт AI: {analysis.verdict}
+            Вердикт AI: {safeStr(analysis.verdict)}
           </span>
         </div>
-        <p style={{ fontSize: 14, color: '#a7f3c0', lineHeight: 1.7 }}>{analysis.summary}</p>
+        <p style={{ fontSize: 14, color: '#a7f3c0', lineHeight: 1.7 }}>{safeStr(analysis.summary)}</p>
       </div>
 
       {/* Extra bets */}
@@ -85,12 +96,12 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
                   borderLeft: `4px solid ${leftBorder}`,
                 }}>
                   <div style={{ flexShrink: 0, textAlign: 'center', minWidth: 48 }}>
-                    <div style={{ fontSize: 16, fontWeight: 900, color }}>{bet.confidence}%</div>
+                    <div style={{ fontSize: 16, fontWeight: 900, color }}>{safeNum(bet.confidence)}%</div>
                     <div style={{ fontSize: 9, color: MUTED, fontWeight: 600 }}>уверен.</div>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: TEXT, marginBottom: 4 }}>{bet.type}</div>
-                    <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.5 }}>{bet.reason}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: TEXT, marginBottom: 4 }}>{safeStr(bet.type)}</div>
+                    <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.5 }}>{safeStr(bet.reason)}</div>
                   </div>
                 </div>
               )
@@ -154,8 +165,8 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
             </>
           ) : (
             <>
-              <div style={{ fontSize: 28, fontWeight: 900, color: analysis.value > 0 ? '#22c55e' : '#ef4444', marginBottom: 4 }}>
-                {analysis.value > 0 ? '+' : ''}{analysis.value}%
+              <div style={{ fontSize: 28, fontWeight: 900, color: safeNum(analysis.value) > 0 ? '#22c55e' : '#ef4444', marginBottom: 4 }}>
+                {safeNum(analysis.value) > 0 ? '+' : ''}{safeNum(analysis.value)}%
               </div>
               <div style={{ fontSize: 11, color: MUTED }}>
                 {analysis.value > 5 ? 'Рекомендуем' : analysis.value > 0 ? 'Умеренно' : 'Не рекомендуем'}
@@ -182,7 +193,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
                 width: 8, height: 8, borderRadius: '50%', background: ACCENT,
                 marginTop: 5, flexShrink: 0,
               }} />
-              <span style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>{reason}</span>
+              <span style={{ fontSize: 14, color: MUTED, lineHeight: 1.6 }}>{safeStr(reason)}</span>
             </div>
           ))}
         </div>
@@ -273,7 +284,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
         }}>
           <AlertTriangle size={16} color="#fb923c" style={{ flexShrink: 0, marginTop: 1 }} />
           <span style={{ fontSize: 13, color: '#fbbf90', lineHeight: 1.5 }}>
-            <strong>Неполные данные:</strong> {analysis.dataWarning}
+            <strong>Неполные данные:</strong> {safeStr(analysis.dataWarning)}
           </span>
         </div>
       )}
