@@ -136,7 +136,7 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
           <div style={{ fontSize: 32, marginBottom: 8 }}>
             {analysis.risk?.toLowerCase() === 'low' ? '🟢' : analysis.risk?.toLowerCase() === 'high' ? '🔴' : '🟡'}
           </div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: riskColor }}>{riskLabel}</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: riskColor }}>{safeStr(riskLabel)}</div>
           <div style={{ fontSize: 11, color: MUTED, marginTop: 4 }}>уровень риска</div>
         </div>
 
@@ -144,13 +144,13 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
         <div className="card" style={{ padding: '20px 16px', textAlign: 'center' }}>
           <div style={{ fontSize: 11, color: MUTED, fontWeight: 600, marginBottom: 12 }}>FAIR ODDS</div>
           <div style={{ fontSize: 28, fontWeight: 900, color: ACCENT, marginBottom: 4 }}>
-            {analysis.fairOdds || '—'}
+            {safeStr(analysis.fairOdds) || '—'}
           </div>
           <div style={{ fontSize: 11, color: MUTED }}>Реальная вероятность</div>
           {analysis.bookOdds && !isLive && (
             <div style={{ marginTop: 8, fontSize: 12 }}>
               <span style={{ color: MUTED }}>Букмекер: </span>
-              <span style={{ fontWeight: 700, color: TEXT }}>{analysis.bookOdds}</span>
+              <span style={{ fontWeight: 700, color: TEXT }}>{safeStr(analysis.bookOdds)}</span>
             </div>
           )}
         </div>
@@ -240,11 +240,11 @@ export default function AnalysisResult({ match, analysis, shareToken, isLive }) 
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     {i === 0 && <span style={{ fontSize: 10, color: '#22c55e', fontWeight: 800 }}>★</span>}
-                    <span style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>{bk.name}</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: TEXT }}>{safeStr(bk.name)}</span>
                   </div>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: ACCENT, textAlign: 'center' }}>{bk.odds}</span>
-                  <span style={{ fontSize: 14, color: MUTED, textAlign: 'center' }}>{bk.draw || '—'}</span>
-                  <span style={{ fontSize: 14, color: MUTED, textAlign: 'center' }}>{bk.away || '—'}</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: ACCENT, textAlign: 'center' }}>{safeStr(bk.odds)}</span>
+                  <span style={{ fontSize: 14, color: MUTED, textAlign: 'center' }}>{safeStr(bk.draw) || '—'}</span>
+                  <span style={{ fontSize: 14, color: MUTED, textAlign: 'center' }}>{safeStr(bk.away) || '—'}</span>
                 </div>
               ))}
             </div>
