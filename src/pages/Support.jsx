@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import Navbar from '../components/Navbar'
 import { MessageCircle, Clock, Shield, HelpCircle, Zap, AlertCircle } from 'lucide-react'
 
 export default function Support() {
   return (
     <div style={{ minHeight: '100vh', background: '#07090f' }}>
+      <Helmet>
+        <title>Поддержка — Valorix AI</title>
+        <meta name="description" content="Служба поддержки Valorix AI. Ответим на вопросы про AI-анализ матчей, оплату монет и работу сервиса." />
+        <link rel="canonical" href="https://valorix.ru/support" />
+      </Helmet>
       <Navbar />
       <div style={{ maxWidth: 700, margin: '0 auto', padding: '48px 24px 80px' }}>
 

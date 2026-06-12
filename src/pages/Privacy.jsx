@@ -1,10 +1,16 @@
 import { Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import Navbar from '../components/Navbar'
 import Logo from '../components/Logo'
 
 export default function Privacy() {
   return (
     <div style={{ minHeight: '100vh', background: '#07090f' }}>
+      <Helmet>
+        <title>Политика конфиденциальности — Valorix AI</title>
+        <meta name="description" content="Политика конфиденциальности сервиса Valorix AI. Как мы храним и обрабатываем ваши данные." />
+        <link rel="canonical" href="https://valorix.ru/privacy" />
+      </Helmet>
       <Navbar />
       <div style={{ maxWidth: 800, margin: '0 auto', padding: '48px 24px 80px' }}>
 

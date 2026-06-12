@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Search, ArrowLeft, Zap, AlertCircle, Loader, Lock } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
@@ -218,6 +219,11 @@ export default function Analyze() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#07090f' }}>
+      <Helmet>
+        <title>AI анализ матча — Valorix AI</title>
+        <meta name="description" content="Выбери матч и получи AI-прогноз за 15 секунд. Футбол, хоккей, CS2, Dota 2. Анализ формы команд, травм, коэффициентов и value-ставок." />
+        <link rel="canonical" href="https://valorix.ru/analyze" />
+      </Helmet>
       <Navbar />
       <div className="analyze-page-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '40px 24px' }}>
         <Link to="/" style={{
