@@ -44,6 +44,20 @@ export default function Navbar() {
             <NavPill to="/analyze"  icon={<BarChart2 size={14} color={ACCENT} />}   label="Анализ"    accent={ACCENT}    accentBg={ACCENT_DIM} />
             <NavPill to="/upload"   icon={<Upload size={14} color="#57c8ff" />}      label="Скриншот"  accent="#57c8ff"   accentBg="rgba(87,200,255,0.1)" />
             <div style={{ width: 1, height: 20, background: BORDER, margin: '0 8px' }} />
+            <a href="/#partner" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '7px 14px', borderRadius: 20,
+              background: 'linear-gradient(135deg, rgba(123,94,167,0.2), rgba(0,207,255,0.1))',
+              border: '1.5px solid rgba(123,94,167,0.4)',
+              textDecoration: 'none', fontSize: 13, fontWeight: 700,
+              color: '#b48af7', whiteSpace: 'nowrap',
+              transition: 'box-shadow 0.18s, border-color 0.18s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 2px 16px rgba(123,94,167,0.4)'; e.currentTarget.style.borderColor = 'rgba(123,94,167,0.7)' }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.borderColor = 'rgba(123,94,167,0.4)' }}
+            >
+              🎙️ Для блогеров
+            </a>
             <a href="/#how" style={{ color: TEXT_MUTED, textDecoration: 'none', fontSize: 13, fontWeight: 500, transition: 'color 0.18s' }}
                onMouseEnter={e => e.target.style.color = TEXT}
                onMouseLeave={e => e.target.style.color = TEXT_MUTED}>

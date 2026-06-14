@@ -563,7 +563,7 @@ export default function Landing() {
         {/* ════════════════════════════════════
             STREAMER AFFILIATE BANNER
         ════════════════════════════════════ */}
-        <section style={{ background: BG, padding: '0 24px 80px' }}>
+        <section id="partner" style={{ background: BG, padding: '0 24px 80px' }}>
           <div style={{
             maxWidth: 1100, margin: '0 auto',
             background: 'linear-gradient(135deg, #0d1f3c 0%, #1a1040 50%, #0d1f3c 100%)',
