@@ -120,6 +120,20 @@ export default function Navbar() {
               <NavPill to="/upload" icon={<Upload size={14} color="#57c8ff" />} label="Скриншот" accent="#57c8ff" accentBg="rgba(87,200,255,0.1)" onClick={() => setMobileOpen(false)} />
             </div>
             <div style={{ height: 1, background: BORDER, margin: '4px 0' }} />
+            <a
+              href="/#partner"
+              onClick={e => { setMobileOpen(false); const el = document.getElementById('partner'); if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }) } }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '8px 16px', borderRadius: 20,
+                background: 'linear-gradient(135deg, rgba(123,94,167,0.2), rgba(0,207,255,0.1))',
+                border: '1.5px solid rgba(123,94,167,0.4)',
+                textDecoration: 'none', fontSize: 15, fontWeight: 700,
+                color: '#b48af7', alignSelf: 'flex-start',
+              }}
+            >
+              🎙️ Для блогеров
+            </a>
             <a href="/#how" onClick={() => setMobileOpen(false)} style={{ color: TEXT_MUTED, textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>Как это работает?</a>
             <a href="/#faq" onClick={() => setMobileOpen(false)} style={{ color: TEXT_MUTED, textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>FAQ</a>
             {user && <Link to="/history" onClick={() => setMobileOpen(false)} style={{ color: TEXT_MUTED, textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>История анализов</Link>}
