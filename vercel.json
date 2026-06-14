@@ -1,4 +1,7 @@
 {
+  "github": {
+    "enabled": false
+  },
   "rewrites": [
     { "source": "/auth/:path*",    "destination": "https://web-production-fefcd.up.railway.app/auth/:path*" },
     { "source": "/coins/:path*",   "destination": "https://web-production-fefcd.up.railway.app/coins/:path*" },
