@@ -44,7 +44,7 @@ function mdToHtml(md) {
 }
 
 module.exports = async (req, res) => {
-  const { slug } = req.query
+  const slug = (req.query.slug || '').replace(/\/+$/, '')
   if (!slug) return res.redirect(302, '/')
 
   const ua = req.headers['user-agent'] || ''

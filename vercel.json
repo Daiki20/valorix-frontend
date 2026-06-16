@@ -2,6 +2,9 @@
   "github": {
     "enabled": false
   },
+  "redirects": [
+    { "source": "/blog/:slug/", "destination": "/blog/:slug", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
