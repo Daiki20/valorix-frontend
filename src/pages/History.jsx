@@ -14,7 +14,7 @@ export default function History() {
   const [selected, setSelected] = useState(null)
 
   useEffect(() => {
-    const token = localStorage.getItem('token') || localStorage.getItem('authToken')
+    const token = localStorage.getItem('valorix_token')
     if (!token) {
       navigate('/')
     }
