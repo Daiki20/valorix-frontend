@@ -86,7 +86,7 @@ export default function AuthModal({ onClose }) {
         const data = await authApi.verifyEmail(form.email, fullCode)
         saveAuth(data)
         fireConfetti()
-        toast.success('Email подтверждён! Вам начислено 50 монет')
+        toast.success('Email подтверждён! Вам начислено 38 монет')
         try { localStorage.removeItem('valorix_onboarded') } catch {}
         onClose()
         return
@@ -109,7 +109,7 @@ export default function AuthModal({ onClose }) {
         }
         saveAuth(data)
         fireConfetti()
-        toast.success('Добро пожаловать! Вам начислено 50 монет')
+        toast.success('Добро пожаловать! Вам начислено 38 монет')
         try { localStorage.removeItem('valorix_onboarded') } catch {}
         onClose()
       }
@@ -338,7 +338,7 @@ export default function AuthModal({ onClose }) {
                   fontSize: 13, color: TEXT,
                 }}>
                   <Zap size={14} fill={ACCENT} color={ACCENT} />
-                  <span><strong style={{ color: ACCENT }}>50 монет</strong> в подарок при регистрации</span>
+                  <span><strong style={{ color: ACCENT }}>38 монет</strong> в подарок при регистрации</span>
                 </div>
               )}
             </>
