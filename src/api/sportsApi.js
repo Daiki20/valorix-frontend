@@ -519,38 +519,42 @@ async function enrichAndAnalyze(matchInfo, game = 'football') {
   // ── Basketball: separate path with BallDontLie NBA API ──
   if (game === 'basketball') return enrichBasketball(matchInfo)
 
-  // ── All other BDL sports: NHL, NFL, MLB, CS2, Dota2, LoL, Valorant, Tennis, MMA ──
-  const BDL_SPORTS = ['hockey', 'cs2', 'dota2', 'lol', 'valorant', 'tennis', 'mma', 'nfl', 'baseball']
-  if (BDL_SPORTS.includes(game)) return enrichWithBDL(matchInfo, game)
-
-  // ── Football: use gpt-4o-search-preview for real-time web data ──
-  try {
-    const token = localStorage.getItem('valorix_token')
-    const res = await fetch(`${API_BASE}/analyze/match-with-search`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-      body: JSON.stringify({
-        home: matchInfo.home,
-        away: matchInfo.away,
-        league: matchInfo.league || '',
-        date: '',
-        odds1x2: matchInfo.odds1 ? { home: matchInfo.odds1, draw: matchInfo.oddsX, away: matchInfo.odds2 } : null,
-        sport: 'football',
-        score: matchInfo.score || null,
-        minute: matchInfo.minute || null,
-        isLive: !!(matchInfo.score),
-      }),
-    })
-    if (res.ok) {
-      const analysis = await res.json()
-      if (analysis.verdict) return {
-        home: matchInfo.home, away: matchInfo.away,
-        league: matchInfo.league, score: matchInfo.score, minute: matchInfo.minute,
-        odds: matchInfo.odds1, oddsX: matchInfo.oddsX, odds2: matchInfo.odds2,
-        ...analysis,
+  // ── All sports with web search: football, hockey, cs2, dota2 ──
+  // Same pipeline as regular analysis — gpt-4o-search-preview with real-time data
+  const WEB_SEARCH_SPORTS = ['football', 'hockey', 'cs2', 'dota2']
+  if (WEB_SEARCH_SPORTS.includes(game)) {
+    try {
+      const token = localStorage.getItem('valorix_token')
+      const res = await fetch(`${API_BASE}/analyze/match-with-search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          home: matchInfo.home,
+          away: matchInfo.away,
+          league: matchInfo.league || '',
+          date: '',
+          odds1x2: matchInfo.odds1 ? { home: matchInfo.odds1, draw: matchInfo.oddsX, away: matchInfo.odds2 } : null,
+          sport: game,
+          score: matchInfo.score || null,
+          minute: matchInfo.minute || null,
+          isLive: !!(matchInfo.score),
+        }),
+      })
+      if (res.ok) {
+        const analysis = await res.json()
+        if (analysis.verdict) return {
+          home: matchInfo.home, away: matchInfo.away,
+          league: matchInfo.league, score: matchInfo.score, minute: matchInfo.minute,
+          odds: matchInfo.odds1, oddsX: matchInfo.oddsX, odds2: matchInfo.odds2,
+          ...analysis,
+        }
       }
-    }
-  } catch { /* fallback below */ }
+    } catch { /* fallback to sstats below */ }
+  }
+
+  // ── Other BDL sports: LoL, Valorant, Tennis, MMA, NFL, Baseball ──
+  const BDL_SPORTS = ['lol', 'valorant', 'tennis', 'mma', 'nfl', 'baseball']
+  if (BDL_SPORTS.includes(game)) return enrichWithBDL(matchInfo, game)
 
   let homeId = null, awayId = null
   let formData = { homeForm: null, awayForm: null, h2h: [] }
