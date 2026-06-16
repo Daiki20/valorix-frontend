@@ -24,7 +24,7 @@ export default function About() {
           {[
             { number: '4', label: 'Вида спорта' },
             { number: '10k+', label: 'Матчей проанализировано' },
-            { number: '2024', label: 'Год основания' },
+            { number: '2026', label: 'Год основания' },
           ].map(stat => (
             <div key={stat.label} style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '12px', padding: '24px', textAlign: 'center' }}>
               <div style={{ fontSize: '2rem', fontWeight: 700, color: '#818cf8' }}>{stat.number}</div>
@@ -41,7 +41,7 @@ export default function About() {
 
         <div style={{ padding: '24px', background: 'rgba(99,102,241,0.1)', borderRadius: '12px', border: '1px solid rgba(99,102,241,0.2)' }}>
           <p style={{ color: '#94a3b8', margin: 0 }}>
-            По вопросам сотрудничества: <a href="mailto:support@valorix.ru" style={{ color: '#6366f1' }}>support@valorix.ru</a>
+            По вопросам сотрудничества: <a href="https://t.me/andrusha_pv" target="_blank" rel="noreferrer" style={{ color: '#6366f1' }}>Telegram: @andrusha_pv</a>
           </p>
         </div>
       </div>

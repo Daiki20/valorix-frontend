@@ -1514,7 +1514,7 @@ function BlogTab({ toast }) {
   // Helper: extract team name whether it's a string or sstats object {id, name}
   const teamName = (t) => typeof t === 'object' && t !== null ? (t.name || '') : (t || '')
 
-  const generateArticle = async (match) => {
+  const generateArticle = async (match, autoPub = false) => {
     const home = teamName(match.home || match.homeTeam)
     const away = teamName(match.away || match.awayTeam)
     const league = match.league || match.season?.league?.name || match.tournamentName || ''
@@ -1532,16 +1532,30 @@ function BlogTab({ toast }) {
           matchId: match.id,
           homeId, awayId,
           sport: sportTab,
+          published: autoPub,
         }),
       })
       const d = await r.json()
       if (!r.ok) throw new Error(d.error)
       if (d.already) { toast.success('Статья уже написана'); return }
       setMatchKeys(prev => new Set([...prev, matchKey]))
-      toast.success('Статья написана! Можешь отредактировать и опубликовать.')
+      toast.success(autoPub ? '✅ Статья написана и опубликована!' : '✍️ Статья написана! Можешь отредактировать.')
       load(sportTab)
     } catch(e) { toast.error(e.message) }
     setGeneratingKey(null)
+  }
+
+  const generateAllArticles = async () => {
+    const pending = matches.filter(m => {
+      const home = teamName(m.home || m.homeTeam) || '?'
+      const away = teamName(m.away || m.awayTeam) || '?'
+      const rawDate = String(m.rawDate || m.date || '').slice(0, 10)
+      return !matchKeys.has(`${sportTab}_${home}_${away}_${rawDate}`)
+    })
+    if (pending.length === 0) { toast.success('Все статьи уже написаны!'); return }
+    for (const m of pending) {
+      await generateArticle(m, true)
+    }
   }
 
   const save = async () => {
@@ -1745,9 +1759,23 @@ function BlogTab({ toast }) {
           {/* Upcoming matches with generate button */}
           {(['football','hockey','cs2','dota2'].includes(sportTab)) && matches.length > 0 && (
             <div style={{ marginBottom: 28 }}>
-              <p style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 1 }}>
-                Ближайшие матчи
-              </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                <p style={{ color: '#94a3b8', fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, margin: 0 }}>
+                  Ближайшие матчи ({matches.filter(m => !matchKeys.has(`${sportTab}_${teamName(m.home||m.homeTeam)||'?'}_${teamName(m.away||m.awayTeam)||'?'}_${String(m.rawDate||m.date||'').slice(0,10)}`)).length} без статьи)
+                </p>
+                <button
+                  onClick={generateAllArticles}
+                  disabled={!!generatingKey}
+                  style={{
+                    background: generatingKey ? 'rgba(99,102,241,0.2)' : 'linear-gradient(135deg,#6366f1,#8b5cf6)',
+                    border: 'none', borderRadius: 8, padding: '7px 16px',
+                    color: generatingKey ? '#64748b' : '#fff', fontSize: 13, fontWeight: 700,
+                    cursor: generatingKey ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap',
+                  }}
+                >
+                  {generatingKey ? '⏳ Генерирую...' : '⚡ Написать все + опубликовать'}
+                </button>
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {matches.map((m, i) => {
                   const home = teamName(m.home || m.homeTeam) || '?'
@@ -1758,22 +1786,37 @@ function BlogTab({ toast }) {
                   const done = matchKeys.has(matchKey)
                   const generating = generatingKey === matchKey
                   return (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px' }}>
-                      <div style={{ flex: 1 }}>
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, background: done ? 'rgba(34,197,94,0.04)' : 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px', border: done ? '1px solid rgba(34,197,94,0.1)' : '1px solid transparent' }}>
+                      {rawDate && (
+                        <span style={{ fontSize: 11, color: '#475569', fontWeight: 700, minWidth: 70, background: 'rgba(0,180,255,0.06)', padding: '2px 8px', borderRadius: 20, textAlign: 'center', flexShrink: 0 }}>
+                          {new Date(rawDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}
+                        </span>
+                      )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
                         <span style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{home}</span>
                         <span style={{ color: '#64748b', margin: '0 8px' }}>—</span>
                         <span style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{away}</span>
-                        {league && <span style={{ color: '#475569', fontSize: 12, marginLeft: 10 }}>{league}</span>}
+                        {league && <span style={{ color: '#475569', fontSize: 12, marginLeft: 10, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{league}</span>}
                       </div>
                       {done ? (
-                        <span style={{ ...pillStyle('#22c55e'), fontSize: 11, padding: '4px 10px' }}>✓ Статья написана</span>
+                        <span style={{ ...pillStyle('#22c55e'), fontSize: 11, padding: '4px 10px', flexShrink: 0 }}>✓ Готово</span>
                       ) : (
-                        <button
-                          onClick={() => generateArticle(m)}
-                          disabled={!!generating}
-                          style={{ background: generating ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 8, padding: '5px 14px', color: '#a78bfa', fontSize: 12, fontWeight: 600, cursor: generating ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}>
-                          {generating ? '⏳ Пишу...' : '✍️ Статья'}
-                        </button>
+                        <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                          <button
+                            onClick={() => generateArticle(m, false)}
+                            disabled={!!generatingKey}
+                            title="Написать статью (черновик — можно редактировать)"
+                            style={{ background: generating ? 'rgba(99,102,241,0.3)' : 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.35)', borderRadius: 8, padding: '5px 12px', color: '#a78bfa', fontSize: 12, fontWeight: 600, cursor: generatingKey ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}>
+                            {generating ? '⏳...' : '✍️ Черновик'}
+                          </button>
+                          <button
+                            onClick={() => generateArticle(m, true)}
+                            disabled={!!generatingKey}
+                            title="Написать и сразу опубликовать"
+                            style={{ background: generating ? 'rgba(34,197,94,0.15)' : 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 8, padding: '5px 12px', color: '#4ade80', fontSize: 12, fontWeight: 600, cursor: generatingKey ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}>
+                            {generating ? '⏳...' : '🚀 Публикую'}
+                          </button>
+                        </div>
                       )}
                     </div>
                   )
