@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { Zap, Lock, Star, TrendingUp, ChevronRight, Flame, Sparkles, Brain } from 'lucide-react'
 import { expressApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 
 const ACCENT  = '#00cfff'
 const A2      = '#7b5ea7'
@@ -204,6 +205,7 @@ function ReasoningPanel({ picks, cfg }) {
 
 function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onUpdate }) {
   const { user, updateCoins } = useAuth()
+  const toast = useToast()
   const [buying, setBuying] = useState(false)
   const [showSummary, setShowSummary] = useState(false)
   const cfg = CONFIG[type]
@@ -224,11 +226,11 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
     setBuying(true)
     try {
       const res = await expressApi.purchase(type, sport, data.date)
-      if (res.error) { alert(res.error); return }
+      if (res.error) { toast.error(res.error); return }
       onUpdate(type, res)
       if (res.coins !== undefined) updateCoins(res.coins)
     } catch (err) {
-      alert(err.message)
+      toast.error(err.message || 'Ошибка при открытии экспресса')
     } finally {
       setBuying(false)
     }
@@ -545,9 +547,8 @@ export default function ExpressCard({ onAuthRequired }) {
   if (error || (!standard && !high)) {
     const otherSport = SPORT_OPTIONS.find(s => s.id !== selectedSport)
     const isNoGames = !error || error.toLowerCase().includes('нет') || error.toLowerCase().includes('not found') || error.toLowerCase().includes('no ')
-    const noGamesMsg = selectedSport === 'football'
-      ? 'На завтра нет футбольных матчей, в которых AI достаточно уверен для сборки экспресса — возможно, вас заинтересует экспресс на хоккей 🏒'
-      : 'На завтра нет хоккейных матчей, в которых AI достаточно уверен для сборки экспресса — возможно, вас заинтересует футбольный экспресс ⚽'
+    const sportLabel = sportInfo?.label || selectedSport
+    const noGamesMsg = `На завтра нет матчей по виду спорта «${sportLabel}», в которых AI достаточно уверен для сборки экспресса — попробуйте другой вид спорта.`
 
     return (
       <div style={{ marginBottom: 24 }}>

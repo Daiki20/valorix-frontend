@@ -76,7 +76,7 @@ export default function PaymentReturn() {
               </span>
             </div>
             <button
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/analyze')}
               style={{
                 width: '100%', padding: '13px', background: '#1a1a2e',
                 color: 'white', border: 'none', borderRadius: 10,

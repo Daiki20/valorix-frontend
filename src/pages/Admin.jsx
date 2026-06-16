@@ -73,10 +73,15 @@ function DashboardTab({ toast }) {
     setExpressLoading(p => ({ ...p, [key]: true }))
     try {
       const token = localStorage.getItem('valorix_token')
+      // CS2/Dota2 — генерируем на сегодня (главная показывает сегодняшний),
+      // футбол/хоккей — на завтра (стандартное поведение)
+      const isEsport = sport === 'cs2' || sport === 'dota2'
+      const today = new Date().toISOString().slice(0, 10)
+      const body = isEsport ? { type, sport, date: today } : { type, sport }
       const res = await fetch(`${API_BASE}/express/generate`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, sport }),
+        body: JSON.stringify(body),
       })
       const data = await res.json()
       if (data.error) { toast.error(data.error); return }

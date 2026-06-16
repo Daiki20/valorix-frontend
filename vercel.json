@@ -2,6 +2,14 @@
   "github": {
     "enabled": false
   },
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/auth/:path*",    "destination": "https://web-production-fefcd.up.railway.app/auth/:path*" },
     { "source": "/coins/:path*",   "destination": "https://web-production-fefcd.up.railway.app/coins/:path*" },

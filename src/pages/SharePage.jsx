@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { TrendingUp, Info, AlertTriangle, Shield, Zap } from 'lucide-react'
 
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const BASE = import.meta.env.VITE_API_URL || 'https://web-production-fefcd.up.railway.app'
 
 export default function SharePage() {
   const { token } = useParams()

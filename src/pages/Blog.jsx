@@ -4,9 +4,7 @@ import { Helmet } from 'react-helmet-async'
 import Navbar from '../components/Navbar'
 import { Calendar, Eye, ArrowRight, Zap } from 'lucide-react'
 
-const API_BASE = import.meta.env.PROD
-  ? 'https://web-production-fefcd.up.railway.app'
-  : (import.meta.env.VITE_API_URL || '')
+const API_BASE = import.meta.env.VITE_API_URL || 'https://web-production-fefcd.up.railway.app'
 
 const ACCENT = '#00cfff'
 
@@ -124,6 +122,7 @@ export default function Blog() {
                     {/* Cover image */}
                     {article.cover_url && (
                       <img src={article.cover_url} alt={article.title}
+                        loading={isFirst ? 'eager' : 'lazy'}
                         style={{ width: isFirst ? 120 : 88, height: isFirst ? 80 : 60, objectFit: 'cover', borderRadius: 12, flexShrink: 0, opacity: 0.9 }}
                         onError={e => { e.target.style.display = 'none' }} />
                     )}

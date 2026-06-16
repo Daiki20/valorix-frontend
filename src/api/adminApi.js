@@ -1,8 +1,12 @@
-const BASE = import.meta.env.PROD ? 'https://web-production-fefcd.up.railway.app' : (import.meta.env.VITE_API_URL || 'http://localhost:3001')
+const BASE = import.meta.env.VITE_API_URL || 'https://web-production-fefcd.up.railway.app'
 
 function headers() {
   const token = localStorage.getItem('valorix_token')
-  return { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+  const authHeaders = {}
+  if (token) {
+    authHeaders['Authorization'] = `Bearer ${token}`
+  }
+  return { 'Content-Type': 'application/json', ...authHeaders }
 }
 
 export async function getStats() {

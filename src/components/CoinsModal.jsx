@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { X, Zap, Star } from 'lucide-react'
 import { coinsApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 
 const ACCENT = '#00cfff'
 const BORDER = 'rgba(0,180,255,0.15)'
@@ -18,6 +19,7 @@ const PAYMENT_METHODS = [
 
 export default function CoinsModal({ onClose }) {
   const { user, updateCoins } = useAuth()
+  const toast = useToast()
   const [packages, setPackages] = useState([])
   const [loading, setLoading] = useState(false)
   const [selectedId, setSelectedId] = useState('pack_300')
@@ -34,7 +36,7 @@ export default function CoinsModal({ onClose }) {
       try { localStorage.setItem('valorix_pending_payment', paymentId) } catch {}
       window.location.href = confirmationUrl
     } catch (err) {
-      alert(err.message)
+      toast.error(err.message || 'Ошибка оплаты')
     } finally {
       setLoading(false)
     }

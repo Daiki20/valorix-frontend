@@ -222,6 +222,7 @@ export default function Analyze() {
       <Helmet>
         <title>AI анализ матча — Valorix AI</title>
         <meta name="description" content="Выбери матч и получи AI-прогноз за 15 секунд. Футбол, хоккей, CS2, Dota 2. Анализ формы команд, травм, коэффициентов и value-ставок." />
+        <meta name="robots" content="noindex" />
         <link rel="canonical" href="https://valorix.ru/analyze" />
       </Helmet>
       <Navbar />

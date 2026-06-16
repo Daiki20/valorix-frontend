@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 
 /* ── Хук: подписывается на ширину окна ── */
@@ -113,6 +113,7 @@ function CosmicOrb() {
         position: 'absolute', inset: 80,
         animation: 'floatOrb 7s ease-in-out infinite',
         filter: 'drop-shadow(0 0 44px rgba(0,207,255,0.55)) drop-shadow(0 0 90px rgba(123,94,167,0.38))',
+        willChange: 'transform',
       }}>
         {/* Circle clip wrapper */}
         <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', position: 'relative' }}>
@@ -226,6 +227,22 @@ export default function Landing() {
         <title>Valorix AI — AI анализ матчей и прогнозы на спорт</title>
         <meta name="description" content="Valorix AI — бесплатный анализ матча за 15 секунд. AI прогнозы на футбол, хоккей, CS2, Dota 2, UFC. Загрузи скриншот линии букмекера — получи разбор формы команд, травм и value ставок." />
         <link rel="canonical" href="https://valorix.ru/" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Какие виды спорта поддерживаются?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Valorix анализирует матчи по футболу, хоккею, CS2 и Dota2." }
+            },
+            {
+              "@type": "Question",
+              "name": "Сколько стоит один анализ?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Один AI-анализ матча стоит 28 монет. При регистрации вы получаете 50 монет бесплатно." }
+            }
+          ]
+        })}</script>
       </Helmet>
 
       {/* ── Deep space background layers ── */}
@@ -251,6 +268,7 @@ export default function Landing() {
         background: 'radial-gradient(circle, rgba(0,207,255,0.06) 0%, transparent 65%)',
         borderRadius: '50%', pointerEvents: 'none', zIndex: 0,
         animation: 'floatOrb 10s ease-in-out infinite',
+        willChange: 'transform',
       }} />
       {/* Purple glow — bottom left */}
       <div style={{
@@ -258,6 +276,7 @@ export default function Landing() {
         background: 'radial-gradient(circle, rgba(123,94,167,0.08) 0%, transparent 65%)',
         borderRadius: '50%', pointerEvents: 'none', zIndex: 0,
         animation: 'floatOrb 14s ease-in-out infinite reverse',
+        willChange: 'transform',
       }} />
 
       <div style={{ position: 'relative', zIndex: 1 }}>
@@ -288,7 +307,7 @@ export default function Landing() {
                   color: TEXT, marginBottom: 28, letterSpacing: -1.5,
                 }}>
                   AI анализ матча<br />
-                  и прогнозы которые{' '}
+                  и прогнозы, которые{' '}
                   <em style={{ color: A, fontStyle: 'italic', textShadow: `0 0 40px ${AGLOW}` }}>побеждают</em>
                 </h1>
 
@@ -552,7 +571,7 @@ export default function Landing() {
                 { q: 'Насколько точен AI-анализ?', a: 'AI анализирует сотни факторов и показывает индекс доверия. Мы не гарантируем результат — это аналитический инструмент для принятия решений.' },
                 { q: 'Что значит "загрузить скрин"?', a: 'Сделай скриншот линии у букмекера и загрузи его. AI прочитает коэффициенты и проанализирует где есть Value.' },
                 { q: 'Сколько стоит один анализ?', a: 'Один анализ стоит 28 монет. Монеты можно пополнить в любое время через раздел "Пополнить".' },
-                { q: 'Какие виды спорта поддерживаются?', a: 'Сейчас поддерживается футбол и хоккей. В ближайшее время добавим теннис и баскетбол.' },
+                { q: 'Какие виды спорта и игры поддерживаются?', a: 'Valorix анализирует матчи по футболу, хоккею, CS2 и Dota2. Список поддерживаемых видов спорта постоянно расширяется.' },
               ].map((item, i) => (
                 <FaqItem key={i} q={item.q} a={item.a} />
               ))}
@@ -587,8 +606,8 @@ export default function Landing() {
             </h2>
             <p style={{ fontSize: 16, color: MUTED, marginBottom: 40, lineHeight: 1.8, fontFamily: 'Outfit, sans-serif' }}>
               Зарегистрируйся и получи{' '}
-              <strong style={{ color: A }}>28 монет бесплатно</strong>{' '}
-              для первого анализа
+              <strong style={{ color: A }}>50 монет бесплатно</strong>{' '}
+              для первых анализов
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link to="/analyze" className="btn-primary" style={{ fontSize: 16, padding: '16px 44px', boxShadow: `0 8px 44px ${AGLOW}` }}>
@@ -601,7 +620,7 @@ export default function Landing() {
             </div>
             {/* Trust indicators */}
             <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 28, flexWrap: 'wrap' }}>
-              {['✓ Регистрация бесплатна', '✓ 28 монет в подарок', '✓ Анализ за 15 секунд'].map((t, i) => (
+              {['✓ Регистрация бесплатна', '✓ 50 монет в подарок', '✓ Анализ за 15 секунд'].map((t, i) => (
                 <span key={i} style={{ fontSize: 13, color: MUTED, fontFamily: 'Outfit, sans-serif' }}>{t}</span>
               ))}
             </div>
@@ -680,7 +699,12 @@ export default function Landing() {
               AI-аналитика для спортивных ставок. Играйте ответственно. 18+
             </p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 28, flexWrap: 'wrap', marginBottom: 28 }}>
-              {[{ to: '/support', l: 'Поддержка' }, { to: '/privacy', l: 'Конфиденциальность' }].map(({ to, l }) => (
+              {[
+                { to: '/support', l: 'Поддержка' },
+                { to: '/privacy', l: 'Конфиденциальность' },
+                { to: '/terms', l: 'Пользовательское соглашение' },
+                { to: '/about', l: 'О сервисе' },
+              ].map(({ to, l }) => (
                 <Link key={to} to={to} style={{ color: MUTED, fontSize: 13, textDecoration: 'none', fontWeight: 500, fontFamily: 'Outfit, sans-serif', transition: 'color 0.18s' }}
                   onMouseEnter={e => e.target.style.color = A}
                   onMouseLeave={e => e.target.style.color = MUTED}>

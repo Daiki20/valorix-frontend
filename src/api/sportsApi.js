@@ -1,5 +1,5 @@
 // In production, always use relative URLs (Vercel rewrites proxy to Railway)
-const API_BASE = import.meta.env.PROD ? 'https://web-production-fefcd.up.railway.app' : (import.meta.env.VITE_API_URL || '')
+const API_BASE = import.meta.env.VITE_API_URL || 'https://web-production-fefcd.up.railway.app'
 
 import { translateTeam } from './teamNames.js'
 
@@ -202,7 +202,7 @@ async function fetchLiveScore(gameId) {
     const res = await sstatsGet(`/Games/${gameId}`)
     const g = res?.data || res
     if (!g) return null
-    console.log('[sstats single game]', JSON.stringify(g, null, 2))
+    console.debug('[sstats single game]', JSON.stringify(g, null, 2))
     const homeScore = g.homeFTResult ?? g.homeScore ?? g.score?.home ?? g.result?.home
       ?? g.liveData?.homeScore ?? g.homeGoals ?? g.home_score ?? g.scoreHome ?? null
     const awayScore = g.awayFTResult ?? g.awayScore ?? g.score?.away ?? g.result?.away
@@ -300,6 +300,7 @@ export async function analyzeMatch(matchInput) {
     fetchFootballEnrich(match).catch(() => ({})),
   ])
 
+  const isFonbet = false // Fonbet integration disabled
   if (match.id && !isFonbet) {
     const apiCalls = [
       sstatsGet('/Games/last-games-stats', { gameId: match.id }),
@@ -404,7 +405,7 @@ export async function analyzeScreenshot(base64Image) {
 
 // Route OpenAI calls through backend (Railway) to avoid Russian blocks on Cloudflare
 const WORKER_URL = `${API_BASE}/analyze/ai-proxy`
-const WORKER_SECRET = 'valorix_proxy_2024'
+const WORKER_SECRET = import.meta.env.VITE_WORKER_SECRET || 'valorix_proxy_2024'
 
 async function workerFetch(body) {
   const token = localStorage.getItem('valorix_token')
@@ -555,46 +556,44 @@ async function enrichAndAnalyze(matchInfo, game = 'football') {
   let formData = { homeForm: null, awayForm: null, h2h: [] }
   let glicko = null, realOdds = []
 
-  if (true) {
-    // Step 1: find team IDs (English name first, fallback to original)
-    const [homeTeams, awayTeams] = await Promise.all([
-      sstatsGet('/Teams/list', { name: matchInfo.homeEn || matchInfo.home, limit: 3 }).catch(() => ({ data: [] })),
-      sstatsGet('/Teams/list', { name: matchInfo.awayEn || matchInfo.away, limit: 3 }).catch(() => ({ data: [] })),
-    ])
-    homeId = homeTeams.data?.[0]?.id
-    awayId = awayTeams.data?.[0]?.id
+  // Step 1: find team IDs (English name first, fallback to original)
+  const [homeTeams, awayTeams] = await Promise.all([
+    sstatsGet('/Teams/list', { name: matchInfo.homeEn || matchInfo.home, limit: 3 }).catch(() => ({ data: [] })),
+    sstatsGet('/Teams/list', { name: matchInfo.awayEn || matchInfo.away, limit: 3 }).catch(() => ({ data: [] })),
+  ])
+  homeId = homeTeams.data?.[0]?.id
+  awayId = awayTeams.data?.[0]?.id
 
-    if (homeId && awayId) {
-      // Step 2: fetch real form + H2H from backend (SQLite cache, 6h TTL)
-      try {
-        const token = localStorage.getItem('valorix_token')
-        const fRes = await fetch(`${API_BASE}/analyze/team-form`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({ homeId, awayId }),
-        })
-        if (fRes.ok) formData = await fRes.json()
-      } catch { /* form data is optional — analysis still runs */ }
+  if (homeId && awayId) {
+    // Step 2: fetch real form + H2H from backend (SQLite cache, 6h TTL)
+    try {
+      const token = localStorage.getItem('valorix_token')
+      const fRes = await fetch(`${API_BASE}/analyze/team-form`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ homeId, awayId }),
+      })
+      if (fRes.ok) formData = await fRes.json()
+    } catch { /* form data is optional — analysis still runs */ }
 
-      // Step 3: try upcoming game for glicko probabilities + bookmaker odds
-      try {
-        const upcomingRes = await sstatsGet('/Games/list', { upcoming: true, team: homeId, limit: 10 })
-        const matchingGame = (upcomingRes?.data || []).find(g =>
-          g.homeTeam?.id === awayId || g.awayTeam?.id === awayId
-        )
-        if (matchingGame) {
-          const [glickoRes, oddsRes] = await Promise.allSettled([
-            sstatsGet(`/Games/glicko/${matchingGame.id}`),
-            sstatsGet(`/Odds/${matchingGame.id}`),
-          ])
-          if (glickoRes.status === 'fulfilled') glicko = glickoRes.value?.data?.glicko
-          if (oddsRes.status === 'fulfilled') realOdds = extractBookmakerOdds(oddsRes.value?.data || [])
-        }
-      } catch { /* glicko/odds are optional */ }
-    }
+    // Step 3: try upcoming game for glicko probabilities + bookmaker odds
+    try {
+      const upcomingRes = await sstatsGet('/Games/list', { upcoming: true, team: homeId, limit: 10 })
+      const matchingGame = (upcomingRes?.data || []).find(g =>
+        g.homeTeam?.id === awayId || g.awayTeam?.id === awayId
+      )
+      if (matchingGame) {
+        const [glickoRes, oddsRes] = await Promise.allSettled([
+          sstatsGet(`/Games/glicko/${matchingGame.id}`),
+          sstatsGet(`/Odds/${matchingGame.id}`),
+        ])
+        if (glickoRes.status === 'fulfilled') glicko = glickoRes.value?.data?.glicko
+        if (oddsRes.status === 'fulfilled') realOdds = extractBookmakerOdds(oddsRes.value?.data || [])
+      }
+    } catch { /* glicko/odds are optional */ }
   }
 
   const match = {

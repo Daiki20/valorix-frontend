@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Zap, Clock, TrendingUp, Search, X } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import { authApi } from '../api/authApi'
@@ -8,9 +8,17 @@ import AnalysisResult from '../components/AnalysisResult'
 
 export default function History() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState(null)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token') || localStorage.getItem('authToken')
+    if (!token) {
+      navigate('/')
+    }
+  }, [navigate])
 
   useEffect(() => {
     authApi.history()

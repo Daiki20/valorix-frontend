@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Zap, LogOut, User, History, Menu, X, Shield, BarChart2, Upload } from 'lucide-react'
+import { Zap, LogOut, User, History, Menu, X, Shield, BarChart2, Upload, Info } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import AuthModal from './AuthModal'
@@ -75,6 +75,11 @@ export default function Navbar() {
                onMouseLeave={e => e.target.style.color = TEXT_MUTED}>
               FAQ
             </a>
+            <Link to="/blog" style={{ color: TEXT_MUTED, textDecoration: 'none', fontSize: 13, fontWeight: 500, transition: 'color 0.18s' }}
+               onMouseEnter={e => e.target.style.color = TEXT}
+               onMouseLeave={e => e.target.style.color = TEXT_MUTED}>
+              Блог
+            </Link>
           </div>
 
           {/* Desktop right */}
@@ -134,8 +139,9 @@ export default function Navbar() {
             >
               🎙️ Для блогеров
             </a>
-            <a href="/#how" onClick={() => setMobileOpen(false)} style={{ color: TEXT_MUTED, textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>Как это работает?</a>
+            <a href="/#how" onClick={() => setMobileOpen(false)} style={{ color: TEXT_MUTED, textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>Как работает?</a>
             <a href="/#faq" onClick={() => setMobileOpen(false)} style={{ color: TEXT_MUTED, textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>FAQ</a>
+            <Link to="/blog" onClick={() => setMobileOpen(false)} style={{ color: TEXT_MUTED, textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>Блог</Link>
             {user && <Link to="/history" onClick={() => setMobileOpen(false)} style={{ color: TEXT_MUTED, textDecoration: 'none', fontSize: 15, fontWeight: 600, padding: '8px 0' }}>История анализов</Link>}
             {user?.is_admin && (
               <Link to="/admin" onClick={() => setMobileOpen(false)} style={{ color: ACCENT, textDecoration: 'none', fontSize: 15, fontWeight: 700, padding: '8px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -293,6 +299,15 @@ function UserMenu({ user, show, onToggle, onClose, onLogout }) {
             >
               <History size={14} color={TEXT_MUTED} />
               История анализов
+            </Link>
+            <Link
+              to="/about" onClick={onClose}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 12px', borderRadius: 8, fontSize: 14, fontWeight: 500, color: TEXT, textDecoration: 'none', transition: 'background 0.15s' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(0,25,60,0.4)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'none'}
+            >
+              <Info size={14} color={TEXT_MUTED} />
+              О сервисе
             </Link>
             {user.is_admin && (
               <Link

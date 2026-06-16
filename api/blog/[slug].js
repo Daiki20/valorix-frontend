@@ -66,12 +66,16 @@ module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8')
   res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
 
+  function escapeHtml(str) {
+    return str.replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026').replace(/'/g, '\\u0027')
+  }
+
   // Для ботов — полный HTML с контентом (без редиректа)
   // Для людей — HTML + мгновенный JS-редирект на SPA (лучший UX)
   const clientRedirect = isBot ? '' : `
   <script>
     // Передаём данные статьи в React-приложение и переходим на него
-    sessionStorage.setItem('__PRELOADED_ARTICLE__', JSON.stringify(${JSON.stringify(article)}));
+    window.__PRELOADED_ARTICLE__ = ${escapeHtml(JSON.stringify(article))};
     history.replaceState({}, '', '${canonical}');
   </script>`
 

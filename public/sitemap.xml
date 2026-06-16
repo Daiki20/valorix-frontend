@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://valorix.ru/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://valorix.ru/blog</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
-  <url><loc>https://valorix.ru/analyze</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://valorix.ru/</loc><lastmod>2026-06-17</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://valorix.ru/blog</loc><lastmod>2026-06-17</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>https://valorix.ru/analyze</loc><lastmod>2026-06-17</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://valorix.ru/about</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://valorix.ru/terms</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
   <url><loc>https://valorix.ru/blog/kak-analizirovat-futbolnyj-match-pered-stavkoj/</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://valorix.ru/blog/kak-ii-prognoziruet-futbolnye-matchi/</loc><lastmod>2026-06-03</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://valorix.ru/blog/team-yandex-bb-team-prognoz-na-match-6-iyunya-2026-g/</loc><lastmod>2026-06-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://valorix.ru/blog/team-vitality-team-falcons-prognoz-na-match-18-iyunya-2026-g/</loc><lastmod>2026-06-15</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://valorix.ru/blog/bb-team-furia-esports-prognoz-na-match-13-iyunya-2026-g/</loc><lastmod>2026-06-13</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://valorix.ru/privacy</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://valorix.ru/support</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://valorix.ru/privacy</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://valorix.ru/support</loc><lastmod>2026-06-17</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
 </urlset>

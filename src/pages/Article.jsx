@@ -182,6 +182,7 @@ const components = {
       <img
         src={src}
         alt={alt || ''}
+        loading="lazy"
         style={{
           width: '100%',
           maxWidth: 680,
@@ -317,6 +318,7 @@ export default function Article() {
             {/* Cover image */}
             {article.cover_url && (
               <img src={article.cover_url} alt={article.title}
+                loading="eager"
                 style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', borderRadius: 20, marginBottom: 28, opacity: 0.9 }}
                 onError={e => { e.target.style.display = 'none' }} />
             )}
@@ -403,6 +405,7 @@ export default function Article() {
                       >
                         {item.cover_url && (
                           <img src={item.cover_url} alt={item.title}
+                            loading="lazy"
                             style={{ width: 72, height: 48, objectFit: 'cover', borderRadius: 10, flexShrink: 0 }}
                             onError={e => { e.target.style.display = 'none' }} />
                         )}
