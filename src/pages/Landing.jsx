@@ -202,11 +202,26 @@ function IconCell({ icon, label, href, onClick }) {
   )
 }
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://web-production-fefcd.up.railway.app'
+
+function formatNum(n) {
+  if (n >= 1000) return Math.floor(n / 100) * 100 + '+'
+  return n + '+'
+}
+
 export default function Landing() {
   const { user } = useAuth()
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [showAuth, setShowAuth] = useState(false)
   const [showSampleAnalysis, setShowSampleAnalysis] = useState(false)
+  const [siteStats, setSiteStats] = useState(null)
+
+  useEffect(() => {
+    fetch(`${API_BASE}/stats`)
+      .then(r => r.json())
+      .then(d => setSiteStats(d))
+      .catch(() => {})
+  }, [])
 
   const vw = useWidth()
   const isMobile  = vw <= 767   // планшет и ниже
@@ -392,10 +407,10 @@ export default function Landing() {
         }}>
           <div className="container stats-ticker-inner" style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'center', gap: isMobile ? 20 : 64, flexWrap: 'wrap' }}>
             {[
-              { num: '10 000+', label: 'Анализов сделано' },
-              { num: '73%',     label: 'Точность прогнозов' },
-              { num: '< 15с',   label: 'Время анализа' },
-              { num: '5+',      label: 'Видов спорта' },
+              { num: siteStats ? formatNum(siteStats.analyses) : '...', label: 'Анализов сделано' },
+              { num: siteStats ? formatNum(siteStats.users)    : '...', label: 'Пользователей' },
+              { num: '< 15с',                                           label: 'Время анализа' },
+              { num: '4',                                               label: 'Вида спорта' },
             ].map((s, i) => (
               <div key={i} style={{ textAlign: 'center' }}>
                 <div className="stat-number" style={{ fontSize: 26, fontWeight: 800, letterSpacing: -0.5 }}>{s.num}</div>

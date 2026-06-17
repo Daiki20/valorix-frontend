@@ -24,6 +24,7 @@
     { "source": "/upload/:path*",  "destination": "https://web-production-fefcd.up.railway.app/upload/:path*" },
     { "source": "/images/:path*",  "destination": "https://web-production-fefcd.up.railway.app/images/:path*" },
     { "source": "/health",         "destination": "https://web-production-fefcd.up.railway.app/health" },
+    { "source": "/stats",          "destination": "https://web-production-fefcd.up.railway.app/stats" },
     { "source": "/sitemap.xml",    "destination": "https://web-production-fefcd.up.railway.app/sitemap.xml" },
     { "source": "/rss.xml",        "destination": "https://web-production-fefcd.up.railway.app/rss.xml" },
     { "source": "/blog/:slug",     "destination": "/api/blog/:slug" },
