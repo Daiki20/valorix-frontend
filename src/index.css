@@ -79,7 +79,7 @@
 }
 
 * {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -121,7 +121,7 @@ h1, h2, h3, .heading-font {
   padding: 13px 28px;
   font-weight: 700;
   font-size: 14px;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -148,7 +148,7 @@ h1, h2, h3, .heading-font {
   border-radius: 50px;
   padding: 11px 24px;
   font-weight: 600;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -200,7 +200,7 @@ h1, h2, h3, .heading-font {
   text-transform: uppercase;
   display: inline-block;
   border: 1px solid rgba(0,207,255,0.2);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 /* ─── Divider ─── */
