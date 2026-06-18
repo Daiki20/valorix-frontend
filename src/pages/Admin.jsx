@@ -1617,6 +1617,18 @@ function BlogTab({ toast }) {
     load()
   }
 
+  const pushStatic = async (article) => {
+    try {
+      const r = await fetch(`${API_BASE}/blog/push-static/${article.id}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token()}` },
+      })
+      const d = await r.json()
+      if (!r.ok) throw new Error(d.error)
+      toast.success('⬆️ Запушено в GitHub! Деплой через ~1 мин.')
+    } catch (e) { toast.error(e.message) }
+  }
+
   const inp = { background: '#0c0f18', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 14px', color: '#fff', width: '100%', fontSize: 14, outline: 'none', boxSizing: 'border-box' }
 
   const TOOLBAR = [
@@ -1928,6 +1940,11 @@ function BlogTab({ toast }) {
                           style={{ ...pageBtn, color: a.published ? '#f59e0b' : '#22c55e', fontSize: 12, padding: '4px 10px' }}>
                           {a.published ? 'Снять' : 'Публ.'}
                         </button>
+                        {a.published && (
+                          <button onClick={() => pushStatic(a)}
+                            title="Запушить статический HTML на GitHub Pages"
+                            style={{ ...pageBtn, color: '#00cfff', fontSize: 12, padding: '4px 10px' }}>⬆️ Push</button>
+                        )}
                         <a href={`https://valorix.ru/blog/${a.slug}/`} target="_blank" rel="noreferrer"
                           style={{ ...pageBtn, color: '#64748b', fontSize: 12, padding: '4px 10px', textDecoration: 'none' }}>↗</a>
                         <button onClick={() => del(a.id)} style={{ ...pageBtn, color: '#ef4444', fontSize: 12, padding: '4px 10px' }}>✕</button>
