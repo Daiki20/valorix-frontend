@@ -1,14 +1,18 @@
 // Vercel Serverless Function — SSR для статей блога
-// Google и другие боты получают готовый HTML с контентом
-// Обычные пользователи получают React SPA через meta-refresh
+// Google и Яндекс боты получают готовый HTML с контентом
+// Обычные пользователи получают React SPA
 
 const https = require('https')
 
-function fetchArticle(slug) {
+// Кеш статей в памяти — переживает повторные запросы на том же инстансе
+const articleCache = new Map()
+const CACHE_TTL = 30 * 60 * 1000 // 30 минут
+
+function fetchFromRailway(slug) {
   return new Promise((resolve) => {
     const req = https.get(
       `https://web-production-fefcd.up.railway.app/blog/${encodeURIComponent(slug)}`,
-      { timeout: 8000 },
+      { timeout: 9000 },
       res => {
         let data = ''
         res.on('data', c => data += c)
@@ -24,15 +28,35 @@ function fetchArticle(slug) {
   })
 }
 
+async function fetchArticle(slug) {
+  // Проверяем кеш
+  const cached = articleCache.get(slug)
+  if (cached && Date.now() - cached.ts < CACHE_TTL) return cached.data
+
+  // Первая попытка
+  let article = await fetchFromRailway(slug)
+
+  // Retry через 1.5 сек если первая попытка не удалась
+  if (!article) {
+    await new Promise(r => setTimeout(r, 1500))
+    article = await fetchFromRailway(slug)
+  }
+
+  if (article && !article.error) {
+    articleCache.set(slug, { data: article, ts: Date.now() })
+  }
+
+  return article
+}
+
 function esc(s) {
   return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 }
 
-// Markdown → plain text для SEO-контента
 function mdToHtml(md) {
   return (md || '')
-    .replace(/!\[([^\]]*)\]\([^\)]+\)/g, '')           // remove images
-    .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')          // links → text
+    .replace(/!\[([^\]]*)\]\([^\)]+\)/g, '')
+    .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
     .replace(/^#{1,6}\s+(.+)$/gm, '<h2>$1</h2>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
@@ -48,12 +72,16 @@ module.exports = async (req, res) => {
   if (!slug) return res.redirect(302, '/')
 
   const ua = req.headers['user-agent'] || ''
-  const isBot = /googlebot|bingbot|yandexbot|facebookexternalhit|twitterbot|linkedinbot|slurp/i.test(ua)
+  const isBot = /googlebot|google-inspectiontool|bingbot|yandex|facebookexternalhit|twitterbot|linkedinbot|slurp|applebot|duckduckbot/i.test(ua)
 
   const article = await fetchArticle(slug)
 
-  // Article not found → redirect to blog list
+  // Статья не найдена — 404 для ботов, редирект для людей
   if (!article || article.error) {
+    if (isBot) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8')
+      return res.status(404).send(`<!DOCTYPE html><html lang="ru"><head><title>Статья не найдена — Valorix AI</title></head><body><h1>404</h1><p>Статья не найдена.</p><a href="https://valorix.ru/blog">← Все статьи</a></body></html>`)
+    }
     return res.redirect(302, '/blog')
   }
 
@@ -66,16 +94,14 @@ module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8')
   res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
 
-  function escapeHtml(str) {
+  function escapeJson(str) {
     return str.replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026').replace(/'/g, '\\u0027')
   }
 
-  // Для ботов — полный HTML с контентом (без редиректа)
-  // Для людей — HTML + мгновенный JS-редирект на SPA (лучший UX)
-  const clientRedirect = isBot ? '' : `
+  // Для людей — передаём данные в React SPA
+  const clientScript = isBot ? '' : `
   <script>
-    // Передаём данные статьи в React-приложение и переходим на него
-    window.__PRELOADED_ARTICLE__ = ${escapeHtml(JSON.stringify(article))};
+    window.__PRELOADED_ARTICLE__ = ${escapeJson(JSON.stringify(article))};
     history.replaceState({}, '', '${canonical}');
   </script>`
 
@@ -136,8 +162,7 @@ module.exports = async (req, res) => {
     <h1>${title}</h1>
     <div class="meta">
       <span>${new Date(article.created_at).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})}</span>
-      ${article.sport && article.sport !== 'other' ? `<span class="badge">⚽ ${article.sport === 'football' ? 'Футбол' : article.sport}</span>` : ''}
-      <span>${article.views || 0} просмотров</span>
+      ${article.sport && article.sport !== 'other' ? `<span class="badge">${article.sport === 'football' ? '⚽ Футбол' : article.sport === 'hockey' ? '🏒 Хоккей' : article.sport === 'cs2' ? '🔫 CS2' : article.sport === 'dota2' ? '🎮 Dota 2' : article.sport}</span>` : ''}
     </div>
     ${desc ? `<p><em>${desc}</em></p>` : ''}
     <div>${bodyHtml}</div>
@@ -146,7 +171,7 @@ module.exports = async (req, res) => {
       <a href="https://valorix.ru/analyze">Попробовать бесплатно →</a>
     </div>
   </div>
-  ${clientRedirect}
+  ${clientScript}
 </body>
 </html>`)
 }
