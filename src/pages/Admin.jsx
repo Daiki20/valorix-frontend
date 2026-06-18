@@ -1431,6 +1431,7 @@ function BlogTab({ toast }) {
   const [uploading, setUploading] = useState(false)
   const [customTopic, setCustomTopic] = useState('')
   const [generatingCustom, setGeneratingCustom] = useState(false)
+  const [regeneratingSitemap, setRegeneratingSitemap] = useState(false)
   const fileInputRef = useRef(null)
 
   const handleImageUpload = (e) => {
@@ -1615,6 +1616,20 @@ function BlogTab({ toast }) {
       body: JSON.stringify({ published: !article.published }),
     })
     load()
+  }
+
+  const regenerateSitemap = async () => {
+    setRegeneratingSitemap(true)
+    try {
+      const r = await fetch(`${API_BASE}/blog/generate-sitemap`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token()}` },
+      })
+      const d = await r.json()
+      if (!r.ok) throw new Error(d.error)
+      toast.success(`🗺️ Sitemap обновлён: ${d.count} URL → GitHub`)
+    } catch (e) { toast.error(e.message) }
+    finally { setRegeneratingSitemap(false) }
   }
 
   const pushStatic = async (article) => {
@@ -1881,6 +1896,18 @@ function BlogTab({ toast }) {
               }}
             >
               {generatingCustom ? '⏳ Пишу...' : '🤖 Написать через AI'}
+            </button>
+            <button
+              onClick={regenerateSitemap}
+              disabled={regeneratingSitemap}
+              title="Перегенерировать sitemap.xml и запушить на GitHub Pages"
+              style={{
+                background: 'rgba(100,116,139,0.15)', border: '1px solid rgba(100,116,139,0.3)',
+                borderRadius: 10, padding: '9px 14px', color: regeneratingSitemap ? '#475569' : '#94a3b8',
+                fontSize: 13, fontWeight: 700, cursor: regeneratingSitemap ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap',
+              }}
+            >
+              {regeneratingSitemap ? '⏳...' : '🗺️ Sitemap'}
             </button>
           </div>
 
