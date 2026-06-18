@@ -1429,6 +1429,8 @@ function BlogTab({ toast }) {
   const [saving, setSaving] = useState(false)
   const [sortBy, setSortBy] = useState('date') // 'date' | 'views'
   const [uploading, setUploading] = useState(false)
+  const [customTopic, setCustomTopic] = useState('')
+  const [generatingCustom, setGeneratingCustom] = useState(false)
   const fileInputRef = useRef(null)
 
   const handleImageUpload = (e) => {
@@ -1556,6 +1558,27 @@ function BlogTab({ toast }) {
     for (const m of pending) {
       await generateArticle(m, true)
     }
+  }
+
+  const generateCustomArticle = async () => {
+    if (!customTopic.trim()) return toast.error('Введи тему статьи')
+    setGeneratingCustom(true)
+    try {
+      const sportMap = { football: 'football', hockey: 'hockey', cs2: 'cs2', dota2: 'dota2' }
+      const sport = sportMap[sportTab] || 'other'
+      const r = await fetch(`${API_BASE}/blog/generate-custom`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` },
+        body: JSON.stringify({ topic: customTopic.trim(), sport }),
+      })
+      const d = await r.json()
+      if (!r.ok) throw new Error(d.error)
+      setCustomTopic('')
+      toast.success('✍️ Статья написана! Открываю редактор...')
+      load(sportTab)
+      setEditing(d.article)
+    } catch (e) { toast.error(e.message) }
+    setGeneratingCustom(false)
   }
 
   const save = async () => {
@@ -1824,6 +1847,30 @@ function BlogTab({ toast }) {
               </div>
             </div>
           )}
+
+          {/* Custom topic article generator */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 18, alignItems: 'center' }}>
+            <input
+              style={{ flex: 1, background: '#0c0f18', border: '1px solid rgba(0,207,255,0.25)', borderRadius: 10, padding: '9px 14px', color: '#fff', fontSize: 14, outline: 'none' }}
+              placeholder="Тема статьи — например: «Кто станет чемпионом Major CS2»"
+              value={customTopic}
+              onChange={e => setCustomTopic(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && generateCustomArticle()}
+              disabled={generatingCustom}
+            />
+            <button
+              onClick={generateCustomArticle}
+              disabled={generatingCustom || !customTopic.trim()}
+              style={{
+                background: generatingCustom ? 'rgba(0,207,255,0.1)' : 'linear-gradient(135deg,#00cfff,#0080ff)',
+                border: 'none', borderRadius: 10, padding: '9px 18px',
+                color: generatingCustom ? '#475569' : '#fff', fontSize: 13, fontWeight: 700,
+                cursor: (generatingCustom || !customTopic.trim()) ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap',
+              }}
+            >
+              {generatingCustom ? '⏳ Пишу...' : '🤖 Написать через AI'}
+            </button>
+          </div>
 
           {/* Articles list */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
