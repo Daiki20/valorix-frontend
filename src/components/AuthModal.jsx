@@ -85,13 +85,8 @@ export default function AuthModal({ onClose }) {
         if (fullCode.length < 6) { setError('Введите все 6 цифр'); setLoading(false); return }
         const data = await authApi.verifyEmail(form.email, fullCode)
         saveAuth(data)
-        if (data.abuseWarning) {
-          toast.success('Аккаунт создан! Начислено 10 монет.')
-          setTimeout(() => toast.error('Бонус 38 монет доступен только при первой регистрации с этого устройства.'), 1500)
-        } else {
-          fireConfetti()
-          toast.success('Email подтверждён! Вам начислено 38 монет')
-        }
+        fireConfetti()
+        toast.success('Email подтверждён! Вам начислено 15 монет')
         try { localStorage.removeItem('valorix_onboarded') } catch {}
         onClose()
         return
@@ -114,7 +109,7 @@ export default function AuthModal({ onClose }) {
         }
         saveAuth(data)
         fireConfetti()
-        toast.success('Добро пожаловать! Вам начислено 38 монет')
+        toast.success('Добро пожаловать! Вам начислено 15 монет')
         try { localStorage.removeItem('valorix_onboarded') } catch {}
         onClose()
       }
@@ -343,7 +338,7 @@ export default function AuthModal({ onClose }) {
                   fontSize: 13, color: TEXT,
                 }}>
                   <Zap size={14} fill={ACCENT} color={ACCENT} />
-                  <span><strong style={{ color: ACCENT }}>38 монет</strong> в подарок при регистрации</span>
+                  <span><strong style={{ color: ACCENT }}>15 монет</strong> в подарок при регистрации</span>
                 </div>
               )}
             </>

@@ -239,7 +239,7 @@ export default function Landing() {
             {
               "@type": "Question",
               "name": "Сколько стоит один анализ?",
-              "acceptedAnswer": { "@type": "Answer", "text": "Один AI-анализ матча стоит 28 монет. При регистрации вы получаете 38 монет бесплатно." }
+              "acceptedAnswer": { "@type": "Answer", "text": "Один AI-анализ матча стоит 28 монет. При регистрации вы получаете 15 монет бесплатно в подарок." }
             }
           ]
         })}</script>
@@ -606,8 +606,8 @@ export default function Landing() {
             </h2>
             <p style={{ fontSize: 16, color: MUTED, marginBottom: 40, lineHeight: 1.8, fontFamily: 'Outfit, sans-serif' }}>
               Зарегистрируйся и получи{' '}
-              <strong style={{ color: A }}>38 монет бесплатно</strong>{' '}
-              для первых анализов
+              <strong style={{ color: A }}>15 монет бесплатно</strong>{' '}
+              в подарок за регистрацию
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link to="/analyze" className="btn-primary" style={{ fontSize: 16, padding: '16px 44px', boxShadow: `0 8px 44px ${AGLOW}` }}>
@@ -620,7 +620,7 @@ export default function Landing() {
             </div>
             {/* Trust indicators */}
             <div style={{ display: 'flex', gap: 24, justifyContent: 'center', marginTop: 28, flexWrap: 'wrap' }}>
-              {['✓ Регистрация бесплатна', '✓ 38 монет в подарок', '✓ Анализ за 15 секунд'].map((t, i) => (
+              {['✓ Регистрация бесплатна', '✓ 15 монет в подарок', '✓ Анализ за 15 секунд'].map((t, i) => (
                 <span key={i} style={{ fontSize: 13, color: MUTED, fontFamily: 'Outfit, sans-serif' }}>{t}</span>
               ))}
             </div>
