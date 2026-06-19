@@ -366,7 +366,7 @@ export default function Article() {
                 background: 'linear-gradient(135deg, #00cfff, #6366f1)',
                 color: '#000', fontWeight: 800, fontSize: 15, textDecoration: 'none',
               }}>
-                Попробовать бесплатно →
+                Анализ со скидкой →
               </Link>
             </div>
 

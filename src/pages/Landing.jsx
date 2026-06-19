@@ -225,7 +225,7 @@ export default function Landing() {
     <div style={{ minHeight: '100vh', background: BG, position: 'relative', overflow: 'hidden' }}>
       <Helmet>
         <title>Valorix AI — AI анализ матчей и прогнозы на спорт</title>
-        <meta name="description" content="Valorix AI — бесплатный анализ матча за 15 секунд. AI прогнозы на футбол, хоккей, CS2, Dota 2, UFC. Загрузи скриншот линии букмекера — получи разбор формы команд, травм и value ставок." />
+        <meta name="description" content="Valorix AI — AI анализ матча за 15 секунд. Прогнозы на футбол, хоккей, CS2, Dota 2, UFC. Загрузи скриншот линии букмекера — получи разбор формы команд, травм и value ставок." />
         <link rel="canonical" href="https://valorix.ru/" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
@@ -523,7 +523,7 @@ export default function Landing() {
                 </p>
                 <Link to="/analyze" className="btn-primary">
                   <Zap size={16} />
-                  Попробовать бесплатно
+                  Попробовать со скидкой
                 </Link>
               </div>
 
@@ -606,8 +606,8 @@ export default function Landing() {
             </h2>
             <p style={{ fontSize: 16, color: MUTED, marginBottom: 40, lineHeight: 1.8, fontFamily: 'Outfit, sans-serif' }}>
               Зарегистрируйся и получи{' '}
-              <strong style={{ color: A }}>15 монет бесплатно</strong>{' '}
-              в подарок за регистрацию
+              <strong style={{ color: A }}>15 монет в подарок</strong>{' '}
+              за регистрацию
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link to="/analyze" className="btn-primary" style={{ fontSize: 16, padding: '16px 44px', boxShadow: `0 8px 44px ${AGLOW}` }}>

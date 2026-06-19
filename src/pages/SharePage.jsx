@@ -348,7 +348,7 @@ export default function SharePage() {
             padding: '12px 32px', fontWeight: 800, textDecoration: 'none',
             fontSize: 15, boxShadow: '0 4px 20px rgba(0,207,255,0.4)',
           }}>
-            Попробовать бесплатно
+            Анализ со скидкой
           </Link>
         </div>
       </div>
