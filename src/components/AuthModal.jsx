@@ -85,8 +85,13 @@ export default function AuthModal({ onClose }) {
         if (fullCode.length < 6) { setError('Введите все 6 цифр'); setLoading(false); return }
         const data = await authApi.verifyEmail(form.email, fullCode)
         saveAuth(data)
-        fireConfetti()
-        toast.success('Email подтверждён! Вам начислено 38 монет')
+        if (data.abuseWarning) {
+          toast.success('Аккаунт создан! Начислено 10 монет.')
+          setTimeout(() => toast.error('Бонус 38 монет доступен только при первой регистрации с этого устройства.'), 1500)
+        } else {
+          fireConfetti()
+          toast.success('Email подтверждён! Вам начислено 38 монет')
+        }
         try { localStorage.removeItem('valorix_onboarded') } catch {}
         onClose()
         return
