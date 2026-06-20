@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { X, Mail, Lock, User, Eye, EyeOff, Zap, ArrowLeft, Shield, Tag } from 'lucide-react'
+import { X, Mail, Lock, User, Eye, EyeOff, Zap, ArrowLeft, Shield } from 'lucide-react'
 import { authApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -18,7 +18,7 @@ const DIM    = 'rgba(255,255,255,0.05)'
 
 export default function AuthModal({ onClose }) {
   const [mode, setMode] = useState('login')
-  const [form, setForm] = useState({ email: '', password: '', username: '', promoCode: '' })
+  const [form, setForm] = useState({ email: '', password: '', username: '' })
   const [code, setCode] = useState(['', '', '', '', '', ''])
   const [showPass, setShowPass] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -86,11 +86,7 @@ export default function AuthModal({ onClose }) {
         const data = await authApi.verifyEmail(form.email, fullCode)
         saveAuth(data)
         fireConfetti()
-        const coins = data.coinsAwarded || 15
-        const msg = data.promoApplied
-          ? `Email подтверждён! Промокод применён — вам начислено ${coins} монет 🎉`
-          : `Email подтверждён! Вам начислено ${coins} монет`
-        toast.success(msg)
+        toast.success('Email подтверждён! Вам начислено 15 монет')
         try { localStorage.removeItem('valorix_onboarded') } catch {}
         onClose()
         return
@@ -103,7 +99,7 @@ export default function AuthModal({ onClose }) {
         toast.success('Вы вошли в аккаунт')
         onClose()
       } else {
-        data = await authApi.register(form.email, form.password, form.username, form.promoCode || '')
+        data = await authApi.register(form.email, form.password, form.username)
         if (data.needsVerification) {
           setMode('verify')
           setCode(['', '', '', '', '', ''])
@@ -299,12 +295,8 @@ export default function AuthModal({ onClose }) {
               ) : (
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   {mode === 'register' && (
-                    <>
-                      <Field icon={<User size={16} color={MUTED} />} placeholder="Имя пользователя"
-                        value={form.username} onChange={v => set('username', v)} />
-                      <Field icon={<Tag size={16} color={MUTED} />} placeholder="Промокод (необязательно)"
-                        value={form.promoCode} onChange={v => set('promoCode', v)} />
-                    </>
+                    <Field icon={<User size={16} color={MUTED} />} placeholder="Имя пользователя"
+                      value={form.username} onChange={v => set('username', v)} />
                   )}
                   <Field icon={<Mail size={16} color={MUTED} />} placeholder="Email" type="email"
                     value={form.email} onChange={v => set('email', v)} />

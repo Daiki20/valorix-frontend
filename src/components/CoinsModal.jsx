@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X, Zap, Star } from 'lucide-react'
+import { X, Zap, Star, Tag } from 'lucide-react'
 import { coinsApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -24,6 +24,12 @@ export default function CoinsModal({ onClose }) {
   const [loading, setLoading] = useState(false)
   const [selectedId, setSelectedId] = useState('pack_300')
   const [paymentMethod, setPaymentMethod] = useState('sbp')
+  const [promoCode, setPromoCode] = useState('')
+
+  const VALID_PROMOS = { valor: 28 }
+  const promoKey = promoCode.trim().toLowerCase()
+  const promoBonus = VALID_PROMOS[promoKey] || 0
+  const promoValid = promoBonus > 0
 
   useEffect(() => {
     coinsApi.packages().then(d => setPackages(d.packages))
@@ -32,7 +38,7 @@ export default function CoinsModal({ onClose }) {
   async function handleBuy() {
     setLoading(true)
     try {
-      const { confirmationUrl, paymentId } = await coinsApi.createPayment(selectedId, paymentMethod)
+      const { confirmationUrl, paymentId } = await coinsApi.createPayment(selectedId, paymentMethod, promoCode.trim() || undefined)
       try { localStorage.setItem('valorix_pending_payment', paymentId) } catch {}
       window.location.href = confirmationUrl
     } catch (err) {
@@ -166,6 +172,42 @@ export default function CoinsModal({ onClose }) {
             </div>
           </div>
 
+          {/* Promo code */}
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: MUTED, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
+              Промокод
+            </div>
+            <div style={{ position: 'relative' }}>
+              <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+                <Tag size={14} color={promoValid ? '#22c55e' : MUTED} />
+              </div>
+              <input
+                value={promoCode}
+                onChange={e => setPromoCode(e.target.value)}
+                placeholder="Введите промокод"
+                style={{
+                  width: '100%', boxSizing: 'border-box',
+                  background: 'rgba(0,15,40,0.6)',
+                  border: `1.5px solid ${promoValid ? '#22c55e' : promoCode.trim() ? '#ef4444' : BORDER}`,
+                  borderRadius: 10, padding: '10px 12px 10px 36px',
+                  color: TEXT, fontSize: 14, outline: 'none',
+                  textTransform: 'uppercase', letterSpacing: 1,
+                }}
+              />
+              {promoValid && (
+                <div style={{ marginTop: 6, fontSize: 12, color: '#22c55e', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <Star size={11} fill="#22c55e" color="#22c55e" />
+                  Промокод принят! +{promoBonus} монет в подарок к пополнению
+                </div>
+              )}
+              {promoCode.trim() && !promoValid && (
+                <div style={{ marginTop: 6, fontSize: 12, color: '#ef4444', fontWeight: 600 }}>
+                  Промокод не найден
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Buy button */}
           <button
             onClick={handleBuy}
@@ -183,7 +225,12 @@ export default function CoinsModal({ onClose }) {
               boxShadow: loading ? 'none' : '0 4px 24px rgba(0,207,255,0.35)',
             }}
           >
-            {loading ? 'Перенаправление...' : `Оплатить ${selected?.price ?? ''} ₽`}
+            {loading
+              ? 'Перенаправление...'
+              : promoValid
+                ? `Оплатить ${selected?.price ?? ''} ₽ · +${promoBonus} монет в подарок`
+                : `Оплатить ${selected?.price ?? ''} ₽`
+            }
           </button>
 
           <div style={{ marginTop: 12, textAlign: 'center', fontSize: 12, color: MUTED }}>

@@ -30,7 +30,7 @@ async function request(method, path, body) {
 }
 
 export const authApi = {
-  register: (email, password, username, promoCode) => request('POST', '/auth/register', { email, password, username, promoCode }),
+  register: (email, password, username) => request('POST', '/auth/register', { email, password, username }),
   login: (email, password) => request('POST', '/auth/login', { email, password }),
   verifyEmail: (email, code) => request('POST', '/auth/verify-email', { email, code }),
   resendCode: (email) => request('POST', '/auth/resend-code', { email }),
@@ -43,7 +43,7 @@ export const authApi = {
 export const coinsApi = {
   balance: () => request('GET', '/coins/balance'),
   packages: () => request('GET', '/coins/packages'),
-  createPayment: (packageId, paymentMethod) => request('POST', '/coins/create-payment', { packageId, paymentMethod }),
+  createPayment: (packageId, paymentMethod, promoCode) => request('POST', '/coins/create-payment', { packageId, paymentMethod, promoCode }),
   verifyPayment: (paymentId) => request('GET', `/coins/verify-payment/${paymentId}`),
   spend: (data) => request('POST', '/coins/spend', data),
   transactions: () => request('GET', '/coins/transactions'),
