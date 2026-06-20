@@ -281,7 +281,7 @@ function DashboardTab({ toast }) {
           <div style={{ overflowX: 'auto' }}><table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
               <tr style={{ borderBottom: '2px solid rgba(0,180,255,0.08)' }}>
-                {['Email', 'Username', 'Монеты', 'Роль', 'Дата'].map(h => (
+                {['Email', 'Username', 'Монеты', 'Промокод', 'Роль', 'Дата'].map(h => (
                   <th key={h} style={{ textAlign: 'left', padding: '6px 10px', color: '#64748b', fontWeight: 700, fontSize: 11, textTransform: 'uppercase' }}>{h}</th>
                 ))}
               </tr>
@@ -292,6 +292,7 @@ function DashboardTab({ toast }) {
                   <td style={tdStyle}>{u.email}</td>
                   <td style={tdStyle}>{u.username}</td>
                   <td style={tdStyle}><CoinPill n={u.coins} /></td>
+                  <td style={tdStyle}>{u.promo_code ? <span style={pillStyle('#a78bfa')}>{u.promo_code}</span> : <span style={{ color: '#4a6a8a', fontSize: 11 }}>—</span>}</td>
                   <td style={tdStyle}>{u.is_admin ? <span style={pillStyle('#00cfff')}>Admin</span> : <span style={pillStyle('#94a3b8')}>User</span>}</td>
                   <td style={tdStyle}>{new Date(u.created_at).toLocaleDateString('ru-RU')}</td>
                 </tr>
@@ -1124,7 +1125,7 @@ function UsersTab({ toast }) {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid rgba(0,180,255,0.08)', background: '#0a0d14' }}>
-                  {['Email', 'Username', 'Монеты', 'Анализов', 'Статус', 'Действия'].map(h => (
+                  {['Email', 'Username', 'Монеты', 'Промокод', 'Анализов', 'Статус', 'Действия'].map(h => (
                     <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#64748b', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
@@ -1135,6 +1136,7 @@ function UsersTab({ toast }) {
                     <td style={tdStyle}>{u.email}</td>
                     <td style={tdStyle}>{u.username}</td>
                     <td style={tdStyle}><CoinPill n={u.coins} /></td>
+                    <td style={tdStyle}>{u.promo_code ? <span style={pillStyle('#a78bfa')}>{u.promo_code}</span> : <span style={{ color: '#4a6a8a', fontSize: 11 }}>—</span>}</td>
                     <td style={tdStyle}>{u.analyses_count}</td>
                     <td style={tdStyle}>
                       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>

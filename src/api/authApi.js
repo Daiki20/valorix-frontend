@@ -30,7 +30,7 @@ async function request(method, path, body) {
 }
 
 export const authApi = {
-  register: (email, password, username) => request('POST', '/auth/register', { email, password, username }),
+  register: (email, password, username, promoCode) => request('POST', '/auth/register', { email, password, username, promoCode }),
   login: (email, password) => request('POST', '/auth/login', { email, password }),
   verifyEmail: (email, code) => request('POST', '/auth/verify-email', { email, code }),
   resendCode: (email) => request('POST', '/auth/resend-code', { email }),
