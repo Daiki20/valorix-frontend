@@ -640,7 +640,12 @@ function MatchRow({ match, onClick, isLiveTab }) {
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', animation: 'pulse-ring 1.2s ease-out infinite' }} />
               <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444' }}>LIVE</span>
             </div>
-            {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#dde4ee', marginTop: 2 }}>{match.score}</div>}
+            {match.score && (
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#dde4ee', marginTop: 2 }}>
+                {match.score}
+                {match.minute != null && <span style={{ fontSize: 10, color: '#94a3b8', marginLeft: 3 }}>{match.minute}'</span>}
+              </div>
+            )}
           </div>
         )}
 
@@ -808,7 +813,12 @@ function HockeyMatchRow({ match, onClick }) {
               <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', animation: 'pulse-ring 1.2s ease-out infinite' }} />
               <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444' }}>LIVE</span>
             </div>
-            {match.score && <div style={{ fontSize: 14, fontWeight: 900, color: '#dde4ee', marginTop: 2 }}>{match.score}</div>}
+            {match.score && (
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#dde4ee', marginTop: 2 }}>
+                {match.score}
+                {match.minute != null && <span style={{ fontSize: 10, color: '#94a3b8', marginLeft: 3 }}>{match.minute}'</span>}
+              </div>
+            )}
           </div>
         )}
 
