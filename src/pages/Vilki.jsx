@@ -4,12 +4,24 @@ import { TrendingUp, RefreshCw, Clock, AlertCircle, CheckCircle } from 'lucide-r
 const API_BASE = import.meta.env.VITE_API_URL || 'https://web-production-fefcd.up.railway.app'
 
 const SPORT_NAMES = {
-  soccer_epl: 'АПЛ',
-  soccer_spain_la_liga: 'Ла Лига',
-  soccer_germany_bundesliga: 'Бундеслига',
-  soccer_italy_serie_a: 'Серия А',
-  soccer_france_ligue_one: 'Лига 1',
-  soccer_uefa_champs_league: 'Лига Чемпионов',
+  soccer_epl: 'Футбол · АПЛ',
+  soccer_spain_la_liga: 'Футбол · Ла Лига',
+  soccer_germany_bundesliga: 'Футбол · Бундеслига',
+  soccer_italy_serie_a: 'Футбол · Серия А',
+  soccer_france_ligue_one: 'Футбол · Лига 1',
+  soccer_uefa_champs_league: 'Футбол · Лига Чемпионов',
+  soccer_uefa_europa_league: 'Футбол · Лига Европы',
+  soccer_netherlands_eredivisie: 'Футбол · Эредивизи',
+  soccer_turkey_super_league: 'Футбол · Суперлига Турции',
+  soccer_portugal_primeira_liga: 'Футбол · Примейра',
+  basketball_nba: 'Баскетбол · NBA',
+  basketball_euroleague: 'Баскетбол · Евролига',
+  icehockey_nhl: 'Хоккей · NHL',
+  tennis_atp_french_open: 'Теннис · ATP',
+  tennis_wta_french_open: 'Теннис · WTA',
+  mma_mixed_martial_arts: 'MMA',
+  americanfootball_nfl: 'Американский футбол · NFL',
+  baseball_mlb: 'Бейсбол · MLB',
 }
 
 export default function Vilki() {
