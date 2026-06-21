@@ -19,6 +19,7 @@ const Blog = lazy(() => import('./pages/Blog'))
 const Article = lazy(() => import('./pages/Article'))
 const Terms = lazy(() => import('./pages/Terms'))
 const About = lazy(() => import('./pages/About'))
+const Vilki = lazy(() => import('./pages/Vilki'))
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
               <Route path="/blog/:slug" element={<Article />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/about" element={<About />} />
+              <Route path="/vilki" element={<Vilki />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
