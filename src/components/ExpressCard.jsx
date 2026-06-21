@@ -15,8 +15,8 @@ const BG_PICK = 'rgba(0,15,35,0.7)'
 
 const CONFIG = {
   standard: {
-    cost: 52,
-    discount: 38, // % скидка vs 3 анализа по 28 = 84
+    cost: 99,
+    discount: 28, // % скидка vs 3 анализа по 46 = 138
     label: 'Экспресс дня',
     sublabel: 'Надёжный',
     icon: <Star size={14} color="#030b18" fill="#030b18" />,
@@ -29,8 +29,8 @@ const CONFIG = {
     oddsColor: ACCENT,
   },
   high: {
-    cost: 72,
-    discount: 36, // % скидка vs 4 анализа по 28 = 112
+    cost: 140,
+    discount: 24, // % скидка vs 4 анализа по 46 = 184
     label: 'Экспресс дня',
     sublabel: 'Высокодоходный',
     icon: <Flame size={14} color="#030b18" fill="#030b18" />,

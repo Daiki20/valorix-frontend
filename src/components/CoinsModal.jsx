@@ -88,7 +88,7 @@ export default function CoinsModal({ onClose }) {
               Пополнить монеты
             </div>
             <div style={{ fontSize: 14, color: MUTED }}>
-              1 анализ = 28 монет · Баланс:{' '}
+              1 анализ = 46 монет · Баланс:{' '}
               <strong style={{ color: ACCENT }}>{user?.coins ?? 0}</strong> монет
             </div>
           </div>

@@ -11,7 +11,7 @@ import ExpressCard from '../components/ExpressCard'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 
-const ANALYSIS_COST = 28
+const ANALYSIS_COST = 46
 
 export default function Analyze() {
   const { user, updateCoins } = useAuth()
