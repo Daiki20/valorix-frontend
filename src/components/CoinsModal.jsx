@@ -22,7 +22,7 @@ export default function CoinsModal({ onClose }) {
   const toast = useToast()
   const [packages, setPackages] = useState([])
   const [loading, setLoading] = useState(false)
-  const [selectedId, setSelectedId] = useState('pack_300')
+  const [selectedId, setSelectedId] = useState('pack_600')
   const [paymentMethod, setPaymentMethod] = useState('sbp')
   const [promoCode, setPromoCode] = useState('')
 
