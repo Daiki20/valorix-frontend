@@ -29,8 +29,8 @@ const CONFIG = {
     oddsColor: ACCENT,
   },
   high: {
-    cost: 140,
-    discount: 24, // % скидка vs 4 анализа по 46 = 184
+    cost: 149,
+    discount: 19, // % скидка vs 4 анализа по 46 = 184
     label: 'Экспресс дня',
     sublabel: 'Высокодоходный',
     icon: <Flame size={14} color="#030b18" fill="#030b18" />,
