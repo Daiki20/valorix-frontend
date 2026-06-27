@@ -267,25 +267,34 @@ export async function analyzeMatch(matchInput) {
   const token = localStorage.getItem('valorix_token')
 
   // All matches (pre-match + live): use gpt-4o-search-preview
+  // Fetch logos in parallel so they're ready when analysis returns
   try {
-    const res = await fetch(`${API_BASE}/analyze/match-with-search`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-      body: JSON.stringify({
-        home: match.home,
-        away: match.away,
-        league: match.league || '',
-        date: match.rawDate ? match.rawDate.slice(0, 10) : match.date || '',
-        odds1x2: match.odds1x2 || null,
-        sport: match.sport || 'football',
-        score: match.score || null,
-        minute: match.minute || null,
-        isLive,
+    const [res, enrichResult] = await Promise.allSettled([
+      fetch(`${API_BASE}/analyze/match-with-search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          home: match.home,
+          away: match.away,
+          league: match.league || '',
+          date: match.rawDate ? match.rawDate.slice(0, 10) : match.date || '',
+          odds1x2: match.odds1x2 || null,
+          sport: match.sport || 'football',
+          score: match.score || null,
+          minute: match.minute || null,
+          isLive,
+        }),
       }),
-    })
-    if (res.ok) {
-      const analysis = await res.json()
-      if (analysis.verdict) return analysis
+      match.sport === 'football' ? fetchFootballEnrich(match) : Promise.resolve({}),
+    ])
+    const enrich = enrichResult.status === 'fulfilled' ? (enrichResult.value || {}) : {}
+    if (res.status === 'fulfilled' && res.value.ok) {
+      const analysis = await res.value.json()
+      if (analysis.verdict) {
+        if (!analysis.homeLogo && enrich.homeLogoTSDB) analysis.homeLogo = enrich.homeLogoTSDB
+        if (!analysis.awayLogo && enrich.awayLogoTSDB) analysis.awayLogo = enrich.awayLogoTSDB
+        return analysis
+      }
     }
   } catch { /* fallback to regular analysis below */ }
 
