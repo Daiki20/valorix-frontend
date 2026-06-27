@@ -408,6 +408,28 @@ export async function analyzeMatch(matchInput) {
 }
 
 // Analyze screenshot — full 2-step pipeline
+export async function analyzeDota2Draft(match, imageBase64) {
+  const token = localStorage.getItem('valorix_token')
+  const res = await fetch(`${API_BASE}/analyze/dota-draft`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({
+      home: match.home,
+      away: match.away,
+      league: match.league || '',
+      imageBase64,
+    }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.error || `HTTP ${res.status}`)
+  }
+  return res.json()
+}
+
 export async function analyzeScreenshot(base64Image) {
 
   // Step 1: extract match info from screenshot

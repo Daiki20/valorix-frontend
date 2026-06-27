@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import AnalysisResult from '../components/AnalysisResult'
 import AuthModal from '../components/AuthModal'
-import { searchMatches, analyzeMatch, analyzeHockeyMatch, getUpcomingMatches, getLiveMatches, getUpcomingHockeyMatches, getUpcomingCS2Matches, getUpcomingDota2Matches } from '../api/sportsApi'
+import { searchMatches, analyzeMatch, analyzeHockeyMatch, analyzeDota2Draft, getUpcomingMatches, getLiveMatches, getUpcomingHockeyMatches, getUpcomingCS2Matches, getUpcomingDota2Matches } from '../api/sportsApi'
 import { coinsApi } from '../api/authApi'
 import ExpressCard from '../components/ExpressCard'
 import { useAuth } from '../context/AuthContext'
@@ -43,6 +43,7 @@ export default function Analyze() {
   const [hockeyLeague, setHockeyLeague] = useState('КХЛ')
 
   const [liveFilter, setLiveFilter] = useState('football')
+  const [draftModal, setDraftModal] = useState(null) // match waiting for draft upload
 
   useEffect(() => {
     getUpcomingMatches(20)
@@ -106,6 +107,11 @@ export default function Analyze() {
 
   async function handleSelectMatch(match) {
     if (!user) { setShowAuth(true); return }
+    // For Dota 2 matches, show draft upload modal first
+    if ((match.sport === 'dota2' || match.sport === '🎮 dota2') && !match._skipDraft) {
+      setDraftModal(match)
+      return
+    }
     setSelectedMatch(match)
     pendingResult.current = null
     setLocked(false)
@@ -115,6 +121,26 @@ export default function Analyze() {
     setError(null)
     try {
       const result = await analyzeMatch(match)
+      pendingResult.current = result
+      setLocked(true)
+    } catch (err) {
+      setError(`Ошибка: ${err.message}`)
+    } finally {
+      setAnalysisLoading(false)
+    }
+  }
+
+  async function handleDraftAnalyze(match, imageBase64) {
+    setDraftModal(null)
+    setSelectedMatch(match)
+    pendingResult.current = null
+    setLocked(false)
+    setRevealed(false)
+    setRevealedAnalysis(null)
+    setAnalysisLoading(true)
+    setError(null)
+    try {
+      const result = await analyzeDota2Draft(match, imageBase64)
       pendingResult.current = result
       setLocked(true)
     } catch (err) {
@@ -216,6 +242,22 @@ export default function Analyze() {
       </div>
     )
   }
+
+  if (draftModal) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#07090f' }}>
+        <Navbar />
+        <DraftUploadModal
+          match={draftModal}
+          onAnalyze={(img) => handleDraftAnalyze(draftModal, img)}
+          onSkip={() => handleSelectMatch({ ...draftModal, _skipDraft: true })}
+          onBack={() => setDraftModal(null)}
+        />
+        {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+      </div>
+    )
+  }
+
 
   return (
     <div style={{ minHeight: '100vh', background: '#07090f' }}>
@@ -958,6 +1000,132 @@ function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnaly
       }}>
         💡 AI использует свои знания о командах: форма, статистика голов, вратари, игра в большинстве — без автоматической загрузки данных.
       </div>
+    </div>
+  )
+}
+
+function DraftUploadModal({ match, onAnalyze, onSkip, onBack }) {
+  const [dragging, setDragging] = useState(false)
+  const [preview, setPreview] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const fileRef = useRef(null)
+
+  function readFile(file) {
+    if (!file || !file.type.startsWith('image/')) return
+    const reader = new FileReader()
+    reader.onload = e => setPreview(e.target.result)
+    reader.readAsDataURL(file)
+  }
+
+  function handleDrop(e) {
+    e.preventDefault()
+    setDragging(false)
+    readFile(e.dataTransfer.files[0])
+  }
+
+  async function handleAnalyze() {
+    if (!preview) return
+    setLoading(true)
+    try { await onAnalyze(preview) }
+    finally { setLoading(false) }
+  }
+
+  return (
+    <div style={{ maxWidth: 640, margin: '0 auto', padding: '40px 24px' }}>
+      <button onClick={onBack} style={{
+        display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none',
+        cursor: 'pointer', color: '#64748b', fontSize: 14, fontWeight: 600, marginBottom: 28,
+      }}>
+        <ArrowLeft size={16} /> Назад к матчам
+      </button>
+
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ fontSize: 13, color: '#64748b', fontWeight: 600, marginBottom: 4 }}>🎮 Dota 2 · {match.league || 'Esports'}</div>
+        <h2 style={{ fontSize: 24, fontWeight: 900, color: '#dde4ee', marginBottom: 0 }}>
+          {match.home} — {match.away}
+        </h2>
+      </div>
+
+      <div className="card" style={{ padding: '28px 28px 24px', marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+            background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+          }}>🛡️</div>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: 16, color: '#dde4ee' }}>Анализ драфта</div>
+            <div style={{ fontSize: 12, color: '#94a3b8' }}>Загрузи скрин — AI распознает героев и разберёт драфт</div>
+          </div>
+        </div>
+
+        {/* Drop zone */}
+        <div
+          onClick={() => fileRef.current?.click()}
+          onDragOver={e => { e.preventDefault(); setDragging(true) }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={handleDrop}
+          style={{
+            border: `2px dashed ${dragging ? '#a855f7' : preview ? 'rgba(168,85,247,0.4)' : 'rgba(0,180,255,0.2)'}`,
+            borderRadius: 14, padding: preview ? 0 : '40px 24px',
+            textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s',
+            background: dragging ? 'rgba(168,85,247,0.06)' : 'rgba(0,0,0,0.1)',
+            overflow: 'hidden', minHeight: 120,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >
+          {preview ? (
+            <img src={preview} alt="draft" style={{ width: '100%', maxHeight: 320, objectFit: 'contain', borderRadius: 12 }} />
+          ) : (
+            <div>
+              <div style={{ fontSize: 36, marginBottom: 10 }}>📸</div>
+              <div style={{ fontWeight: 700, color: '#dde4ee', marginBottom: 4 }}>Перетащи скрин драфта</div>
+              <div style={{ fontSize: 13, color: '#64748b' }}>или кликни чтобы выбрать файл</div>
+              <div style={{ fontSize: 11, color: '#4a6a8a', marginTop: 8 }}>PNG, JPG, WebP · до 5 МБ</div>
+            </div>
+          )}
+        </div>
+        <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
+          onChange={e => readFile(e.target.files[0])} />
+
+        {preview && (
+          <button onClick={() => setPreview(null)} style={{
+            marginTop: 8, background: 'none', border: 'none', cursor: 'pointer',
+            fontSize: 12, color: '#64748b', textDecoration: 'underline',
+          }}>
+            Выбрать другой скрин
+          </button>
+        )}
+
+        <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+          <button
+            onClick={handleAnalyze}
+            disabled={!preview || loading}
+            style={{
+              flex: 1, padding: '12px 0', borderRadius: 12, border: 'none',
+              background: preview ? 'linear-gradient(135deg, #7c3aed, #a855f7)' : 'rgba(255,255,255,0.05)',
+              color: preview ? '#fff' : '#4a6a8a', fontWeight: 800, fontSize: 15,
+              cursor: preview ? 'pointer' : 'not-allowed', transition: 'all 0.15s',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            }}
+          >
+            {loading ? <Loader size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Zap size={16} fill="currentColor" />}
+            {loading ? 'Анализирую драфт...' : 'Анализировать драфт'}
+          </button>
+        </div>
+
+        <div style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(168,85,247,0.06)', borderRadius: 10, border: '1px solid rgba(168,85,247,0.15)', fontSize: 12, color: '#c084fc' }}>
+          💡 GPT-4o Vision распознаёт героев и анализирует синергии, метовость, тайминги силы.
+        </div>
+      </div>
+
+      <button onClick={onSkip} style={{
+        width: '100%', padding: '12px 0', borderRadius: 12,
+        border: '1.5px solid rgba(0,180,255,0.15)', background: 'transparent',
+        color: '#64748b', fontWeight: 600, fontSize: 14, cursor: 'pointer',
+      }}>
+        Анализировать без драфта (по форме команд)
+      </button>
     </div>
   )
 }
