@@ -1115,7 +1115,7 @@ function DraftUploadModal({ match, onAnalyze, onSkip, onBack }) {
         </div>
 
         <div style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(168,85,247,0.06)', borderRadius: 10, border: '1px solid rgba(168,85,247,0.15)', fontSize: 12, color: '#c084fc' }}>
-          💡 GPT-4o Vision распознаёт героев и анализирует синергии, метовость, тайминги силы.
+          💡 Valorix распознаёт героев и анализирует синергии, метовость, тайминги силы.
         </div>
       </div>
 
