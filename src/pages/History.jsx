@@ -136,49 +136,70 @@ function HistoryRow({ item, onClick }) {
   const confidence = analysis.confidence
   const date = new Date(item.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
 
+  // Short badge: first sentence or first 32 chars
+  const shortVerdict = (() => {
+    if (!verdict) return ''
+    const firstSentence = verdict.split(/[.,—–]/)[0].trim()
+    if (firstSentence.length <= 36) return firstSentence
+    return firstSentence.slice(0, 34) + '…'
+  })()
+
+  // Clean league name: cut off garbage like "NHL 26. United Leagues. 3:4 мин. Czech Republic"
+  const leagueDisplay = (() => {
+    if (!item.league) return null
+    const clean = item.league.split('.')[0].trim()
+    return clean.length > 40 ? clean.slice(0, 38) + '…' : clean
+  })()
+
   const v = verdict.toLowerCase()
-  const verdictColor = v.includes('ничья') ? '#f59e0b' : (v.includes('победа') || verdict) ? '#00cfff' : '#4a6a8a'
+  const verdictColor = v.includes('ничья') ? '#f59e0b' : v.includes('победа') || v.includes('тб') || v.includes('тм') ? '#00cfff' : '#64748b'
 
   return (
-    <div className="card" onClick={onClick} style={{ padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16, cursor: 'pointer', transition: 'box-shadow 0.15s' }}
+    <div className="card" onClick={onClick} style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', transition: 'box-shadow 0.15s' }}
       onMouseEnter={e => e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,207,255,0.12)'}
       onMouseLeave={e => e.currentTarget.style.boxShadow = ''}
     >
       <div style={{
-        width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
-        background: 'rgba(0,207,255,0.1)', border: '1px solid rgba(0,207,255,0.2)',
+        width: 40, height: 40, borderRadius: '50%', flexShrink: 0,
+        background: 'rgba(0,207,255,0.08)', border: '1px solid rgba(0,207,255,0.18)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        <TrendingUp size={20} color="#00cfff" />
+        <TrendingUp size={18} color="#00cfff" />
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 700, fontSize: 15, color: '#dde4ee', marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div style={{ fontWeight: 700, fontSize: 14, color: '#dde4ee', marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {item.match_home} — {item.match_away}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, color: '#94a3b8' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#64748b', flexWrap: 'wrap' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 3, whiteSpace: 'nowrap' }}>
             <Clock size={11} /> {date}
           </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 3, whiteSpace: 'nowrap' }}>
             <Zap size={11} color="#00cfff" fill="#00cfff" /> {item.coins_spent} монет
           </span>
-          {item.league && <span>{item.league}</span>}
+          {leagueDisplay && (
+            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>
+              {leagueDisplay}
+            </span>
+          )}
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
-        {verdict && (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0, maxWidth: 190 }}>
+        {shortVerdict && (
           <div style={{
-            background: verdictColor + '15', color: verdictColor,
-            borderRadius: 20, padding: '4px 12px',
+            background: verdictColor + '18', color: verdictColor,
+            borderRadius: 20, padding: '4px 10px',
             fontSize: 12, fontWeight: 700,
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            maxWidth: '100%',
           }}>
-            {verdict}
+            {shortVerdict}
           </div>
         )}
         {confidence && (
-          <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500 }}>
+          <div style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500, whiteSpace: 'nowrap' }}>
             {confidence}% уверенность
           </div>
         )}
