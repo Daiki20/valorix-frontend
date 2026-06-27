@@ -263,11 +263,28 @@ async function fetchFootballEnrich(match) {
 // Main AI analysis for a match
 export async function analyzeMatch(matchInput) {
   let match = { ...matchInput }
+
+  // If not already marked as live, check live feed for current score
+  if (!match.isLive && !match.score && match.sport === 'football') {
+    try {
+      const liveRes = await fetch(`${API_BASE}/matches/live-all`)
+      if (liveRes.ok) {
+        const { data: liveData } = await liveRes.json()
+        const normalize = s => (s || '').toLowerCase().replace(/\s+/g, ' ').trim()
+        const liveMatch = (liveData || []).find(m =>
+          normalize(m.home) === normalize(match.home) && normalize(m.away) === normalize(match.away)
+        )
+        if (liveMatch?.score) {
+          match = { ...match, isLive: true, score: liveMatch.score, minute: liveMatch.minute ?? match.minute }
+        }
+      }
+    } catch { /* ignore, proceed with original match data */ }
+  }
+
   const isLive = !!(match.isLive || match.score)
   const token = localStorage.getItem('valorix_token')
 
-  // All matches (pre-match + live): use gpt-4o-search-preview
-  // Fetch logos in parallel so they're ready when analysis returns
+  // All matches (pre-match + live): fetch logos in parallel
   try {
     const [res, enrichResult] = await Promise.allSettled([
       fetch(`${API_BASE}/analyze/match-with-search`, {
