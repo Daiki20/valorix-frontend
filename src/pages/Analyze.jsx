@@ -1097,6 +1097,34 @@ function DraftUploadModal({ match, onAnalyze, onSkip, onBack }) {
           </button>
         )}
 
+        {/* Example screenshot */}
+        {!preview && (
+          <div style={{ marginTop: 20 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', marginBottom: 10, letterSpacing: 0.5 }}>
+              ПРИМЕР ПОДХОДЯЩЕГО СКРИНА:
+            </div>
+            <div style={{ position: 'relative', borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(168,85,247,0.2)' }}>
+              <img
+                src="/draft-example.jpg"
+                alt="Пример скрина драфта"
+                style={{ width: '100%', display: 'block', borderRadius: 10 }}
+              />
+              <div style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0,
+                background: 'linear-gradient(to top, rgba(7,9,15,0.95) 0%, transparent 100%)',
+                padding: '20px 16px 12px',
+              }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#dde4ee', marginBottom: 3 }}>
+                  Скрин с героями обеих команд
+                </div>
+                <div style={{ fontSize: 12, color: '#94a3b8' }}>
+                  Valorix распознает всех героев и оценит силу драфта, синергии и шансы на победу
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
           <button
             onClick={handleAnalyze}
