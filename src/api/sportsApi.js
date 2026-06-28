@@ -436,8 +436,23 @@ export async function analyzeScreenshot(base64Image) {
   const extracted = await extractFromScreenshot(base64Image)
   if (!extracted?.matches?.length) throw new Error('Не удалось распознать матч на скриншоте')
 
-  // Step 2: for each match, enrich with sstats data then do full AI analysis
   const game = extracted.game || 'football'
+
+  // Dota 2: route to draft analysis (heroes, synergies, meta)
+  if (game === 'dota2') {
+    const m = extracted.matches[0]
+    const result = await analyzeDota2Draft(
+      { home: m.home, away: m.away, league: m.league || '' },
+      base64Image
+    )
+    return {
+      screenType: extracted.screenType,
+      matches: [{ ...result, home: m.home, away: m.away, league: m.league || '' }],
+      summary: result.verdict,
+    }
+  }
+
+  // Step 2: for each match, enrich with sstats data then do full AI analysis
   const analyzed = await Promise.all(
     extracted.matches.map(m => enrichAndAnalyze(m, game))
   )
