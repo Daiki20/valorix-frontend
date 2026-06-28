@@ -217,6 +217,35 @@ export default function UploadScreen() {
           </div>
         )}
 
+        {/* Example screenshot */}
+        {!preview && (
+          <div style={{ marginTop: 24 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', marginBottom: 10, letterSpacing: 0.5 }}>
+              ПРИМЕР ПОДХОДЯЩЕГО СКРИНА:
+            </div>
+            <div style={{ position: 'relative', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,207,255,0.15)', cursor: 'pointer' }}
+              onClick={() => inputRef.current.click()}>
+              <img
+                src="/draft-example.jpg"
+                alt="Пример скрина"
+                style={{ width: '100%', display: 'block' }}
+              />
+              <div style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0,
+                background: 'linear-gradient(to top, rgba(7,9,15,0.95) 0%, transparent 100%)',
+                padding: '24px 16px 14px',
+              }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#dde4ee', marginBottom: 3 }}>
+                  Скрин с командами и коэффициентами
+                </div>
+                <div style={{ fontSize: 12, color: '#94a3b8' }}>
+                  Valorix распознает матч и проведёт полный AI-анализ с вердиктом и дополнительными ставками
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#64748b', marginBottom: 4 }}>Советы для лучшего результата:</div>
           {[
