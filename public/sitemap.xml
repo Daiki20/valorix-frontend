@@ -4,19 +4,25 @@
     <loc>https://valorix.ru/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <lastmod>2026-06-20</lastmod>
+    <lastmod>2026-06-29</lastmod>
   </url>
   <url>
     <loc>https://valorix.ru/blog/</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
-    <lastmod>2026-06-20</lastmod>
+    <lastmod>2026-06-29</lastmod>
   </url>
   <url>
     <loc>https://valorix.ru/analyze/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <lastmod>2026-06-20</lastmod>
+    <lastmod>2026-06-29</lastmod>
+  </url>
+  <url>
+    <loc>https://valorix.ru/blog/braziliya-yaponiya-prognoz-na-match-29-iyunya-2026-g/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-06-29</lastmod>
   </url>
   <url>
     <loc>https://valorix.ru/blog/furia-esports-team-falcons-prognoz-na-match-21-iyunya-2026-g/</loc>
