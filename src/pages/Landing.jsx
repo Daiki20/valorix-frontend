@@ -221,7 +221,7 @@ export default function Landing() {
     }
   }, [user])
 
-  const MAINTENANCE = true // выключи когда всё заработает
+  const MAINTENANCE = false
 
   return (
     <div style={{ minHeight: '100vh', background: BG, position: 'relative', overflow: 'hidden' }}>
