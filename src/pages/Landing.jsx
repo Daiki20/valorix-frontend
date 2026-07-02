@@ -221,8 +221,20 @@ export default function Landing() {
     }
   }, [user])
 
+  const MAINTENANCE = true // выключи когда всё заработает
+
   return (
     <div style={{ minHeight: '100vh', background: BG, position: 'relative', overflow: 'hidden' }}>
+      {MAINTENANCE && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999,
+          background: 'linear-gradient(90deg, #f59e0b, #d97706)',
+          color: '#000', textAlign: 'center', padding: '10px 16px',
+          fontSize: 14, fontWeight: 600, letterSpacing: 0.3,
+        }}>
+          🔧 Технические работы — сайт скоро вернётся в штатный режим. Спасибо за ожидание!
+        </div>
+      )}
       <Helmet>
         <title>Valorix AI — AI анализ матчей и прогнозы на спорт</title>
         <meta name="description" content="Valorix AI — AI анализ матча за 15 секунд. Прогнозы на футбол, хоккей, CS2, Dota 2, UFC. Загрузи скриншот линии букмекера — получи разбор формы команд, травм и value ставок." />
