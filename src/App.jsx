@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ToastProvider } from './context/ToastContext'
 import ErrorBoundary from './components/ErrorBoundary'
+import WelcomeBonusPopup from './components/WelcomeBonusPopup'
+import WelcomeBonusBanner from './components/WelcomeBonusBanner'
 
 const Landing = lazy(() => import('./pages/Landing'))
 const Analyze = lazy(() => import('./pages/Analyze'))
@@ -27,6 +29,8 @@ export default function App() {
     <AuthProvider>
       <ToastProvider>
         <BrowserRouter>
+          <WelcomeBonusPopup />
+          <WelcomeBonusBanner />
           <Suspense fallback={<div style={{ background: '#0a0a1a', minHeight: '100vh' }} />}>
             <Routes>
               <Route path="/" element={<Landing />} />

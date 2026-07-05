@@ -17,12 +17,12 @@ const PAYMENT_METHODS = [
   { id: 'sberbank',      label: 'SberPay', desc: 'Через приложение Сбера',   emoji: '🟢' },
 ]
 
-export default function CoinsModal({ onClose }) {
+export default function CoinsModal({ onClose, initialPackageId }) {
   const { user, updateCoins } = useAuth()
   const toast = useToast()
   const [packages, setPackages] = useState([])
   const [loading, setLoading] = useState(false)
-  const [selectedId, setSelectedId] = useState('pack_600')
+  const [selectedId, setSelectedId] = useState(initialPackageId || 'pack_600')
   const [paymentMethod, setPaymentMethod] = useState('sbp')
   const [promoCode, setPromoCode] = useState('')
 
