@@ -4,6 +4,115 @@ import CoinsModal from './CoinsModal'
 
 const CLOSED_KEY = 'valorix_welcome_banner_closed'
 
+const STYLES = `
+  @keyframes wbbSweep {
+    0%,100% { opacity:0; transform:translateX(-60%); }
+    50%      { opacity:1; transform:translateX(60%);  }
+  }
+  @keyframes wbbBlink {
+    0%,100% { opacity:1 } 50% { opacity:0.2 }
+  }
+  .wbb-wrap {
+    position: relative;
+    background: linear-gradient(90deg,rgba(0,60,120,0.4) 0%,rgba(18,70,255,0.15) 50%,rgba(0,60,120,0.4) 100%);
+    border-bottom: 1px solid rgba(0,180,255,0.15);
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 99;
+  }
+  .wbb-wrap::before {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background: linear-gradient(90deg,transparent,rgba(0,180,255,0.04),transparent);
+    animation: wbbSweep 4s ease-in-out infinite;
+  }
+
+  /* ── Desktop layout ── */
+  .wbb-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: 52px;
+    gap: 12px;
+  }
+  .wbb-left  { display:flex; align-items:center; gap:16px; flex-shrink:0; }
+  .wbb-right { display:flex; align-items:center; gap:14px; flex-shrink:0; }
+
+  .wbb-pill {
+    display:flex; align-items:center; gap:6px;
+    background: rgba(0,180,255,0.08);
+    border: 1px solid rgba(0,180,255,0.2);
+    border-radius:20px; padding:4px 11px;
+    font-size:11px; font-weight:600; color:#00d4ff;
+    text-transform:uppercase; letter-spacing:0.5px;
+    white-space:nowrap;
+  }
+  .wbb-pill-dot {
+    width:5px; height:5px; background:#00d4ff;
+    border-radius:50%; animation:wbbBlink 1.2s infinite;
+  }
+  .wbb-deal {
+    display:flex; align-items:center; gap:8px;
+    font-size:14px; font-weight:700;
+  }
+  .wbb-old { color:#ff3e3e; text-decoration:line-through; opacity:0.6; font-size:12px; }
+  .wbb-new { color:#fff; font-size:16px; font-weight:800; }
+  .wbb-sep { color:rgba(0,180,255,0.25); }
+  .wbb-coins { color:#00d4ff; font-size:13px; }
+  .wbb-divider { width:1px; height:24px; background:rgba(0,180,255,0.1); flex-shrink:0; }
+  .wbb-tag2 { font-size:11px; color:#3a5070; white-space:nowrap; }
+
+  .wbb-timer { display:flex; align-items:center; gap:5px; }
+  .wbb-timer-icon { color:rgba(0,180,255,0.35); font-size:13px; }
+  .wbb-timer-digits {
+    font-size:16px; font-weight:800; color:#00d4ff;
+    letter-spacing:2px; font-variant-numeric:tabular-nums;
+  }
+
+  .wbb-btn {
+    background: linear-gradient(135deg,#00d4ff,#1246ff);
+    border:none; color:#fff;
+    font-size:12px; font-weight:700;
+    padding:8px 18px; border-radius:8px; cursor:pointer;
+    white-space:nowrap;
+    transition: opacity 0.2s, transform 0.1s;
+    box-shadow: 0 2px 14px rgba(0,180,255,0.25);
+  }
+  .wbb-btn:hover { opacity:0.9; transform:translateY(-1px); }
+
+  .wbb-close {
+    background:none; border:none;
+    color:#2a3a55; font-size:18px; cursor:pointer;
+    padding:4px 2px; line-height:1; transition:color 0.2s;
+    flex-shrink:0;
+  }
+  .wbb-close:hover { color:#e8f0fc; }
+
+  /* ── Mobile layout ── */
+  @media (max-width: 600px) {
+    .wbb-inner {
+      height: auto;
+      padding: 10px 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .wbb-left  { gap:10px; flex:1; min-width:0; }
+    .wbb-right { gap:8px;  width:100%; justify-content:space-between; }
+    .wbb-pill  { display:none; }
+    .wbb-divider { display:none; }
+    .wbb-tag2  { display:none; }
+    .wbb-deal  { gap:6px; font-size:13px; }
+    .wbb-new   { font-size:15px; }
+    .wbb-timer-digits { font-size:15px; letter-spacing:1.5px; }
+    .wbb-btn   { flex:1; text-align:center; font-size:13px; padding:9px 12px; }
+  }
+
+  @media (max-width: 380px) {
+    .wbb-old   { display:none; }
+    .wbb-sep   { display:none; }
+  }
+`
+
 export default function WelcomeBonusBanner() {
   const { user } = useAuth()
   const [secs, setSecs] = useState(0)
@@ -33,13 +142,11 @@ export default function WelcomeBonusBanner() {
 
   function dismiss(e) {
     e.stopPropagation()
-    // закрыто до конца бонусного периода
-    const expires = user?.bonus_expires_at || 0
-    localStorage.setItem(CLOSED_KEY, String(expires))
+    localStorage.setItem(CLOSED_KEY, String(user?.bonus_expires_at || 0))
     setVisible(false)
   }
 
-  function pad(n) { return String(n).padStart(2, '0') }
+  const pad = n => String(n).padStart(2, '0')
   const h = pad(Math.floor(secs / 3600))
   const m = pad(Math.floor((secs % 3600) / 60))
   const s = pad(secs % 60)
@@ -48,86 +155,43 @@ export default function WelcomeBonusBanner() {
 
   return (
     <>
-      <div
-        onClick={() => setShowCoins(true)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 12,
-          background: 'linear-gradient(90deg,#06122e 0%,#0a1e5a 45%,#06122e 100%)',
-          borderBottom: '1px solid rgba(0,100,255,0.2)',
-          padding: '10px 20px',
-          cursor: 'pointer',
-          position: 'relative',
-          overflow: 'hidden',
-          zIndex: 99,
-        }}
-      >
-        {/* shimmer */}
-        <style>{`
-          @keyframes bannerShimmer {
-            0% { transform: translateX(-100%) }
-            100% { transform: translateX(100%) }
-          }
-        `}</style>
-        <div style={{
-          position: 'absolute', inset: 0,
-          background: 'linear-gradient(90deg,transparent,rgba(0,100,255,0.04),transparent)',
-          animation: 'bannerShimmer 4s infinite',
-          pointerEvents: 'none',
-        }} />
+      <style dangerouslySetInnerHTML={{ __html: STYLES }} />
 
-        {/* left */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#aac4e8' }}>Приветственный бонус</div>
-            <div style={{ fontSize: 11, color: '#3a5570' }}>Только 1 час после регистрации</div>
-          </div>
-          <div style={{ width: 1, height: 32, background: 'rgba(0,100,255,0.2)' }} />
-          <div>
-            <div style={{ fontSize: 26, fontWeight: 900, color: '#00cfff', lineHeight: 1 }}>−40%</div>
-            <div style={{ fontSize: 11, color: '#3a5570' }}>к первому пополнению</div>
-          </div>
-        </div>
+      <div className="wbb-wrap" onClick={() => setShowCoins(true)}>
+        <div className="wbb-inner">
 
-        {/* timer */}
-        <div style={{ textAlign: 'center', flexShrink: 0 }}>
-          <div style={{ fontSize: 10, color: '#3a5570', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 2 }}>До конца акции</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: '#00cfff', letterSpacing: 3, fontVariantNumeric: 'tabular-nums' }}>
-            {h}<span style={{ color: '#1a3a66' }}>:</span>{m}<span style={{ color: '#1a3a66' }}>:</span>{s}
+          {/* left */}
+          <div className="wbb-left">
+            <div className="wbb-pill">
+              <span className="wbb-pill-dot" />
+              Бонус активен
+            </div>
+            <div className="wbb-deal">
+              <span className="wbb-old">1 000 ₽</span>
+              <span className="wbb-sep">→</span>
+              <span className="wbb-new">600 ₽</span>
+              <span className="wbb-sep">·</span>
+              <span className="wbb-coins">💎 1000 монет</span>
+            </div>
+            <div className="wbb-divider" />
+            <div className="wbb-tag2">−40% к первому пополнению</div>
           </div>
-        </div>
 
-        {/* right */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 12, color: '#ff6666', textDecoration: 'line-through', opacity: 0.8 }}>1 000 ₽</div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#fff' }}>600 ₽</div>
-            <div style={{ fontSize: 11, color: '#3a6688' }}>получишь 1000 монет</div>
+          {/* right */}
+          <div className="wbb-right">
+            <div className="wbb-timer">
+              <span className="wbb-timer-icon">⏱</span>
+              <span className="wbb-timer-digits">{h}:{m}:{s}</span>
+            </div>
+            <button
+              className="wbb-btn"
+              onClick={e => { e.stopPropagation(); setShowCoins(true) }}
+            >
+              Получить бонус
+            </button>
+            <button className="wbb-close" onClick={dismiss}>×</button>
           </div>
-          <button
-            onClick={e => { e.stopPropagation(); setShowCoins(true) }}
-            style={{
-              background: 'linear-gradient(135deg,#1a5aff,#0d3acc)',
-              border: 'none', color: '#fff',
-              fontSize: 13, fontWeight: 700,
-              padding: '9px 18px', borderRadius: 8, cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 0 20px rgba(26,90,255,0.4)',
-            }}
-          >
-            Получить бонус
-          </button>
-          <button
-            onClick={dismiss}
-            style={{
-              background: 'none', border: 'none',
-              color: '#2a3a55', fontSize: 20, cursor: 'pointer',
-              padding: '4px 8px', lineHeight: 1,
-            }}
-            title="Закрыть"
-          >×</button>
+
         </div>
       </div>
 
