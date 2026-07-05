@@ -155,8 +155,14 @@ function DashboardTab({ toast }) {
             const token = localStorage.getItem('valorix_token')
             const r = await fetch(`${API_BASE}/admin/test-bonus`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } })
             const d = await r.json()
-            if (d.ok) { toast.success('Бонус активирован! Перезагрузи страницу'); }
-            else toast.error(d.error || 'Ошибка')
+            if (d.ok) {
+              localStorage.removeItem('valorix_welcome_bonus_seen')
+              localStorage.removeItem('valorix_welcome_banner_closed')
+              toast.success('Бонус активирован! Перезагружаем...')
+              setTimeout(() => window.location.reload(), 1200)
+            } else {
+              toast.error(d.error || 'Ошибка')
+            }
           }}
           style={{
             background: 'linear-gradient(135deg,#1a5aff,#0d3acc)',
