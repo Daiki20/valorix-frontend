@@ -32,11 +32,12 @@ export default function CoinsModal({ onClose, initialPackageId }) {
   const promoValid = promoBonus > 0
 
   const BONUS_PACKAGE = { id: 'pack_bonus', coins: 1000, price: 600, label: '1000 монет', bonus: 'Приветственный −40%' }
+  const bonusActive = user?.bonus_expires_at && Date.now() < user.bonus_expires_at
 
   useEffect(() => {
     coinsApi.packages().then(d => {
       const list = d.packages
-      if (initialPackageId === 'pack_bonus') {
+      if (bonusActive) {
         setPackages([BONUS_PACKAGE, ...list])
       } else {
         setPackages(list)
