@@ -41,6 +41,12 @@ export async function setAdmin(email, value) {
   return r.json()
 }
 
+export async function getTrafficStats() {
+  const r = await fetch(`${BASE}/admin/traffic`, { headers: headers() })
+  if (!r.ok) throw new Error('Forbidden')
+  return r.json()
+}
+
 export async function setBlocked(email, value) {
   const r = await fetch(`${BASE}/admin/set-blocked`, {
     method: 'POST', headers: headers(),

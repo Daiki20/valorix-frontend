@@ -30,7 +30,11 @@ async function request(method, path, body) {
 }
 
 export const authApi = {
-  register: (email, password, username) => request('POST', '/auth/register', { email, password, username }),
+  register: (email, password, username) => {
+    const utm_source = localStorage.getItem('valorix_utm_source') || ''
+    const utm_campaign = localStorage.getItem('valorix_utm_campaign') || ''
+    return request('POST', '/auth/register', { email, password, username, utm_source, utm_campaign })
+  },
   login: (email, password) => request('POST', '/auth/login', { email, password }),
   verifyEmail: (email, code) => request('POST', '/auth/verify-email', { email, code }),
   resendCode: (email) => request('POST', '/auth/resend-code', { email }),

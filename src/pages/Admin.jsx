@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import Navbar from '../components/Navbar'
-import { getStats, getUsers, getTransactions, addCoins, setAdmin, setBlocked } from '../api/adminApi'
+import { getStats, getUsers, getTransactions, addCoins, setAdmin, setBlocked, getTrafficStats } from '../api/adminApi'
 import { Users, Zap, BarChart3, RefreshCw, Shield, Ban, Plus, Minus, Search, ChevronLeft, ChevronRight, Star } from 'lucide-react'
 const API_BASE = import.meta.env.PROD ? 'https://web-production-fefcd.up.railway.app' : (import.meta.env.VITE_API_URL || '')
 
-const TABS = ['Дашборд', 'Пользователи', 'Транзакции', 'Блог', 'Рассылка']
+const TABS = ['Дашборд', 'Пользователи', 'Транзакции', 'Трафик', 'Блог', 'Рассылка']
 
 export default function Admin() {
   const { user } = useAuth()
@@ -50,8 +50,9 @@ export default function Admin() {
         {tab === 0 && <DashboardTab toast={toast} />}
         {tab === 1 && <UsersTab toast={toast} />}
         {tab === 2 && <TransactionsTab />}
-        {tab === 3 && <BlogTab toast={toast} />}
-        {tab === 4 && <NewsletterTab toast={toast} />}
+        {tab === 3 && <TrafficTab />}
+        {tab === 4 && <BlogTab toast={toast} />}
+        {tab === 5 && <NewsletterTab toast={toast} />}
       </div>
     </div>
   )
@@ -2109,6 +2110,98 @@ function NewsletterTab({ toast }) {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+/* ─── Traffic Tab ─── */
+const SOURCE_LABELS = { vk: 'ВКонтакте', yandex: 'Яндекс.Директ', google: 'Google Ads', organic: 'Органика' }
+const SOURCE_COLORS = { vk: '#2787F5', yandex: '#FC3F1D', google: '#4285F4', organic: '#4ade80' }
+
+function TrafficTab() {
+  const [data, setData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [activeSource, setActiveSource] = useState('all')
+
+  useEffect(() => {
+    getTrafficStats().then(d => { setData(d); setLoading(false) }).catch(() => setLoading(false))
+  }, [])
+
+  if (loading) return <div style={{ color: '#64748b', padding: 40, textAlign: 'center' }}>Загрузка...</div>
+  if (!data || data.length === 0) return (
+    <div style={{ color: '#64748b', padding: 40, textAlign: 'center' }}>
+      <p style={{ fontSize: 16, marginBottom: 8 }}>Данных пока нет</p>
+      <p style={{ fontSize: 13 }}>UTM-метки начнут собираться после первой регистрации с рекламы</p>
+    </div>
+  )
+
+  const knownSources = ['vk', 'yandex', 'organic']
+  const tabs = ['all', ...knownSources.filter(s => data.some(r => r.source === s))]
+  const filtered = activeSource === 'all' ? data : data.filter(r => r.source === activeSource)
+  const totals = data.reduce((acc, r) => ({
+    registrations: acc.registrations + r.registrations,
+    payments: acc.payments + r.payments,
+    revenue: acc.revenue + r.revenue,
+  }), { registrations: 0, payments: 0, revenue: 0 })
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16 }}>
+        {[
+          { label: 'Всего регистраций', value: totals.registrations, color: '#00cfff' },
+          { label: 'Оплат с рекламы', value: totals.payments, color: '#a78bfa' },
+          { label: 'Выручка с рекламы', value: `${totals.revenue} ₽`, color: '#4ade80' },
+        ].map((c, i) => (
+          <div key={i} style={{ background: '#0c0f18', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '18px 20px' }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: c.color }}>{c.value}</div>
+            <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>{c.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {tabs.map(s => (
+          <button key={s} onClick={() => setActiveSource(s)} style={{
+            padding: '7px 18px', borderRadius: 8, border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            background: activeSource === s ? (SOURCE_COLORS[s] || '#6366f1') : 'rgba(255,255,255,0.06)',
+            color: activeSource === s ? 'white' : '#94a3b8', transition: 'all 0.2s',
+          }}>
+            {s === 'all' ? 'Все источники' : (SOURCE_LABELS[s] || s)}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ background: '#0c0f18', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, overflow: 'hidden' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+              {['Источник', 'Регистраций всего', 'Сегодня', 'Оплат', 'Выручка'].map(h => (
+                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, color: '#64748b', fontWeight: 600 }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((row, i) => (
+              <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <td style={{ padding: '14px 16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: SOURCE_COLORS[row.source] || '#94a3b8', flexShrink: 0 }} />
+                    <span style={{ color: '#dde4ee', fontWeight: 600, fontSize: 14 }}>{SOURCE_LABELS[row.source] || row.source}</span>
+                  </div>
+                </td>
+                <td style={{ padding: '14px 16px', color: '#00cfff', fontWeight: 700, fontSize: 15 }}>{row.registrations}</td>
+                <td style={{ padding: '14px 16px', color: row.today_regs > 0 ? '#4ade80' : '#64748b', fontWeight: 600 }}>
+                  {row.today_regs > 0 ? `+${row.today_regs}` : '—'}
+                </td>
+                <td style={{ padding: '14px 16px', color: '#a78bfa', fontWeight: 600 }}>{row.payments || '—'}</td>
+                <td style={{ padding: '14px 16px', color: row.revenue > 0 ? '#4ade80' : '#64748b', fontWeight: 700 }}>
+                  {row.revenue > 0 ? `${row.revenue} ₽` : '—'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
