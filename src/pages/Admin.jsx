@@ -144,6 +144,30 @@ function DashboardTab({ toast }) {
         ))}
       </div>
 
+      {/* Test bonus button */}
+      <div className="card" style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: '#dde4ee' }}>🎁 Тест приветственного бонуса</div>
+          <div style={{ fontSize: 12, color: '#64748b', marginTop: 2 }}>Активирует бонус на 1 час для твоего аккаунта — чтобы увидеть попап и баннер</div>
+        </div>
+        <button
+          onClick={async () => {
+            const token = localStorage.getItem('valorix_token')
+            const r = await fetch(`${API_BASE}/admin/test-bonus`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } })
+            const d = await r.json()
+            if (d.ok) { toast.success('Бонус активирован! Перезагрузи страницу'); }
+            else toast.error(d.error || 'Ошибка')
+          }}
+          style={{
+            background: 'linear-gradient(135deg,#1a5aff,#0d3acc)',
+            border: 'none', color: '#fff', fontSize: 13, fontWeight: 700,
+            padding: '10px 20px', borderRadius: 8, cursor: 'pointer', whiteSpace: 'nowrap',
+          }}
+        >
+          Активировать тест
+        </button>
+      </div>
+
       {/* Add coins form */}
       <div className="card" style={{ padding: 24 }}>
         <h3 style={{ fontWeight: 700, fontSize: 16, color: '#dde4ee', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
