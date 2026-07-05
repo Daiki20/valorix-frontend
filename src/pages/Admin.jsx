@@ -2149,15 +2149,20 @@ const SOURCE_LABELS = { vk: 'ВКонтакте', yandex: 'Яндекс.Дире
 const SOURCE_COLORS = { vk: '#2787F5', yandex: '#FC3F1D', google: '#4285F4', organic: '#4ade80' }
 
 function TrafficTab() {
-  const [data, setData] = useState(null)
+  const [raw, setRaw] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeSource, setActiveSource] = useState('all')
 
   useEffect(() => {
-    getTrafficStats().then(d => { setData(d); setLoading(false) }).catch(() => setLoading(false))
+    getTrafficStats().then(d => { setRaw(d); setLoading(false) }).catch(() => setLoading(false))
   }, [])
 
   if (loading) return <div style={{ color: '#64748b', padding: 40, textAlign: 'center' }}>Загрузка...</div>
+
+  // Support both old array format and new { rows, bonus_total } format
+  const data = Array.isArray(raw) ? raw : (raw?.rows || [])
+  const bonusTotal = raw?.bonus_total ?? 0
+
   if (!data || data.length === 0) return (
     <div style={{ color: '#64748b', padding: 40, textAlign: 'center' }}>
       <p style={{ fontSize: 16, marginBottom: 8 }}>Данных пока нет</p>
@@ -2181,9 +2186,10 @@ function TrafficTab() {
           { label: 'Всего регистраций', value: totals.registrations, color: '#00cfff' },
           { label: 'Оплат с рекламы', value: totals.payments, color: '#a78bfa' },
           { label: 'Выручка с рекламы', value: `${totals.revenue} ₽`, color: '#4ade80' },
+          { label: 'Акция (−40% бонус)', value: bonusTotal, color: '#ffb800', icon: '🎁' },
         ].map((c, i) => (
-          <div key={i} style={{ background: '#0c0f18', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '18px 20px' }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: c.color }}>{c.value}</div>
+          <div key={i} style={{ background: '#0c0f18', border: `1px solid ${i === 3 ? 'rgba(255,184,0,0.2)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 14, padding: '18px 20px' }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: c.color }}>{c.icon ? `${c.icon} ` : ''}{c.value}</div>
             <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>{c.label}</div>
           </div>
         ))}
@@ -2205,7 +2211,7 @@ function TrafficTab() {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-              {['Источник', 'Регистраций всего', 'Сегодня', 'Оплат', 'Выручка'].map(h => (
+              {['Источник', 'Регистраций', 'Сегодня', 'Оплат', 'Акция', 'Выручка'].map(h => (
                 <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 12, color: '#64748b', fontWeight: 600 }}>{h}</th>
               ))}
             </tr>
@@ -2224,6 +2230,11 @@ function TrafficTab() {
                   {row.today_regs > 0 ? `+${row.today_regs}` : '—'}
                 </td>
                 <td style={{ padding: '14px 16px', color: '#a78bfa', fontWeight: 600 }}>{row.payments || '—'}</td>
+                <td style={{ padding: '14px 16px' }}>
+                  {row.bonus_used > 0
+                    ? <span style={{ color: '#ffb800', fontWeight: 700 }}>🎁 {row.bonus_used}</span>
+                    : <span style={{ color: '#64748b' }}>—</span>}
+                </td>
                 <td style={{ padding: '14px 16px', color: row.revenue > 0 ? '#4ade80' : '#64748b', fontWeight: 700 }}>
                   {row.revenue > 0 ? `${row.revenue} ₽` : '—'}
                 </td>
