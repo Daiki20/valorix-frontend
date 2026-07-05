@@ -31,8 +31,17 @@ export default function CoinsModal({ onClose, initialPackageId }) {
   const promoBonus = VALID_PROMOS[promoKey] || 0
   const promoValid = promoBonus > 0
 
+  const BONUS_PACKAGE = { id: 'pack_bonus', coins: 1000, price: 600, label: '1000 монет', bonus: 'Приветственный −40%' }
+
   useEffect(() => {
-    coinsApi.packages().then(d => setPackages(d.packages))
+    coinsApi.packages().then(d => {
+      const list = d.packages
+      if (initialPackageId === 'pack_bonus') {
+        setPackages([BONUS_PACKAGE, ...list])
+      } else {
+        setPackages(list)
+      }
+    })
   }, [])
 
   async function handleBuy() {
