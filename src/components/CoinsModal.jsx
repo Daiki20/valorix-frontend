@@ -62,26 +62,58 @@ export default function CoinsModal({ onClose, initialPackageId }) {
 
   return (
     <>
-      <div onClick={onClose} style={{
-        position: 'fixed', inset: 0,
-        background: 'rgba(3,11,24,0.75)',
-        zIndex: 200, backdropFilter: 'blur(8px)',
-      }} />
+      <style>{`
+        .coins-modal-scroll {
+          position: fixed; inset: 0; z-index: 201;
+          display: flex; align-items: center; justify-content: center;
+          padding: 16px;
+        }
+        .coins-modal-card {
+          width: 100%; max-width: 460px;
+          max-height: 92vh;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
+          padding: 32px 28px;
+          position: relative;
+          background: #07132a;
+          border: 1px solid ${BORDER};
+          border-radius: 20px;
+          box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+        }
+        @media (max-width: 480px) {
+          .coins-modal-scroll {
+            align-items: flex-end;
+            padding: 0;
+          }
+          .coins-modal-card {
+            max-height: 94vh;
+            border-radius: 20px 20px 0 0;
+            padding: 22px 18px 32px;
+          }
+          .coins-pkg-grid {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 8px !important;
+          }
+          .coins-pkg-btn {
+            padding: 10px 12px !important;
+          }
+          .coins-pkg-btn .pkg-label { font-size: 12px !important; }
+          .coins-pkg-btn .pkg-price { font-size: 17px !important; }
+          .coins-pkg-btn .pkg-icon  { width: 26px !important; height: 26px !important; }
+          .coins-pay-grid {
+            gap: 6px !important;
+          }
+        }
+      `}</style>
 
-      <div className="coin-packages-modal" style={{
-        position: 'fixed', inset: 0,
-        zIndex: 201,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '16px', overflowY: 'auto',
-      }}>
-        <div className="card coin-packages-inner" style={{
-          width: '100%', maxWidth: 460,
-          padding: '36px 32px', position: 'relative',
-          background: '#07132a',
-          border: `1px solid ${BORDER}`,
-          boxShadow: '0 24px 80px rgba(0,0,0,0.6)',
-          flexShrink: 0,
-        }}>
+      <div style={{
+        position: 'fixed', inset: 0, zIndex: 200,
+        background: 'rgba(3,11,24,0.82)',
+      }} onClick={onClose} />
+
+      <div className="coins-modal-scroll">
+        <div className="card coins-modal-card">
           {/* Close */}
           <button onClick={onClose} style={{
             position: 'absolute', top: 16, right: 16,
@@ -104,48 +136,43 @@ export default function CoinsModal({ onClose, initialPackageId }) {
           </div>
 
           {/* Packages */}
-          <div className="coin-packages" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 24 }}>
+          <div className="coins-pkg-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
             {packages.map(pkg => {
               const isSelected = selectedId === pkg.id
+              const isBonus = pkg.id === 'pack_bonus'
               return (
                 <button
                   key={pkg.id}
+                  className="coins-pkg-btn"
                   onClick={() => setSelectedId(pkg.id)}
                   style={{
                     display: 'flex', flexDirection: 'column',
-                    padding: '14px 16px',
-                    border: `2px solid ${isSelected ? ACCENT : BORDER}`,
+                    padding: '12px 14px',
+                    border: `2px solid ${isSelected ? ACCENT : isBonus ? 'rgba(255,184,0,0.35)' : BORDER}`,
                     borderRadius: 12,
-                    background: isSelected ? 'rgba(0,207,255,0.1)' : DIM,
+                    background: isSelected ? 'rgba(0,207,255,0.1)' : isBonus ? 'rgba(255,184,0,0.05)' : DIM,
                     cursor: 'pointer', transition: 'all 0.15s', textAlign: 'left',
                     boxShadow: isSelected ? '0 0 20px rgba(0,207,255,0.15)' : 'none',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                    <div style={{
-                      width: 32, height: 32, borderRadius: '50%',
-                      background: isSelected
-                        ? 'linear-gradient(135deg, #00cfff, #7b5ea7)'
-                        : 'rgba(0,180,255,0.1)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0,
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
+                    <div className="pkg-icon" style={{
+                      width: 28, height: 28, borderRadius: '50%',
+                      background: isSelected ? 'linear-gradient(135deg, #00cfff, #7b5ea7)' : 'rgba(0,180,255,0.1)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                     }}>
-                      <Zap size={15} color={isSelected ? '#030b18' : ACCENT} fill={isSelected ? '#030b18' : 'none'} />
+                      {isBonus
+                        ? <span style={{ fontSize: 14 }}>🎁</span>
+                        : <Zap size={13} color={isSelected ? '#030b18' : ACCENT} fill={isSelected ? '#030b18' : 'none'} />}
                     </div>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: TEXT }}>{pkg.label}</div>
+                    <div className="pkg-label" style={{ fontWeight: 700, fontSize: 13, color: TEXT }}>{pkg.label}</div>
                   </div>
                   {pkg.bonus && (
-                    <div style={{
-                      fontSize: 11, color: '#22c55e', fontWeight: 600,
-                      display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4,
-                    }}>
-                      <Star size={10} fill="#22c55e" color="#22c55e" /> {pkg.bonus}
+                    <div style={{ fontSize: 10, color: isBonus ? '#ffb800' : '#22c55e', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3, marginBottom: 3 }}>
+                      <Star size={9} fill={isBonus ? '#ffb800' : '#22c55e'} color={isBonus ? '#ffb800' : '#22c55e'} /> {pkg.bonus}
                     </div>
                   )}
-                  <div style={{
-                    fontWeight: 800, fontSize: 20,
-                    color: isSelected ? ACCENT : TEXT,
-                  }}>
+                  <div className="pkg-price" style={{ fontWeight: 800, fontSize: 18, color: isSelected ? ACCENT : TEXT }}>
                     {pkg.price} ₽
                   </div>
                 </button>
@@ -154,11 +181,11 @@ export default function CoinsModal({ onClose, initialPackageId }) {
           </div>
 
           {/* Payment methods */}
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: MUTED, letterSpacing: 1, marginBottom: 10, textTransform: 'uppercase' }}>
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: MUTED, letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
               Способ оплаты
             </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <div className="coins-pay-grid" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {PAYMENT_METHODS.map(m => {
                 const isSelected = paymentMethod === m.id
                 return (
@@ -166,16 +193,16 @@ export default function CoinsModal({ onClose, initialPackageId }) {
                     key={m.id}
                     onClick={() => setPaymentMethod(m.id)}
                     style={{
-                      flex: '1 1 calc(50% - 4px)', minWidth: 80,
-                      padding: '10px 8px', borderRadius: 10,
+                      flex: '1 1 calc(50% - 4px)', minWidth: 70,
+                      padding: '8px 6px', borderRadius: 10,
                       border: `2px solid ${isSelected ? ACCENT : BORDER}`,
                       background: isSelected ? 'rgba(0,207,255,0.1)' : DIM,
                       cursor: 'pointer', transition: 'all 0.15s', textAlign: 'center',
                     }}
                   >
-                    <div style={{ fontSize: 18, marginBottom: 3 }}>{m.emoji}</div>
+                    <div style={{ fontSize: 16, marginBottom: 2 }}>{m.emoji}</div>
                     <div style={{ fontWeight: 700, fontSize: 12, color: isSelected ? ACCENT : TEXT }}>{m.label}</div>
-                    <div style={{ fontSize: 10, color: MUTED, marginTop: 2, lineHeight: 1.3 }}>{m.desc}</div>
+                    <div style={{ fontSize: 10, color: MUTED, marginTop: 1, lineHeight: 1.3 }}>{m.desc}</div>
                   </button>
                 )
               })}
