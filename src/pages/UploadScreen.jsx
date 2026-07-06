@@ -130,7 +130,7 @@ function ScreenshotDisclaimer({ onConfirm, onCancel }) {
 
 export default function UploadScreen() {
   const { user, updateCoins } = useAuth()
-  const [showDisclaimer, setShowDisclaimer] = useState(() => !localStorage.getItem(DISCLAIMER_KEY))
+  const [showDisclaimer, setShowDisclaimer] = useState(true)
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(null)
   const [dragging, setDragging] = useState(false)
@@ -211,7 +211,6 @@ export default function UploadScreen() {
   }
 
   function handleDisclaimerConfirm() {
-    localStorage.setItem(DISCLAIMER_KEY, '1')
     setShowDisclaimer(false)
   }
 
