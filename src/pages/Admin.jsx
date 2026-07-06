@@ -1156,7 +1156,7 @@ function UsersTab({ toast }) {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid rgba(0,180,255,0.08)', background: '#0a0d14' }}>
-                  {['Email', 'Username', 'Монеты', 'Промокод', 'Анализов', 'Статус', 'Действия'].map(h => (
+                  {['Email', 'Username', 'Монеты', 'Промокод', 'Источник', 'Анализов', 'Статус', 'Действия'].map(h => (
                     <th key={h} style={{ textAlign: 'left', padding: '10px 12px', color: '#64748b', fontWeight: 700, fontSize: 11, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
@@ -1168,6 +1168,18 @@ function UsersTab({ toast }) {
                     <td style={tdStyle}>{u.username}</td>
                     <td style={tdStyle}><CoinPill n={u.coins} /></td>
                     <td style={tdStyle}>{u.promo_code ? <span style={pillStyle('#a78bfa')}>{u.promo_code}</span> : <span style={{ color: '#4a6a8a', fontSize: 11 }}>—</span>}</td>
+                    <td style={tdStyle}>
+                      {u.utm_source ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                          <span style={pillStyle(
+                            u.utm_source === 'vk' ? '#4a7fbf' :
+                            u.utm_source === 'yandex' ? '#b8962a' :
+                            u.utm_source === 'google' ? '#2a7a4a' : '#3a5070'
+                          )}>{u.utm_source}</span>
+                          {u.utm_campaign && <span style={{ fontSize: 10, color: '#4a6a8a' }}>{u.utm_campaign}</span>}
+                        </div>
+                      ) : <span style={{ color: '#4a6a8a', fontSize: 11 }}>органика</span>}
+                    </td>
                     <td style={tdStyle}>{u.analyses_count}</td>
                     <td style={tdStyle}>
                       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
