@@ -9,9 +9,128 @@ import { coinsApi } from '../api/authApi'
 import { useAuth } from '../context/AuthContext'
 
 const ANALYSIS_COST = 46
+const DISCLAIMER_KEY = 'valorix_screenshot_disclaimer_seen'
+
+const DISCLAIMER_STYLES = `
+  @keyframes discPopIn {
+    from { transform: scale(0.92) translateY(16px); opacity: 0; }
+    to   { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  @keyframes discFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .disc-overlay {
+    position: fixed; inset: 0; z-index: 600;
+    background: rgba(0,0,0,0.75);
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+    animation: discFadeIn 0.2s ease;
+  }
+  .disc-card {
+    width: 100%; max-width: 480px;
+    background: linear-gradient(145deg, #0d1b6e 0%, #0a1250 60%, #0c1870 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(100,140,255,0.25);
+    overflow: hidden;
+    animation: discPopIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .disc-top {
+    padding: 28px 28px 0;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .disc-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: #f5c000;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .disc-title { font-size: 22px; font-weight: 700; color: #fff; line-height: 1.2; }
+  .disc-title span { color: #5b8aff; }
+  .disc-sub { font-size: 11px; font-weight: 600; color: #4a6a9a; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 3px; }
+  .disc-body { padding: 20px 28px 24px; display: flex; flex-direction: column; gap: 14px; }
+  .disc-section {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(100,140,255,0.15);
+    border-radius: 14px; padding: 16px;
+  }
+  .disc-section-label {
+    font-size: 11px; font-weight: 700; color: #5b8aff;
+    letter-spacing: 1.5px; text-transform: uppercase; text-align: center; margin-bottom: 12px;
+  }
+  .disc-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .disc-tag {
+    padding: 6px 18px; border-radius: 30px; font-size: 13px;
+    font-weight: 700; border: 2px solid;
+  }
+  .disc-tag-soccer  { color: #00e676; border-color: #00e676; background: rgba(0,230,118,0.08); }
+  .disc-tag-hockey  { color: #5b8aff; border-color: #5b8aff; background: rgba(91,138,255,0.08); }
+  .disc-tag-dota    { color: #ff4d6d; border-color: #ff4d6d; background: rgba(255,77,109,0.08); }
+  .disc-tag-cs      { color: #ff9f43; border-color: #ff9f43; background: rgba(255,159,67,0.08); }
+  .disc-warn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(100,140,255,0.15);
+    border-radius: 14px; padding: 16px;
+    font-size: 13px; color: #8a9ec0; line-height: 1.65;
+  }
+  .disc-btns { display: flex; gap: 10px; }
+  .disc-btn-cancel {
+    flex: 1; padding: 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(100,140,255,0.2);
+    border-radius: 12px; color: #4a6a9a;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .disc-btn-ok {
+    flex: 2; padding: 14px;
+    background: linear-gradient(90deg, #1246ff, #3a6fff);
+    border: none; border-radius: 12px; color: #fff;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(18,70,255,0.4);
+  }
+`
+
+function ScreenshotDisclaimer({ onConfirm, onCancel }) {
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{ __html: DISCLAIMER_STYLES }} />
+      <div className="disc-overlay">
+        <div className="disc-card">
+          <div className="disc-top">
+            <div className="disc-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div>
+              <div className="disc-title">Анализ по <span>скриншоту</span></div>
+              <div className="disc-sub">Ознакомьтесь перед использованием</div>
+            </div>
+          </div>
+          <div className="disc-body">
+            <div className="disc-section">
+              <div className="disc-section-label">Лучшая точность</div>
+              <div className="disc-tags">
+                <span className="disc-tag disc-tag-soccer">⚽ Футбол</span>
+                <span className="disc-tag disc-tag-hockey">🏒 Хоккей</span>
+                <span className="disc-tag disc-tag-dota">🐉 Dota 2</span>
+                <span className="disc-tag disc-tag-cs">🎮 CS2</span>
+              </div>
+            </div>
+            <div className="disc-warn">
+              Для других видов спорта (теннис, баскетбол и др.) ИИ может выдавать{' '}
+              <span style={{ color: '#ff4d6d', fontWeight: 600 }}>неточные или некорректные результаты.</span>{' '}
+              Valorix не несёт ответственности за решения, принятые на основе таких анализов.
+            </div>
+            <div className="disc-btns">
+              <button className="disc-btn-cancel" onClick={onCancel}>Отмена</button>
+              <button className="disc-btn-ok" onClick={onConfirm}>Понятно, продолжить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
 
 export default function UploadScreen() {
   const { user, updateCoins } = useAuth()
+  const [showDisclaimer, setShowDisclaimer] = useState(() => !localStorage.getItem(DISCLAIMER_KEY))
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(null)
   const [dragging, setDragging] = useState(false)
@@ -91,8 +210,18 @@ export default function UploadScreen() {
     }
   }
 
+  function handleDisclaimerConfirm() {
+    localStorage.setItem(DISCLAIMER_KEY, '1')
+    setShowDisclaimer(false)
+  }
+
+  function handleDisclaimerCancel() {
+    window.history.back()
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: '#07090f' }}>
+      {showDisclaimer && <ScreenshotDisclaimer onConfirm={handleDisclaimerConfirm} onCancel={handleDisclaimerCancel} />}
       <Navbar />
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '40px 24px' }}>
         <Link to="/" style={{
