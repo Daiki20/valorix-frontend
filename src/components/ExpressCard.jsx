@@ -373,19 +373,6 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
                   ×{data.total_odds?.toFixed(2)}
                 </div>
               </div>
-              <button onClick={() => setShowSummary(s => !s)} style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                background: showSummary ? cfg.gradient : 'rgba(255,255,255,0.04)',
-                border: `1.5px solid ${cfg.border}`,
-                borderRadius: 20, padding: '7px 14px',
-                fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                color: showSummary ? '#030b18' : cfg.oddsColor,
-                whiteSpace: 'nowrap',
-                transition: 'all 0.18s',
-              }}>
-                <Brain size={13} />
-                {showSummary ? 'Свернуть' : 'Логика AI'}
-              </button>
             </div>
           </div>
         ) : (
@@ -437,7 +424,6 @@ function SingleExpressCard({ data, type, sport = 'football', onAuthRequired, onU
         )}
       </div>
 
-      {showSummary && isPurchased && <ReasoningPanel picks={data.picks || []} cfg={cfg} />}
     </div>
   )
 }
