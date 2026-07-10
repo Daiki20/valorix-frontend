@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import AnalysisResult from '../components/AnalysisResult'
 import AuthModal from '../components/AuthModal'
-import { searchMatches, analyzeMatch, analyzeHockeyMatch, analyzeDota2Draft, getUpcomingMatches, getLiveMatches, getUpcomingHockeyMatches, getUpcomingCS2Matches, getUpcomingDota2Matches } from '../api/sportsApi'
+import { searchMatches, analyzeMatch, analyzeDota2Draft, getUpcomingMatches, getLiveMatches, getUpcomingCS2Matches, getUpcomingDota2Matches } from '../api/sportsApi'
 import { coinsApi } from '../api/authApi'
 import ExpressCard from '../components/ExpressCard'
 import { useAuth } from '../context/AuthContext'
@@ -31,16 +31,10 @@ export default function Analyze() {
   const [shareToken, setShareToken] = useState(null)
   const [activeTab, setActiveTab] = useState('football')
   const [liveMatches, setLiveMatches] = useState([])
-  const [hockeyMatches, setHockeyMatches] = useState([])
-  const [hockeyLoading, setHockeyLoading] = useState(false)
   const [cs2Matches, setCs2Matches] = useState([])
   const [cs2Loading, setCs2Loading] = useState(false)
   const [dota2Matches, setDota2Matches] = useState([])
   const [dota2Loading, setDota2Loading] = useState(false)
-  const [showHockeyForm, setShowHockeyForm] = useState(false)
-  const [hockeyHome, setHockeyHome] = useState('')
-  const [hockeyAway, setHockeyAway] = useState('')
-  const [hockeyLeague, setHockeyLeague] = useState('КХЛ')
 
   const [liveFilter, setLiveFilter] = useState('football')
   const [draftModal, setDraftModal] = useState(null) // match waiting for draft upload
@@ -59,15 +53,6 @@ export default function Analyze() {
     fetch_()
     const interval = setInterval(fetch_, 2 * 60 * 1000)
     return () => { cancelled = true; clearInterval(interval) }
-  }, [activeTab])
-
-  useEffect(() => {
-    if (activeTab !== 'hockey' || hockeyMatches.length > 0) return
-    setHockeyLoading(true)
-    getUpcomingHockeyMatches()
-      .then(m => { setHockeyMatches(m); if (m.length === 0) setShowHockeyForm(true) })
-      .catch(() => setShowHockeyForm(true))
-      .finally(() => setHockeyLoading(false))
   }, [activeTab])
 
   useEffect(() => {
@@ -148,17 +133,6 @@ export default function Analyze() {
     } finally {
       setAnalysisLoading(false)
     }
-  }
-
-  function handleHockeyAnalyze() {
-    if (!hockeyHome.trim() || !hockeyAway.trim()) return
-    handleSelectMatch({
-      id: null,
-      home: hockeyHome.trim(),
-      away: hockeyAway.trim(),
-      league: hockeyLeague,
-      sport: 'hockey',
-    })
   }
 
   async function handleConfirmPayment() {
@@ -263,7 +237,7 @@ export default function Analyze() {
     <div style={{ minHeight: '100vh', background: '#07090f' }}>
       <Helmet>
         <title>AI анализ матча — Valorix AI</title>
-        <meta name="description" content="Выбери матч и получи AI-прогноз за 15 секунд. Футбол, хоккей, CS2, Dota 2. Анализ формы команд, травм, коэффициентов и value-ставок." />
+        <meta name="description" content="Выбери матч и получи AI-прогноз за 15 секунд. Футбол, CS2, Dota 2. Анализ формы команд, травм, коэффициентов и value-ставок." />
         <meta name="robots" content="noindex" />
         <link rel="canonical" href="https://valorix.ru/analyze" />
       </Helmet>
@@ -291,7 +265,6 @@ export default function Analyze() {
         <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
           {[
             { id: 'football', label: '⚽ Футбол' },
-            { id: 'hockey',   label: '🏒 Хоккей' },
             { id: 'cs2',      label: '🔫 CS2' },
             { id: 'dota2',    label: '🎮 Dota 2' },
             { id: 'live',     label: '🔴 Лайв' },
@@ -324,57 +297,6 @@ export default function Analyze() {
             <Search size={18} color="#94a3b8"
               style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)' }} />
           </form>
-        )}
-
-        {activeTab === 'hockey' && (
-          <>
-            {hockeyLoading ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {[1,2,3,4].map(i => (
-                  <div key={i} className="card" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
-                    <div className="skeleton" style={{ width: 32, height: 32, borderRadius: '50%', flexShrink: 0 }} />
-                    <div className="skeleton" style={{ height: 15, flex: 1, maxWidth: 140 }} />
-                    <div className="skeleton" style={{ height: 15, width: 60 }} />
-                    <div className="skeleton" style={{ height: 15, flex: 1, maxWidth: 140 }} />
-                    <div className="skeleton" style={{ width: 32, height: 32, borderRadius: '50%', flexShrink: 0 }} />
-                  </div>
-                ))}
-              </div>
-            ) : hockeyMatches.length > 0 ? (
-              <>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
-                  {hockeyMatches.map(match => (
-                    <HockeyMatchRow key={match.id} match={match} onClick={() => handleSelectMatch(match)} />
-                  ))}
-                </div>
-                <button
-                  onClick={() => setShowHockeyForm(f => !f)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    background: 'none', border: '1.5px dashed rgba(0,180,255,0.2)',
-                    borderRadius: 10, padding: '10px 16px', cursor: 'pointer',
-                    fontSize: 13, fontWeight: 600, color: '#4a6a8a',
-                    marginBottom: 16, width: '100%',
-                    transition: 'all 0.15s',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#00cfff'; e.currentTarget.style.color = '#00cfff' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,180,255,0.2)'; e.currentTarget.style.color = '#4a6a8a' }}
-                >
-                  {showHockeyForm ? '✕ Скрыть форму' : '+ Другой матч (ввести вручную)'}
-                </button>
-              </>
-            ) : null}
-
-            {(showHockeyForm || (!hockeyLoading && hockeyMatches.length === 0)) && (
-              <HockeyInputForm
-                home={hockeyHome} onHome={setHockeyHome}
-                away={hockeyAway} onAway={setHockeyAway}
-                league={hockeyLeague} onLeague={setHockeyLeague}
-                onAnalyze={handleHockeyAnalyze}
-                cost={ANALYSIS_COST}
-              />
-            )}
-          </>
         )}
 
         {(activeTab === 'cs2' || activeTab === 'dota2') && (() => {
@@ -439,11 +361,10 @@ export default function Analyze() {
         {activeTab === 'live' && (() => {
           const SPORT_META = {
             football: { label: '⚽ Футбол', emoji: '⚽' },
-            hockey:   { label: '🏒 Хоккей', emoji: '🏒' },
             cs2:      { label: '🔫 CS2',     emoji: '🔫' },
             dota2:    { label: '🎮 Dota 2',  emoji: '🎮' },
           }
-          const ALLOWED = new Set(['football', 'hockey', 'cs2', 'dota2'])
+          const ALLOWED = new Set(['football', 'cs2', 'dota2'])
 
           const allLive = liveMatches.filter(m => ALLOWED.has(m.sport))
           const countFor = id => id === 'all' ? allLive.length : allLive.filter(m => m.sport === id).length
@@ -807,203 +728,6 @@ function TeamLogo({ name, img, size = 44 }) {
   )
 }
 
-function HockeyMatchRow({ match, onClick }) {
-  const [hovered, setHovered] = useState(false)
-  const isLive = match.isLive
-
-  return (
-    <div
-      className="card match-row"
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        padding: '16px 20px', cursor: 'pointer',
-        display: 'flex', alignItems: 'center', gap: 12,
-        transition: 'all 0.15s',
-        transform: hovered ? 'translateX(4px)' : 'none',
-        border: isLive ? '1.5px solid rgba(239,68,68,0.3)' : hovered ? '1.5px solid rgba(14,165,233,0.4)' : '1.5px solid transparent',
-        background: isLive ? 'rgba(239,68,68,0.05)' : undefined,
-      }}
-    >
-      {/* Левая группа: логотипы + имена */}
-      <div className="match-row-teams" style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '0 1 auto', minWidth: 0 }}>
-        <TeamLogo name={match.home} img={match.homeImg} size={32} />
-        <div style={{ minWidth: 0, overflow: 'hidden' }}>
-          <div style={{
-            fontWeight: 700, fontSize: 13, color: '#dde4ee',
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          }}>
-            {match.home}
-            <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 400, margin: '0 4px' }}>vs</span>
-            {match.away}
-          </div>
-          <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2 }}>
-            {match.league}{match.date ? ` · ${match.date}` : ''}
-          </div>
-        </div>
-        <TeamLogo name={match.away} img={match.awayImg} size={32} />
-      </div>
-
-      <div style={{ flex: 1 }} />
-
-      {/* Правая группа: live / коэфы / кнопка */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-        {isLive && (
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 3, justifyContent: 'center' }}>
-              <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', animation: 'pulse-ring 1.2s ease-out infinite' }} />
-              <span style={{ fontSize: 10, fontWeight: 800, color: '#ef4444' }}>LIVE</span>
-            </div>
-            {match.score && (
-              <div style={{ fontSize: 14, fontWeight: 900, color: '#dde4ee', marginTop: 2 }}>
-                {match.score}
-                {match.minute != null && <span style={{ fontSize: 10, color: '#94a3b8', marginLeft: 3 }}>{match.minute}'</span>}
-              </div>
-            )}
-          </div>
-        )}
-
-        {match.odds1x2 && !isLive && (
-          <div className="match-row-odds" style={{ display: 'flex', gap: 4 }}>
-            {[{ label: '1', val: match.odds1x2.home }, { label: 'X', val: match.odds1x2.draw }, { label: '2', val: match.odds1x2.away }].map(o => (
-              <div key={o.label} style={{
-                textAlign: 'center', background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '4px 7px', minWidth: 40,
-              }}>
-                <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600 }}>{o.label}</div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#dde4ee' }}>{o.val}</div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="match-row-btn" style={{
-          background: hovered ? 'rgba(14,165,233,0.15)' : 'rgba(0,25,60,0.5)',
-          color: hovered ? '#0ea5e9' : '#4a6a8a',
-          border: `1px solid ${hovered ? 'rgba(14,165,233,0.3)' : 'rgba(0,180,255,0.1)'}`,
-          borderRadius: 20, padding: '6px 12px',
-          fontSize: 13, fontWeight: 600,
-          display: 'flex', alignItems: 'center', gap: 5,
-          transition: 'all 0.15s',
-        }}>
-          <Zap size={13} /> Анализ
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function HockeyInputForm({ home, onHome, away, onAway, league, onLeague, onAnalyze, cost }) {
-  const leagues = ['КХЛ', 'НХЛ', 'МХЛ', 'ВХЛ', 'Другое']
-  const canAnalyze = home.trim() && away.trim()
-
-  return (
-    <div style={{
-      background: 'rgba(0,25,60,0.4)', borderRadius: 16, padding: '28px 28px 24px',
-      border: '1.5px solid rgba(0,207,255,0.15)', marginBottom: 24,
-      boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
-    }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-        <div style={{
-          width: 36, height: 36, borderRadius: 10,
-          background: 'linear-gradient(135deg, #0ea5e9, #00cfff)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <span style={{ fontSize: 18 }}>🏒</span>
-        </div>
-        <div>
-          <div style={{ fontWeight: 800, fontSize: 16, color: '#dde4ee' }}>Анализ хоккейного матча</div>
-          <div style={{ fontSize: 12, color: '#94a3b8' }}>Введите команды — AI проанализирует на основе своих знаний</div>
-        </div>
-      </div>
-
-      {/* League selector */}
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', marginBottom: 8, letterSpacing: 0.5 }}>ТУРНИР</div>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-          {leagues.map(l => (
-            <button key={l} onClick={() => onLeague(l)} style={{
-              padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 600,
-              border: `1.5px solid ${league === l ? '#00cfff' : 'rgba(0,180,255,0.15)'}`,
-              background: league === l ? 'rgba(0,207,255,0.12)' : 'rgba(0,25,60,0.4)',
-              color: league === l ? '#00cfff' : '#4a6a8a',
-              cursor: 'pointer', transition: 'all 0.15s',
-            }}>{l}</button>
-          ))}
-        </div>
-      </div>
-
-      {/* Teams input */}
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: 140 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', marginBottom: 6, letterSpacing: 0.5 }}>ХОЗЯЕВА</div>
-          <input
-            value={home}
-            onChange={e => onHome(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && canAnalyze && onAnalyze()}
-            placeholder="Например: ЦСКА"
-            style={{
-              width: '100%', padding: '11px 14px', borderRadius: 10,
-              border: '1.5px solid rgba(255,255,255,0.07)', fontSize: 14, outline: 'none',
-              boxSizing: 'border-box',
-              transition: 'border-color 0.15s',
-            }}
-            onFocus={e => e.target.style.borderColor = '#00cfff'}
-            onBlur={e => e.target.style.borderColor = 'rgba(0,180,255,0.15)'}
-          />
-        </div>
-
-        <div style={{ fontSize: 18, fontWeight: 800, color: '#94a3b8', paddingTop: 22, flexShrink: 0 }}>vs</div>
-
-        <div style={{ flex: 1, minWidth: 140 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', marginBottom: 6, letterSpacing: 0.5 }}>ГОСТИ</div>
-          <input
-            value={away}
-            onChange={e => onAway(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && canAnalyze && onAnalyze()}
-            placeholder="Например: Ак Барс"
-            style={{
-              width: '100%', padding: '11px 14px', borderRadius: 10,
-              border: '1.5px solid rgba(255,255,255,0.07)', fontSize: 14, outline: 'none',
-              boxSizing: 'border-box',
-              transition: 'border-color 0.15s',
-            }}
-            onFocus={e => e.target.style.borderColor = '#00cfff'}
-            onBlur={e => e.target.style.borderColor = 'rgba(0,180,255,0.15)'}
-          />
-        </div>
-      </div>
-
-      <button
-        onClick={onAnalyze}
-        disabled={!canAnalyze}
-        style={{
-          marginTop: 16, width: '100%', padding: '12px',
-          background: canAnalyze ? 'linear-gradient(135deg, #0ea5e9, #00cfff)' : 'rgba(0,25,60,0.4)',
-          color: canAnalyze ? '#030b18' : '#4a6a8a',
-          border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 14,
-          cursor: canAnalyze ? 'pointer' : 'not-allowed',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-          transition: 'all 0.15s',
-        }}
-      >
-        <Zap size={15} fill={canAnalyze ? 'white' : '#94a3b8'} />
-        Анализировать матч — {cost} монет
-      </button>
-
-      <div style={{
-        marginTop: 14, padding: '10px 14px', background: 'rgba(0,207,255,0.06)',
-        borderRadius: 10, border: '1px solid rgba(0,207,255,0.18)',
-        fontSize: 12, color: '#57c8ff', lineHeight: 1.5,
-      }}>
-        💡 AI использует свои знания о командах: форма, статистика голов, вратари, игра в большинстве — без автоматической загрузки данных.
-      </div>
-    </div>
-  )
-}
-
 function DraftUploadModal({ match, onAnalyze, onSkip, onBack }) {
   const [dragging, setDragging] = useState(false)
   const [preview, setPreview] = useState(null)
@@ -1162,35 +886,21 @@ function LoadingAnalysis({ match }) {
   return (
     <div className="card" style={{ padding: 48, textAlign: 'center' }}>
       <div className="loading-teams" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginBottom: 24 }}>
-        {match.sport === 'hockey'
-          ? <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ fontWeight: 800, fontSize: 18, color: '#dde4ee' }}>{match.home}</div>
-              <span style={{ fontSize: 20, fontWeight: 800, color: '#dde4ee' }}>🏒 VS</span>
-              <div style={{ fontWeight: 800, fontSize: 18, color: '#dde4ee' }}>{match.away}</div>
-            </div>
-          : <>
-              <TeamLogo name={match.home} img={match.homeImg} />
-              <span style={{ fontSize: 20, fontWeight: 800, color: '#dde4ee' }}>VS</span>
-              <TeamLogo name={match.away} img={match.awayImg} />
-            </>
-        }
+        <TeamLogo name={match.home} img={match.homeImg} />
+        <span style={{ fontSize: 20, fontWeight: 800, color: '#dde4ee' }}>VS</span>
+        <TeamLogo name={match.away} img={match.awayImg} />
       </div>
       <h2 style={{ fontSize: 20, fontWeight: 700, color: '#dde4ee', marginBottom: 8 }}>
-        {match.sport === 'hockey' ? '🏒 AI анализирует матч...' : 'AI анализирует матч...'}
+        AI анализирует матч...
       </h2>
       <p style={{ color: '#64748b', fontSize: 14, marginBottom: 24 }}>
-        {match.sport === 'hockey'
-          ? 'Анализируем вратарей, форму, статистику голов и большинство'
-          : 'Изучаем форму команд, травмы, статистику и новости'}
+        Изучаем форму команд, травмы, статистику и новости
       </p>
       <div className="thinking-dots" style={{ fontSize: 24 }}>
         <span>●</span><span> ●</span><span> ●</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 400, margin: '24px auto 0' }}>
-        {(match.sport === 'hockey'
-          ? ['Форма команд и серии', 'Анализ вратарей и голевой статистики', 'Игра в большинстве и меньшинстве', 'Формирование вердикта']
-          : ['Анализ формы команд', 'Проверка травм и дисквалификаций', 'Сравнение коэффициентов', 'Формирование вердикта']
-        ).map((step, i) => (
+        {['Анализ формы команд', 'Проверка травм и дисквалификаций', 'Сравнение коэффициентов', 'Формирование вердикта'].map((step, i) => (
           <div key={i} style={{
             display: 'flex', alignItems: 'flex-start', gap: 8,
             padding: '8px 14px', background: 'rgba(255,255,255,0.04)', borderRadius: 8,

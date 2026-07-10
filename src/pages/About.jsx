@@ -6,7 +6,7 @@ export default function About() {
     <div style={{ minHeight: '100vh', background: '#0a0a1a', color: '#e2e8f0', padding: '80px 20px' }}>
       <Helmet>
         <title>О сервисе — Valorix AI</title>
-        <meta name="description" content="Valorix — AI-аналитика спортивных матчей: футбол, хоккей, CS2, Dota2. Умный анализ для осознанных решений." />
+        <meta name="description" content="Valorix — AI-аналитика спортивных матчей: футбол, CS2, Dota2. Умный анализ для осознанных решений." />
       </Helmet>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         <Link to="/" style={{ color: '#6366f1', textDecoration: 'none', display: 'inline-block', marginBottom: '32px' }}>

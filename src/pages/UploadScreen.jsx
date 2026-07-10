@@ -61,7 +61,6 @@ const DISCLAIMER_STYLES = `
     font-weight: 700; border: 2px solid;
   }
   .disc-tag-soccer  { color: #00e676; border-color: #00e676; background: rgba(0,230,118,0.08); }
-  .disc-tag-hockey  { color: #5b8aff; border-color: #5b8aff; background: rgba(91,138,255,0.08); }
   .disc-tag-dota    { color: #ff4d6d; border-color: #ff4d6d; background: rgba(255,77,109,0.08); }
   .disc-tag-cs      { color: #ff9f43; border-color: #ff9f43; background: rgba(255,159,67,0.08); }
   .disc-warn {
@@ -107,7 +106,6 @@ function ScreenshotDisclaimer({ onConfirm, onCancel }) {
               <div className="disc-section-label">Лучшая точность</div>
               <div className="disc-tags">
                 <span className="disc-tag disc-tag-soccer">⚽ Футбол</span>
-                <span className="disc-tag disc-tag-hockey">🏒 Хоккей</span>
                 <span className="disc-tag disc-tag-dota">🐉 Dota 2</span>
                 <span className="disc-tag disc-tag-cs">🎮 CS2</span>
               </div>

@@ -237,7 +237,7 @@ export default function Landing() {
       )}
       <Helmet>
         <title>Valorix AI — AI анализ матчей и прогнозы на спорт</title>
-        <meta name="description" content="Valorix AI — AI анализ матча за 15 секунд. Прогнозы на футбол, хоккей, CS2, Dota 2, UFC. Загрузи скриншот линии букмекера — получи разбор формы команд, травм и value ставок." />
+        <meta name="description" content="Valorix AI — AI анализ матча за 15 секунд. Прогнозы на футбол, CS2, Dota 2, UFC. Загрузи скриншот линии букмекера — получи разбор формы команд, травм и value ставок." />
         <link rel="canonical" href="https://valorix.ru/" />
         <script type="application/ld+json">{JSON.stringify({
           "@context": "https://schema.org",
@@ -330,7 +330,7 @@ export default function Landing() {
                   Выбирай матч или загружай скрин линии букмекера — искусственный интеллект за{' '}
                   <span style={{ color: A, fontWeight: 600 }}>15 секунд</span>{' '}
                   проанализирует форму команд, травмы, личные встречи и найдёт value ставки.
-                  Футбол, хоккей, CS2, Dota 2.
+                  Футбол, CS2, Dota 2.
                 </p>
 
                 <div className="hero-buttons" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 48 }}>
