@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /history
+Disallow: /payment-return
+
+Sitemap: https://valorix.ru/sitemap.xml
